@@ -17,7 +17,7 @@ function getDiaSemana(dateStr) {
   return DIAS_SEMANA[date.getDay() === 0 ? 6 : date.getDay() - 1]
 }
 
-function emptyRefeicao() {
+function emptyRefeicao(tipo = 'almoco') {
   return {
     baseGeralDL: BASES_DIETA.geralDL[0],
     baseDM:      BASES_DIETA.dm[0],
@@ -30,7 +30,7 @@ function emptyRefeicao() {
     proteinaPastosaId: undefined,
     proteinaPastosaManual: undefined,
     proteinaLiquidaManual: undefined,
-    leguminosaId:  '',
+    leguminosaId:  tipo === 'almoco' ? 'leg1' : '', // Feijão Preto pré-selecionado no Almoço
     guarnicaoId:   '',
     guarnicaoAbrev: '',
     guarnicaoBranda: '',
@@ -656,9 +656,9 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
   const [internalDate, setInternalDate] = useState(todayStr)
   const selectedDate = propSelectedDate !== undefined ? propSelectedDate : internalDate
   const setSelectedDate = propSetSelectedDate || setInternalDate
-
-  const [almoco, setAlmoco] = useState(emptyRefeicao)
-  const [jantar, setJantar] = useState(emptyRefeicao)
+ 
+  const [almoco, setAlmoco] = useState(() => emptyRefeicao('almoco'))
+  const [jantar, setJantar] = useState(() => emptyRefeicao('jantar'))
   const [obsLiquidaCompleta, setObsLiquidaCompleta] = useState(OBS_LIQUIDA_PADRAO.liquidaCompleta)
   const [obsLiquidaSemResiduos, setObsLiquidaSemResiduos] = useState(OBS_LIQUIDA_PADRAO.liquidaSemResiduos)
   const [saved, setSaved] = useState(false)
@@ -666,13 +666,13 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
   useEffect(() => {
     const existing = cardapios[selectedDate]
     if (existing) {
-      setAlmoco({ ...emptyRefeicao(), ...(existing.almoco ?? {}) })
-      setJantar({ ...emptyRefeicao(), ...(existing.jantar ?? {}) })
+      setAlmoco({ ...emptyRefeicao('almoco'), ...(existing.almoco ?? {}) })
+      setJantar({ ...emptyRefeicao('jantar'), ...(existing.jantar ?? {}) })
       setObsLiquidaCompleta(existing.observacoes?.liquidaCompleta ?? OBS_LIQUIDA_PADRAO.liquidaCompleta)
       setObsLiquidaSemResiduos(existing.observacoes?.liquidaSemResiduos ?? OBS_LIQUIDA_PADRAO.liquidaSemResiduos)
     } else {
-      setAlmoco(emptyRefeicao())
-      setJantar(emptyRefeicao())
+      setAlmoco(emptyRefeicao('almoco'))
+      setJantar(emptyRefeicao('jantar'))
       setObsLiquidaCompleta(OBS_LIQUIDA_PADRAO.liquidaCompleta)
       setObsLiquidaSemResiduos(OBS_LIQUIDA_PADRAO.liquidaSemResiduos)
     }
