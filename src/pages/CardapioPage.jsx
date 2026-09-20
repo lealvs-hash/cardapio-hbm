@@ -87,7 +87,7 @@ function QuickCreateModal({ tipo, onSave, onClose }) {
   }
 
   return (
-    <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+    <div className="modal-overlay">
       <div className="modal-box" style={{ maxWidth: 520 }}>
         <div className="modal-header">
           <h3><Plus size={15} /> + Novo {labels[tipo]}</h3>
@@ -408,28 +408,6 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
           <tr className="row-principal">
             <td className="row-label-cell">
               <span className="row-label-main">PROTEÍNA</span>
-              {prot && onOpenFicha && (
-                <button
-                  type="button"
-                  className="no-print"
-                  style={{
-                    display: 'block',
-                    margin: '3px auto 0',
-                    fontSize: '8.5px',
-                    padding: '2px 5px',
-                    background: '#e8f5e9',
-                    color: '#1b5e20',
-                    border: '1px solid #81c784',
-                    borderRadius: 3,
-                    cursor: 'pointer',
-                    fontWeight: 700
-                  }}
-                  onClick={() => onOpenFicha(prot)}
-                  title="Abrir Ficha Técnica e Custos desta proteína"
-                >
-                  📋 FICHA
-                </button>
-              )}
             </td>
             <td className="cardapio-td edit-cell">
               <select className="table-select" value={r.proteinaId} onChange={handleProteinaChange}>
@@ -539,28 +517,6 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
           <tr className="row-guarnicao">
             <td className="row-label-cell">
               <span className="row-label-main">GUARNIÇÃO</span>
-              {guard && onOpenFicha && (
-                <button
-                  type="button"
-                  className="no-print"
-                  style={{
-                    display: 'block',
-                    margin: '3px auto 0',
-                    fontSize: '8.5px',
-                    padding: '2px 5px',
-                    background: '#e8f5e9',
-                    color: '#1b5e20',
-                    border: '1px solid #81c784',
-                    borderRadius: 3,
-                    cursor: 'pointer',
-                    fontWeight: 700
-                  }}
-                  onClick={() => onOpenFicha(guard)}
-                  title="Abrir Ficha Técnica e Custos desta guarnição"
-                >
-                  📋 FICHA
-                </button>
-              )}
             </td>
             <td className="cardapio-td edit-cell">
               <select className="table-select" value={r.guarnicaoId} onChange={handleGuardChange}>

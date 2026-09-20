@@ -45,7 +45,7 @@ function ModalPreparacao({ initial, onSave, onClose, titulo, tipo = 'proteina', 
   const categoriasDisponiveis = tipo === 'guarnicao' ? CATEGORIAS_GUARNICAO : CATEGORIAS_PROTEINA
 
   return (
-    <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+    <div className="modal-overlay">
       <div className="modal-box" style={{ maxWidth: 640 }}>
         <div className="modal-header">
           <h3><FileText size={18} /> {titulo}</h3>

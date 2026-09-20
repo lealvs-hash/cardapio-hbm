@@ -229,7 +229,7 @@ export default function ValoresPage({ store, onOpenFicha }) {
 
       {/* Modal Novo Insumo */}
       {modalNovo && (
-        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setModalNovo(false)}>
+        <div className="modal-overlay">
           <div className="modal-box" style={{ maxWidth: 440 }}>
             <div className="modal-header">
               <h3><Plus size={16} /> Novo Insumo / Matéria-Prima</h3>

@@ -965,7 +965,7 @@ export default function FichaTecnicaPage({ store, selectedFichaId, setSelectedFi
 
       {/* Modal Criar Nova Ficha */}
       {modalNova && (
-        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setModalNova(false)}>
+        <div className="modal-overlay">
           <div className="modal-box" style={{ maxWidth: 480 }}>
             <div className="modal-header">
               <h3><Plus size={16} /> Nova Ficha Técnica de Preparação</h3>
