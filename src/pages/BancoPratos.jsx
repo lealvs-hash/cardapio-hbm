@@ -31,6 +31,25 @@ function ModalPreparacao({ initial, onSave, onClose, titulo, tipo = 'proteina', 
 
   const handleChange = (key) => (e) => setForm(prev => ({ ...prev, [key]: e.target.value }))
 
+  const handleUpperChange = (field, isDual = false) => (e) => {
+    const target = e.target
+    const start = target.selectionStart
+    const end = target.selectionEnd
+    const val = target.value.toUpperCase()
+
+    if (isDual) {
+      setForm(p => ({ ...p, nome: val, nomeAbrev: val }))
+    } else {
+      setForm(p => ({ ...p, [field]: val }))
+    }
+
+    requestAnimationFrame(() => {
+      if (target && target.setSelectionRange) {
+        target.setSelectionRange(start, end)
+      }
+    })
+  }
+
   const CATEGORIAS_PROTEINA = [
     'Bovina — Coxão de Dentro',
     'Bovina — Patinho',
@@ -84,11 +103,9 @@ function ModalPreparacao({ initial, onSave, onClose, titulo, tipo = 'proteina', 
               <input
                 type="text"
                 value={form.nomeAbrev || form.nome || ''}
-                onChange={e => {
-                  const val = e.target.value.toUpperCase()
-                  setForm(prev => ({ ...prev, nome: val, nomeAbrev: val }))
-                }}
+                onChange={handleUpperChange('nomeAbrev', true)}
                 placeholder={tipo === 'guarnicao' ? 'Ex: BATATA ASSADA C/ ERVAS' : 'Ex: PEITO DE FRANGO AO MOLHO CREMOSO DE MILHO'}
+                style={{ textTransform: 'uppercase' }}
                 autoFocus
               />
               <span className="field-hint">Utilizado na Dieta Livre e repetido idêntico na Dieta DM</span>
@@ -99,17 +116,17 @@ function ModalPreparacao({ initial, onSave, onClose, titulo, tipo = 'proteina', 
           <div className="form-grid form-grid-3">
             <div className="form-group">
               <label>Opção DIETA BRANDA</label>
-              <input type="text" value={form.nomeBranda || ''} onChange={e => handleChange('nomeBranda')({ target: { value: e.target.value.toUpperCase() } })} placeholder={tipo === 'guarnicao' ? 'Ex: BATATA COZIDA' : 'Ex: PEITO DE FRANGO EM CUBOS'} />
+              <input type="text" value={form.nomeBranda || ''} onChange={handleUpperChange('nomeBranda')} placeholder={tipo === 'guarnicao' ? 'Ex: BATATA COZIDA' : 'Ex: PEITO DE FRANGO EM CUBOS'} style={{ textTransform: 'uppercase' }} />
               <span className="field-hint">Se vazio, repete a Dieta Livre</span>
             </div>
             <div className="form-group">
               <label>Opção DIETA PASTOSA</label>
-              <input type="text" value={form.nomePastosa || ''} onChange={e => handleChange('nomePastosa')({ target: { value: e.target.value.toUpperCase() } })} placeholder={tipo === 'guarnicao' ? 'Ex: PURÊ DE BATATA' : 'Ex: FRANGO DESFIADO COM CALDO/MOLHO'} />
+              <input type="text" value={form.nomePastosa || ''} onChange={handleUpperChange('nomePastosa')} placeholder={tipo === 'guarnicao' ? 'Ex: PURÊ DE BATATA' : 'Ex: FRANGO DESFIADO COM CALDO/MOLHO'} style={{ textTransform: 'uppercase' }} />
               <span className="field-hint">{tipo === 'guarnicao' ? 'Purê, creme, etc.' : 'Carne picada ou desfiada'}</span>
             </div>
             <div className="form-group">
               <label>Opção LÍQ. PASTOSA</label>
-              <input type="text" value={form.nomeLiquida || ''} onChange={e => handleChange('nomeLiquida')({ target: { value: e.target.value.toUpperCase() } })} placeholder={tipo === 'guarnicao' ? 'Ou deixe em branco' : 'Ex: CARNE C/ CALDO LIQUIDIFICADA'} />
+              <input type="text" value={form.nomeLiquida || ''} onChange={handleUpperChange('nomeLiquida')} placeholder={tipo === 'guarnicao' ? 'Ou deixe em branco' : 'Ex: CARNE C/ CALDO LIQUIDIFICADA'} style={{ textTransform: 'uppercase' }} />
               <span className="field-hint">{tipo === 'guarnicao' ? 'Opcional (ou deixe vazio)' : 'Padrão: Carne liquidificada'}</span>
             </div>
           </div>

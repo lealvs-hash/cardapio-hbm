@@ -101,7 +101,25 @@ function QuickCreateModal({ tipo, initial = null, onSave, onClose }) {
     }
   })
   const set = k => e => setForm(p => ({ ...p, [k]: e.target.value }))
-  const upper = k => e => setForm(p => ({ ...p, [k]: e.target.value.toUpperCase() }))
+  
+  const handleUpperChange = (field, isDual = false) => (e) => {
+    const target = e.target
+    const start = target.selectionStart
+    const end = target.selectionEnd
+    const val = target.value.toUpperCase()
+
+    if (isDual) {
+      setForm(p => ({ ...p, nome: val, nomeAbrev: val }))
+    } else {
+      setForm(p => ({ ...p, [field]: val }))
+    }
+
+    requestAnimationFrame(() => {
+      if (target && target.setSelectionRange) {
+        target.setSelectionRange(start, end)
+      }
+    })
+  }
 
   const labels = { proteina: 'Proteína / Prato', leguminosa: 'Leguminosa', guarnicao: 'Guarnição', salada: 'Salada', base: 'Prato Base' }
 
@@ -156,12 +174,9 @@ function QuickCreateModal({ tipo, initial = null, onSave, onClose }) {
             <input
               type="text"
               value={form.nomeAbrev || form.nome || ''}
-              onChange={e => {
-                const val = e.target.value.toUpperCase()
-                setForm(p => ({ ...p, nome: val, nomeAbrev: val }))
-              }}
+              onChange={handleUpperChange('nomeAbrev', true)}
               placeholder="Ex: PEITO DE FRANGO AO MOLHO CREMOSO DE MILHO"
-              autoFocus
+              style={{ textTransform: 'uppercase' }}
             />
             <span className="field-hint" style={{ fontSize: '10px', color: '#666' }}>
               Aparece na Dieta Livre e repete idêntico na Dieta DM
@@ -177,18 +192,18 @@ function QuickCreateModal({ tipo, initial = null, onSave, onClose }) {
               <div className="form-grid form-grid-2" style={{ gap: 8 }}>
                 <div className="form-group">
                   <label>Opção DIETA BRANDA</label>
-                  <input type="text" value={form.nomeBranda} onChange={upper('nomeBranda')} placeholder="Ex: PEITO DE FRANGO EM CUBOS" />
+                  <input type="text" value={form.nomeBranda} onChange={handleUpperChange('nomeBranda')} placeholder="Ex: PEITO DE FRANGO EM CUBOS" style={{ textTransform: 'uppercase' }} />
                   <span className="field-hint" style={{ fontSize: '10px', color: '#666' }}>Se vazio, repete a Dieta Livre</span>
                 </div>
                 <div className="form-group">
                   <label>Opção DIETA PASTOSA</label>
-                  <input type="text" value={form.nomePastosa} onChange={upper('nomePastosa')} placeholder="Ex: FRANGO DESFIADO COM CALDO/MOLHO" />
+                  <input type="text" value={form.nomePastosa} onChange={handleUpperChange('nomePastosa')} placeholder="Ex: FRANGO DESFIADO COM CALDO/MOLHO" style={{ textTransform: 'uppercase' }} />
                   <span className="field-hint" style={{ fontSize: '10px', color: '#666' }}>Carne picada ou desfiada c/ caldo</span>
                 </div>
               </div>
               <div className="form-group" style={{ marginTop: 8 }}>
                 <label>Opção LÍQ. PASTOSA <span style={{ fontWeight: 400, color: '#888' }}>(Padrão: CARNE C/ CALDO LIQUIDIFICADA — ou deixe vazio)</span></label>
-                <input type="text" value={form.nomeLiquida} onChange={upper('nomeLiquida')} placeholder="Ex: CARNE C/ CALDO LIQUIDIFICADA" />
+                <input type="text" value={form.nomeLiquida} onChange={handleUpperChange('nomeLiquida')} placeholder="Ex: CARNE C/ CALDO LIQUIDIFICADA" style={{ textTransform: 'uppercase' }} />
               </div>
             </>
           )}
@@ -202,17 +217,17 @@ function QuickCreateModal({ tipo, initial = null, onSave, onClose }) {
               <div className="form-grid form-grid-3" style={{ gap: 8 }}>
                 <div className="form-group">
                   <label>Opção BRANDA</label>
-                  <input type="text" value={form.nomeBranda} onChange={upper('nomeBranda')} placeholder="Ex: BATATA COZIDA" />
+                  <input type="text" value={form.nomeBranda} onChange={handleUpperChange('nomeBranda')} placeholder="Ex: BATATA COZIDA" style={{ textTransform: 'uppercase' }} />
                   <span className="field-hint" style={{ fontSize: '10px', color: '#666' }}>Se vazio, usa a Dieta Livre</span>
                 </div>
                 <div className="form-group">
                   <label>Opção PASTOSA</label>
-                  <input type="text" value={form.nomePastosa} onChange={upper('nomePastosa')} placeholder="Ex: PURÊ DE BATATA" />
+                  <input type="text" value={form.nomePastosa} onChange={handleUpperChange('nomePastosa')} placeholder="Ex: PURÊ DE BATATA" style={{ textTransform: 'uppercase' }} />
                   <span className="field-hint" style={{ fontSize: '10px', color: '#666' }}>Purês, cremes, etc.</span>
                 </div>
                 <div className="form-group">
                   <label>Opção LÍQ. PASTOSA</label>
-                  <input type="text" value={form.nomeLiquida} onChange={upper('nomeLiquida')} placeholder="Ou deixe em branco" />
+                  <input type="text" value={form.nomeLiquida} onChange={handleUpperChange('nomeLiquida')} placeholder="Ou deixe em branco" style={{ textTransform: 'uppercase' }} />
                   <span className="field-hint" style={{ fontSize: '10px', color: '#666' }}>Opcional</span>
                 </div>
               </div>
