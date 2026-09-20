@@ -76,11 +76,12 @@ function QuickCreateModal({ tipo, initial = null, onSave, onClose }) {
 
   const [form, setForm] = useState(() => {
     if (initial) {
+      const nomeFinal = (initial.nomeAbrev || initial.nome || '').toUpperCase()
       return {
         ...initial,
         categoria: initial.categoria || categorias[0],
-        nome: initial.nome || '',
-        nomeAbrev: initial.nomeAbrev || '',
+        nome: nomeFinal,
+        nomeAbrev: nomeFinal,
         nomeBranda: initial.nomeBranda || '',
         nomePastosa: initial.nomePastosa || '',
         nomeLiquida: initial.nomeLiquida !== undefined ? initial.nomeLiquida : (tipo === 'proteina' ? 'CARNE COM CALDO/MOLHO LIQUIDIFICADA' : ''),
@@ -105,12 +106,15 @@ function QuickCreateModal({ tipo, initial = null, onSave, onClose }) {
   const labels = { proteina: 'Proteína / Prato', leguminosa: 'Leguminosa', guarnicao: 'Guarnição', salada: 'Salada', base: 'Prato Base' }
 
   const handleSave = () => {
-    if (!form.nome.trim() || !form.nomeAbrev.trim()) {
-      alert('Preencha o Nome e o Nome Abreviado.')
+    const nomeVal = (form.nomeAbrev || form.nome || '').trim()
+    if (!nomeVal) {
+      alert('Preencha o Nome do Prato (DL e DM).')
       return
     }
     const sanitized = {
       ...form,
+      nome: nomeVal,
+      nomeAbrev: nomeVal,
       nomePastosa: form.nomePastosa ? formatarNomePastosa(form.nomePastosa) : form.nomePastosa,
     }
     onSave(sanitized)
@@ -145,14 +149,23 @@ function QuickCreateModal({ tipo, initial = null, onSave, onClose }) {
               </div>
             </div>
           )}
-          <div className="form-group" style={{ marginBottom: 10 }}>
-            <label>Nome Completo</label>
-            <input type="text" value={form.nome} onChange={set('nome')} placeholder="Ex: Frango ao Molho de Milho" />
-          </div>
-          <div className="form-group" style={{ marginBottom: 10 }}>
-            <label>Opção DIETA LIVRE e DM (Nome Abreviado) *</label>
-            <input type="text" value={form.nomeAbrev} onChange={upper('nomeAbrev')} placeholder="Ex: PEITO DE FRANGO AO MOLHO CREMOSO DE MILHO" />
-            <span className="field-hint" style={{ fontSize: '10px', color: '#666' }}>Aparece na Dieta Livre e repete idêntico na Dieta DM</span>
+          <div className="form-group" style={{ marginBottom: 12 }}>
+            <label style={{ fontWeight: 700, color: '#1e293b' }}>
+              Nome do Prato (DL e DM) *
+            </label>
+            <input
+              type="text"
+              value={form.nomeAbrev || form.nome || ''}
+              onChange={e => {
+                const val = e.target.value.toUpperCase()
+                setForm(p => ({ ...p, nome: val, nomeAbrev: val }))
+              }}
+              placeholder="Ex: PEITO DE FRANGO AO MOLHO CREMOSO DE MILHO"
+              autoFocus
+            />
+            <span className="field-hint" style={{ fontSize: '10px', color: '#666' }}>
+              Aparece na Dieta Livre e repete idêntico na Dieta DM
+            </span>
           </div>
 
           {/* Adaptações para Proteína */}

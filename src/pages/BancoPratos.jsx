@@ -4,19 +4,29 @@ import { formatarNomePastosa } from '../utils/formatUtils'
 
 // ── Modal for creating/editing a dish with consistency options and ficha técnica ──
 function ModalPreparacao({ initial, onSave, onClose, titulo, tipo = 'proteina', onOpenFicha }) {
-  const [form, setForm] = useState(initial || {
-    categoria: tipo === 'guarnicao' ? 'Guarnição' : '',
-    subcategoria: '',
-    nome: '',
-    nomeAbrev: '',
-    nomeBranda: '',
-    nomePastosa: '',
-    nomeLiquida: tipo === 'guarnicao' ? '' : 'CARNE COM CALDO/MOLHO LIQUIDIFICADA',
-    sufixoPastosa: '',
-    sufixoLiquida: 'LIQUIDIFICADO',
-    perCapita: '',
-    metodoPreparo: '',
-    observacoes: '',
+  const [form, setForm] = useState(() => {
+    if (initial) {
+      const nomeFinal = (initial.nomeAbrev || initial.nome || '').toUpperCase()
+      return {
+        ...initial,
+        nome: nomeFinal,
+        nomeAbrev: nomeFinal,
+      }
+    }
+    return {
+      categoria: tipo === 'guarnicao' ? 'Guarnição' : '',
+      subcategoria: '',
+      nome: '',
+      nomeAbrev: '',
+      nomeBranda: '',
+      nomePastosa: '',
+      nomeLiquida: tipo === 'guarnicao' ? '' : 'CARNE COM CALDO/MOLHO LIQUIDIFICADA',
+      sufixoPastosa: '',
+      sufixoLiquida: 'LIQUIDIFICADO',
+      perCapita: '',
+      metodoPreparo: '',
+      observacoes: '',
+    }
   })
 
   const handleChange = (key) => (e) => setForm(prev => ({ ...prev, [key]: e.target.value }))
@@ -70,13 +80,18 @@ function ModalPreparacao({ initial, onSave, onClose, titulo, tipo = 'proteina', 
               <input type="text" value={form.subcategoria || ''} onChange={handleChange('subcategoria')} placeholder="Ex: Forno, Pressão, Grelhado, Purê..." />
             </div>
             <div className="form-group" style={{ gridColumn: '1/-1' }}>
-              <label>Nome Completo da Preparação *</label>
-              <input type="text" value={form.nome} onChange={handleChange('nome')} placeholder={tipo === 'guarnicao' ? 'Ex: Batata Assada no Forno com Ervas' : 'Ex: Strogonoff de Frango em Iscas'} />
-            </div>
-            <div className="form-group" style={{ gridColumn: '1/-1' }}>
-              <label>Opção DIETA LIVRE e DM (Nome para Impressão) *</label>
-              <input type="text" value={form.nomeAbrev} onChange={e => handleChange('nomeAbrev')({ target: { value: e.target.value.toUpperCase() } })} placeholder={tipo === 'guarnicao' ? 'Ex: BATATA ASSADA C/ ERVAS' : 'Ex: PEITO DE FRANGO AO MOLHO CREMOSO DE MILHO'} />
-              <span className="field-hint">Aparece na Dieta Livre e repete idêntico na Dieta DM</span>
+              <label style={{ fontWeight: 700 }}>Nome do Prato (DL e DM) *</label>
+              <input
+                type="text"
+                value={form.nomeAbrev || form.nome || ''}
+                onChange={e => {
+                  const val = e.target.value.toUpperCase()
+                  setForm(prev => ({ ...prev, nome: val, nomeAbrev: val }))
+                }}
+                placeholder={tipo === 'guarnicao' ? 'Ex: BATATA ASSADA C/ ERVAS' : 'Ex: PEITO DE FRANGO AO MOLHO CREMOSO DE MILHO'}
+                autoFocus
+              />
+              <span className="field-hint">Utilizado na Dieta Livre e repetido idêntico na Dieta DM</span>
             </div>
           </div>
 
@@ -138,11 +153,12 @@ function ModalPreparacao({ initial, onSave, onClose, titulo, tipo = 'proteina', 
             <button
               className="btn btn-primary"
               onClick={() => {
-                if (!form.nome || !form.nomeAbrev || !form.categoria) {
-                  alert('Preencha: Tipo/Categoria, Nome Completo e Nome Abreviado.')
+                const nomeVal = (form.nomeAbrev || form.nome || '').trim()
+                if (!nomeVal || !form.categoria) {
+                  alert('Preencha: Tipo/Categoria e o Nome do Prato (DL e DM).')
                   return
                 }
-                onSave(form)
+                onSave({ ...form, nome: nomeVal, nomeAbrev: nomeVal })
               }}
             >
               <Check size={16} /> Salvar Preparação
@@ -447,12 +463,11 @@ export default function BancoPratos({ store, onOpenFicha }) {
                   <table className="banco-table">
                     <thead>
                       <tr>
-                        <th style={{ width: '28%' }}>Nome Completo</th>
-                        <th style={{ width: '20%' }}>Opção DL / DM</th>
-                        <th style={{ width: '16%' }}>Opção Branda</th>
-                        <th style={{ width: '16%' }}>Opção Pastosa</th>
-                        <th style={{ width: '13%', textAlign: 'center' }}>Ficha / Custo</th>
-                        <th style={{ width: '7%', textAlign: 'center' }}>Ações</th>
+                        <th style={{ width: '32%' }}>Nome do Prato (DL e DM)</th>
+                        <th style={{ width: '22%' }}>Opção Branda</th>
+                        <th style={{ width: '22%' }}>Opção Pastosa</th>
+                        <th style={{ width: '14%', textAlign: 'center' }}>Ficha / Custo</th>
+                        <th style={{ width: '10%', textAlign: 'center' }}>Ações</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -461,9 +476,8 @@ export default function BancoPratos({ store, onOpenFicha }) {
                         const custo = calcularCustoPorcao(ficha)
                         return (
                           <tr key={p.id}>
-                            <td style={{ fontWeight: 600 }}>{p.nome}</td>
-                            <td className="mono" style={{ color: '#0d47a1', fontWeight: 700 }}>{p.nomeAbrev}</td>
-                            <td className="mono" style={{ color: '#2e7d32' }}>{p.nomeBranda || p.nomeAbrev}</td>
+                            <td style={{ fontWeight: 700, color: '#0d47a1' }}>{p.nomeAbrev || p.nome}</td>
+                            <td className="mono" style={{ color: '#2e7d32' }}>{p.nomeBranda || p.nomeAbrev || p.nome}</td>
                             <td className="mono" style={{ color: '#e65100' }}>{formatarNomePastosa(p)}</td>
                             <td style={{ textAlign: 'center' }}>
                               {ficha ? (
@@ -612,12 +626,11 @@ export default function BancoPratos({ store, onOpenFicha }) {
             <table className="banco-table">
               <thead>
                 <tr>
-                  <th style={{ width: '28%' }}>Nome Completo</th>
-                  <th style={{ width: '20%' }}>Opção DL / DM</th>
-                  <th style={{ width: '16%' }}>Opção Branda</th>
-                  <th style={{ width: '16%' }}>Opção Pastosa</th>
-                  <th style={{ width: '13%', textAlign: 'center' }}>Ficha / Custo</th>
-                  <th style={{ width: '7%', textAlign: 'center' }}>Ações</th>
+                  <th style={{ width: '32%' }}>Nome da Guarnição (DL e DM)</th>
+                  <th style={{ width: '22%' }}>Opção Branda</th>
+                  <th style={{ width: '22%' }}>Opção Pastosa</th>
+                  <th style={{ width: '14%', textAlign: 'center' }}>Ficha / Custo</th>
+                  <th style={{ width: '10%', textAlign: 'center' }}>Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -626,9 +639,8 @@ export default function BancoPratos({ store, onOpenFicha }) {
                   const custo = calcularCustoPorcao(ficha)
                   return (
                     <tr key={g.id}>
-                      <td style={{ fontWeight: 600 }}>{g.nome}</td>
-                      <td className="mono" style={{ color: '#0d47a1', fontWeight: 700 }}>{g.nomeAbrev}</td>
-                      <td className="mono" style={{ color: '#2e7d32' }}>{g.nomeBranda || g.nomeAbrev}</td>
+                      <td style={{ fontWeight: 700, color: '#0d47a1' }}>{g.nomeAbrev || g.nome}</td>
+                      <td className="mono" style={{ color: '#2e7d32' }}>{g.nomeBranda || g.nomeAbrev || g.nome}</td>
                       <td className="mono" style={{ color: '#e65100' }}>{g.nomePastosa || '—'}</td>
                       <td style={{ textAlign: 'center' }}>
                         {ficha ? (

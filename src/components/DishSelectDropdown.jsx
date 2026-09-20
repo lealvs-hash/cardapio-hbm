@@ -132,10 +132,10 @@ export default function DishSelectDropdown({
     const isDefaultItem = !value && Boolean(defaultItemId) && item.id === defaultItemId
     const isHighlighted = isExplicitlySelected || isDefaultItem
 
-    const primaryName = formatOptionName ? formatOptionName(item) : item.nome
+    const primaryName = formatOptionName ? formatOptionName(item) : (item.nomeAbrev || item.nome)
     const subText = formatOptionSecondary
       ? formatOptionSecondary(item)
-      : (item.nomeAbrev && item.nomeAbrev !== item.nome ? `DL/DM: ${item.nomeAbrev}` : '')
+      : (item.nomeAbrev && item.nome && item.nomeAbrev.trim().toUpperCase() !== item.nome.trim().toUpperCase() ? `DL/DM: ${item.nomeAbrev}` : '')
 
     return (
       <div
