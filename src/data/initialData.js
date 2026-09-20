@@ -531,4 +531,102 @@ Em geral este prato é servido com arroz e batata palha. Fica muito bom também 
       { item: 'AZEITE', un: 'ML', pesoBruto: 0.001, pesoLiquido: 0.001, fatorCorrecao: 1.000, valorUnitario: 15.00 },
     ],
   },
+  {
+    id: 'ft_frango_assado',
+    nomePreparacao: 'SOBRECOXA ASSADA AO FORNO',
+    profissional: 'Nutricionista HBM',
+    fotoUrl: '',
+    rendimentoPorcoes: 25,
+    modoPreparo: `1. Higienizar e temperar as sobrecoxas com alho amassado, sal, azeite e limão.
+2. Dispor em assadeiras sem sobrepor.
+3. Levar ao forno combinado pré-aquecido a 180°C por 45 minutos até dourar.`,
+    insumos: [
+      { item: 'CEBOLA', un: 'KG', pesoBruto: 0.300, pesoLiquido: 0.250, fatorCorrecao: 1.000, valorUnitario: 3.20 },
+      { item: 'ALHO', un: 'KG', pesoBruto: 0.050, pesoLiquido: 0.040, fatorCorrecao: 1.000, valorUnitario: 20.99 },
+      { item: 'SAL REFINADO', un: 'KG', pesoBruto: 0.050, pesoLiquido: 0.050, fatorCorrecao: 1.000, valorUnitario: 2.00 },
+      { item: 'AZEITE', un: 'ML', pesoBruto: 0.050, pesoLiquido: 0.050, fatorCorrecao: 1.000, valorUnitario: 15.00 },
+    ],
+  },
+  {
+    id: 'ft_carne_moida',
+    nomePreparacao: 'CARNE MOÍDA REFOGADA C/ ERVILHA',
+    profissional: 'Nutricionista HBM',
+    fotoUrl: '',
+    rendimentoPorcoes: 30,
+    modoPreparo: `1. Dourar o alho e cebola no azeite.
+2. Adicionar a carne moída bovina e refogar bem desfazendo os grumos.
+3. Adicionar o tomate, sal e ervilhas. Cozinhar em fogo brando.`,
+    insumos: [
+      { item: 'CARNE BOVINA MOÍDA', un: 'KG', pesoBruto: 3.500, pesoLiquido: 3.500, fatorCorrecao: 1.000, valorUnitario: 28.90 },
+      { item: 'CEBOLA', un: 'KG', pesoBruto: 0.400, pesoLiquido: 0.350, fatorCorrecao: 1.000, valorUnitario: 3.20 },
+      { item: 'TOMATE', un: 'KG', pesoBruto: 0.500, pesoLiquido: 0.400, fatorCorrecao: 1.250, valorUnitario: 2.29 },
+      { item: 'ALHO', un: 'KG', pesoBruto: 0.040, pesoLiquido: 0.035, fatorCorrecao: 1.000, valorUnitario: 20.99 },
+      { item: 'SAL REFINADO', un: 'KG', pesoBruto: 0.040, pesoLiquido: 0.040, fatorCorrecao: 1.000, valorUnitario: 2.00 },
+    ],
+  },
+  {
+    id: 'ft_pure_batata',
+    nomePreparacao: 'PURÊ DE BATATA INGLESA',
+    profissional: 'Nutricionista HBM',
+    fotoUrl: '',
+    rendimentoPorcoes: 30,
+    modoPreparo: `1. Lavar, descascar e picar as batatas em cubos uniformes.
+2. Cozinhar em água fervente com sal até ficarem macias.
+3. Passar pelo espremedor e bater com azeite até obter consistência lisa e cremosa.`,
+    insumos: [
+      { item: 'BATATA INGLESA', un: 'KG', pesoBruto: 4.500, pesoLiquido: 3.900, fatorCorrecao: 1.150, valorUnitario: 4.50 },
+      { item: 'SAL REFINADO', un: 'KG', pesoBruto: 0.030, pesoLiquido: 0.030, fatorCorrecao: 1.000, valorUnitario: 2.00 },
+      { item: 'AZEITE', un: 'ML', pesoBruto: 0.050, pesoLiquido: 0.050, fatorCorrecao: 1.000, valorUnitario: 15.00 },
+    ],
+  },
+  {
+    id: 'ft_arroz_parboilizado',
+    nomePreparacao: 'ARROZ PARBOILIZADO SOLTINHO',
+    profissional: 'Nutricionista HBM',
+    fotoUrl: '',
+    rendimentoPorcoes: 40,
+    modoPreparo: `1. Dourar o alho picado no óleo/azeite.
+2. Adicionar o arroz parboilizado e refogar por 2 minutos.
+3. Acrescentar água fervente na proporção 2:1 e o sal.
+4. Cozinhar em fogo brando com a panela semitampada até secar.`,
+    insumos: [
+      { item: 'ARROZ PARBOILIZADO', un: 'KG', pesoBruto: 3.000, pesoLiquido: 3.000, fatorCorrecao: 1.000, valorUnitario: 5.50 },
+      { item: 'ALHO', un: 'KG', pesoBruto: 0.030, pesoLiquido: 0.025, fatorCorrecao: 1.000, valorUnitario: 20.99 },
+      { item: 'SAL REFINADO', un: 'KG', pesoBruto: 0.040, pesoLiquido: 0.040, fatorCorrecao: 1.000, valorUnitario: 2.00 },
+      { item: 'AZEITE', un: 'ML', pesoBruto: 0.050, pesoLiquido: 0.050, fatorCorrecao: 1.000, valorUnitario: 15.00 },
+    ],
+  },
+  {
+    id: 'ft_feijao_preto',
+    nomePreparacao: 'FEIJÃO PRETO TEMPERADO',
+    profissional: 'Nutricionista HBM',
+    fotoUrl: '',
+    rendimentoPorcoes: 40,
+    modoPreparo: `1. Escolher, lavar e deixar o feijão de molho por 8 a 12 horas (descartar a água do molho).
+2. Cozinhar sob pressão com água nova até amolecer os grãos.
+3. Em frigideira, refogar o alho e cebola no azeite e incorporar ao feijão.
+4. Deixar ferver em fogo brando até o caldo encorpar.`,
+    insumos: [
+      { item: 'FEIJÃO PRETO', un: 'KG', pesoBruto: 2.500, pesoLiquido: 2.500, fatorCorrecao: 1.000, valorUnitario: 7.80 },
+      { item: 'ALHO', un: 'KG', pesoBruto: 0.040, pesoLiquido: 0.035, fatorCorrecao: 1.000, valorUnitario: 20.99 },
+      { item: 'CEBOLA', un: 'KG', pesoBruto: 0.300, pesoLiquido: 0.250, fatorCorrecao: 1.000, valorUnitario: 3.20 },
+      { item: 'SAL REFINADO', un: 'KG', pesoBruto: 0.035, pesoLiquido: 0.035, fatorCorrecao: 1.000, valorUnitario: 2.00 },
+      { item: 'AZEITE', un: 'ML', pesoBruto: 0.040, pesoLiquido: 0.040, fatorCorrecao: 1.000, valorUnitario: 15.00 },
+    ],
+  },
+  {
+    id: 'ft_cenoura_salsinha',
+    nomePreparacao: 'CENOURA COZIDA NO VAPOR C/ SALSINHA',
+    profissional: 'Nutricionista HBM',
+    fotoUrl: '',
+    rendimentoPorcoes: 25,
+    modoPreparo: `1. Lavar, descascar e cortar as cenouras em rodelas médias.
+2. Cozinhar no vapor até ficar al dente.
+3. Finalizar salpicando salsinha fresca picada e um fio de azeite.`,
+    insumos: [
+      { item: 'CENOURA', un: 'KG', pesoBruto: 2.500, pesoLiquido: 2.250, fatorCorrecao: 1.100, valorUnitario: 3.90 },
+      { item: 'SAL REFINADO', un: 'KG', pesoBruto: 0.020, pesoLiquido: 0.020, fatorCorrecao: 1.000, valorUnitario: 2.00 },
+      { item: 'AZEITE', un: 'ML', pesoBruto: 0.030, pesoLiquido: 0.030, fatorCorrecao: 1.000, valorUnitario: 15.00 },
+    ],
+  },
 ]

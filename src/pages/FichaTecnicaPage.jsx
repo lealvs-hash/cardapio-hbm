@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Plus, Trash2, Edit2, Printer, Save, Check, X, Image as ImageIcon, Calculator, FileSpreadsheet, RefreshCw, ChevronDown } from 'lucide-react'
+import { Plus, Trash2, Edit2, Printer, Save, Check, X, Image as ImageIcon, Calculator, FileSpreadsheet, RefreshCw, ChevronDown, ChevronLeft, ChevronRight, History, ArrowUpDown, Search, FileText } from 'lucide-react'
 
 export default function FichaTecnicaPage({ store, selectedFichaId, setSelectedFichaId }) {
   const { state, salvarFichaTecnica, excluirFichaTecnica } = store
@@ -10,6 +10,11 @@ export default function FichaTecnicaPage({ store, selectedFichaId, setSelectedFi
   )
   const [modalNova, setModalNova] = useState(false)
   const [modoEdicao, setModoEdicao] = useState(false)
+  const [mostrarHistorico, setMostrarHistorico] = useState(true)
+  const [ordenacaoTipo, setOrdenacaoTipo] = useState('recentes') // 'recentes' | 'alfabetica'
+  const [paginaAtual, setPaginaAtual] = useState(1)
+  const [buscaFicha, setBuscaFicha] = useState('')
+  const ITENS_POR_PAGINA = 5
 
   // Sincroniza se o App mudar o selectedFichaId externamente (vindo de Pratos ou Valores)
   useEffect(() => {
@@ -191,6 +196,31 @@ export default function FichaTecnicaPage({ store, selectedFichaId, setSelectedFi
     setFormFicha({ ...formFicha, insumos: list })
   }
 
+  // ──── Lógica de Histórico & Paginação ────
+  const fichasFiltradas = fichasTecnicas.filter(f => {
+    if (!buscaFicha.trim()) return true
+    return (f.nomePreparacao || '').toLowerCase().includes(buscaFicha.toLowerCase())
+  })
+
+  const fichasOrdenadas = [...fichasFiltradas].sort((a, b) => {
+    if (ordenacaoTipo === 'alfabetica') {
+      return (a.nomePreparacao || '').localeCompare(b.nomePreparacao || '', 'pt-BR')
+    }
+    // 'recentes': mais recentes primeiro (por id timestamp ou ordem de inserção inversa)
+    return b.id.localeCompare(a.id)
+  })
+
+  const totalPaginas = Math.ceil(fichasOrdenadas.length / ITENS_POR_PAGINA) || 1
+  const indiceInicio = (paginaAtual - 1) * ITENS_POR_PAGINA
+  const fichasDaPagina = fichasOrdenadas.slice(indiceInicio, indiceInicio + ITENS_POR_PAGINA)
+
+  // Gerar botões de páginas (exibe até a página 5; se houver mais, exibe seta / controles)
+  const maxBotoesVisiveis = 5
+  const paginasParaExibir = []
+  for (let i = 1; i <= Math.min(totalPaginas, maxBotoesVisiveis); i++) {
+    paginasParaExibir.push(i)
+  }
+
   return (
     <div className="page">
       {/* Barra superior de seleção de ficha */}
@@ -265,6 +295,318 @@ export default function FichaTecnicaPage({ store, selectedFichaId, setSelectedFi
             </>
           )}
         </div>
+      </div>
+
+      {/* ──── PAINEL HISTÓRICO DE FICHAS TÉCNICAS (NO-PRINT) ──── */}
+      <div className="no-print" style={{
+        maxWidth: 820,
+        margin: '0 auto 16px',
+        background: '#ffffff',
+        borderRadius: 8,
+        border: '1px solid #e0e0e0',
+        padding: '12px 16px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+      }}>
+        {/* Cabeçalho do Histórico: Título, Filtro e Alternância de Ordenação */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 10,
+          borderBottom: '1px solid #f0f0f0',
+          paddingBottom: 10,
+          marginBottom: 10
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{
+              background: '#e8f5e9',
+              color: '#2e7d32',
+              padding: '5px 8px',
+              borderRadius: 6,
+              display: 'flex',
+              alignItems: 'center',
+              fontWeight: 800,
+              fontSize: '12px'
+            }}>
+              <History size={15} style={{ marginRight: 5 }} />
+              HISTÓRICO DE FICHAS TÉCNICAS
+            </div>
+            <span style={{ fontSize: '11px', color: '#666' }}>
+              ({fichasOrdenadas.length} {fichasOrdenadas.length === 1 ? 'cadastrada' : 'cadastradas'})
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            {/* Campo de Busca */}
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <Search size={13} style={{ position: 'absolute', left: 8, color: '#888' }} />
+              <input
+                type="text"
+                placeholder="Buscar ficha..."
+                value={buscaFicha}
+                onChange={e => {
+                  setBuscaFicha(e.target.value)
+                  setPaginaAtual(1)
+                }}
+                style={{
+                  padding: '4px 8px 4px 26px',
+                  fontSize: '11px',
+                  borderRadius: 4,
+                  border: '1px solid #ccc',
+                  outline: 'none',
+                  width: 140
+                }}
+              />
+            </div>
+
+            {/* Alternar Ordenação */}
+            <div style={{ display: 'flex', border: '1px solid #d0d7de', borderRadius: 4, overflow: 'hidden' }}>
+              <button
+                type="button"
+                onClick={() => { setOrdenacaoTipo('recentes'); setPaginaAtual(1) }}
+                style={{
+                  padding: '4px 9px',
+                  fontSize: '11px',
+                  border: 'none',
+                  background: ordenacaoTipo === 'recentes' ? '#1565c0' : '#f6f8fa',
+                  color: ordenacaoTipo === 'recentes' ? '#fff' : '#444',
+                  fontWeight: ordenacaoTipo === 'recentes' ? 700 : 500,
+                  cursor: 'pointer'
+                }}
+                title="Mais recentes primeiro"
+              >
+                🕒 Mais Recentes
+              </button>
+              <button
+                type="button"
+                onClick={() => { setOrdenacaoTipo('alfabetica'); setPaginaAtual(1) }}
+                style={{
+                  padding: '4px 9px',
+                  fontSize: '11px',
+                  border: 'none',
+                  borderLeft: '1px solid #d0d7de',
+                  background: ordenacaoTipo === 'alfabetica' ? '#1565c0' : '#f6f8fa',
+                  color: ordenacaoTipo === 'alfabetica' ? '#fff' : '#444',
+                  fontWeight: ordenacaoTipo === 'alfabetica' ? 700 : 500,
+                  cursor: 'pointer'
+                }}
+                title="Ordem Alfabética (A-Z)"
+              >
+                🔤 Ordem Alfabética
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Lista dos 5 itens da página */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, minHeight: 180 }}>
+          {fichasDaPagina.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '24px 0', color: '#888', fontSize: '12px' }}>
+              Nenhuma ficha técnica encontrada com este filtro.
+            </div>
+          ) : (
+            fichasDaPagina.map((f, index) => {
+              const isAtiva = f.id === fichaAtual?.id
+              // Cálculo rápido do custo desta ficha para exibição no card
+              const rend = Number(f.rendimentoPorcoes) || 1
+              const custoTot = (f.insumos || []).reduce((acc, curr) => acc + (Number(curr.pesoBruto) || 0) * (Number(curr.valorUnitario) || 0), 0)
+              const custoUn = rend > 0 ? custoTot / rend : 0
+
+              return (
+                <div
+                  key={f.id}
+                  onClick={() => {
+                    if (modoEdicao && !window.confirm('Descartar alterações não salvas?')) return
+                    setFichaSelecionadaId(f.id)
+                    if (setSelectedFichaId) setSelectedFichaId(f.id)
+                    setModoEdicao(false)
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 12px',
+                    borderRadius: 6,
+                    border: isAtiva ? '1.5px solid #2e7d32' : '1px solid #e0e0e0',
+                    background: isAtiva ? '#f1f8e9' : '#fafafa',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                  onMouseEnter={e => { if (!isAtiva) e.currentTarget.style.background = '#f5f5f5' }}
+                  onMouseLeave={e => { if (!isAtiva) e.currentTarget.style.background = '#fafafa' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: 22,
+                      height: 22,
+                      borderRadius: '50%',
+                      background: isAtiva ? '#2e7d32' : '#e0e0e0',
+                      color: isAtiva ? '#fff' : '#555',
+                      fontSize: '11px',
+                      fontWeight: 700
+                    }}>
+                      {indiceInicio + index + 1}
+                    </span>
+                    <div>
+                      <div style={{ fontWeight: 800, fontSize: '12px', color: isAtiva ? '#1b5e20' : '#222' }}>
+                        {f.nomePreparacao}
+                      </div>
+                      <div style={{ fontSize: '10.5px', color: '#666', marginTop: 1 }}>
+                        Rendimento: <strong>{f.rendimentoPorcoes} porções</strong> • {(f.insumos || []).length} insumos
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: '9px', textTransform: 'uppercase', color: '#888', fontWeight: 600 }}>Custo/Porção</div>
+                      <div style={{ fontWeight: 800, fontSize: '12.5px', color: '#2e7d32' }}>
+                        R$ {custoUn.toFixed(2)}
+                      </div>
+                    </div>
+                    {isAtiva ? (
+                      <span style={{
+                        background: '#2e7d32',
+                        color: '#fff',
+                        fontSize: '9.5px',
+                        fontWeight: 700,
+                        padding: '3px 8px',
+                        borderRadius: 12
+                      }}>
+                        VISUALIZANDO
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        style={{
+                          background: '#fff',
+                          border: '1px solid #ccc',
+                          borderRadius: 4,
+                          padding: '3px 8px',
+                          fontSize: '10px',
+                          color: '#444',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Abrir
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )
+            })
+          )}
+        </div>
+
+        {/* ──── PAGINAÇÃO: ATÉ A PÁGINA 5 E DEPOIS SETAS ──── */}
+        {totalPaginas > 1 && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderTop: '1px solid #f0f0f0',
+            paddingTop: 10,
+            marginTop: 10
+          }}>
+            <div style={{ fontSize: '11px', color: '#666' }}>
+              Exibindo <strong>{indiceInicio + 1}</strong>–<strong>{Math.min(indiceInicio + ITENS_POR_PAGINA, fichasOrdenadas.length)}</strong> de <strong>{fichasOrdenadas.length}</strong>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              {/* Seta Anterior */}
+              <button
+                type="button"
+                disabled={paginaAtual === 1}
+                onClick={() => setPaginaAtual(p => Math.max(p - 1, 1))}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '4px 6px',
+                  borderRadius: 4,
+                  border: '1px solid #d0d7de',
+                  background: paginaAtual === 1 ? '#f5f5f5' : '#fff',
+                  color: paginaAtual === 1 ? '#aaa' : '#333',
+                  cursor: paginaAtual === 1 ? 'not-allowed' : 'pointer'
+                }}
+                title="Página Anterior"
+              >
+                <ChevronLeft size={14} />
+              </button>
+
+              {/* Botões de 1 até 5 */}
+              {paginasParaExibir.map(num => (
+                <button
+                  key={num}
+                  type="button"
+                  onClick={() => setPaginaAtual(num)}
+                  style={{
+                    minWidth: 26,
+                    height: 26,
+                    padding: '0 4px',
+                    borderRadius: 4,
+                    fontSize: '11px',
+                    fontWeight: paginaAtual === num ? 800 : 500,
+                    border: paginaAtual === num ? '1px solid #1565c0' : '1px solid #d0d7de',
+                    background: paginaAtual === num ? '#1565c0' : '#fff',
+                    color: paginaAtual === num ? '#fff' : '#333',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {num}
+                </button>
+              ))}
+
+              {/* Se tiver mais de 5 páginas, exibe reticências e botão da última se relevante */}
+              {totalPaginas > 5 && (
+                <>
+                  <span style={{ fontSize: '11px', color: '#888', padding: '0 2px' }}>...</span>
+                  <button
+                    type="button"
+                    onClick={() => setPaginaAtual(totalPaginas)}
+                    style={{
+                      minWidth: 26,
+                      height: 26,
+                      padding: '0 4px',
+                      borderRadius: 4,
+                      fontSize: '11px',
+                      fontWeight: paginaAtual === totalPaginas ? 800 : 500,
+                      border: paginaAtual === totalPaginas ? '1px solid #1565c0' : '1px solid #d0d7de',
+                      background: paginaAtual === totalPaginas ? '#1565c0' : '#fff',
+                      color: paginaAtual === totalPaginas ? '#fff' : '#333',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {totalPaginas}
+                  </button>
+                </>
+              )}
+
+              {/* Seta Próxima */}
+              <button
+                type="button"
+                disabled={paginaAtual === totalPaginas}
+                onClick={() => setPaginaAtual(p => Math.min(p + 1, totalPaginas))}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '4px 6px',
+                  borderRadius: 4,
+                  border: '1px solid #d0d7de',
+                  background: paginaAtual === totalPaginas ? '#f5f5f5' : '#fff',
+                  color: paginaAtual === totalPaginas ? '#aaa' : '#333',
+                  cursor: paginaAtual === totalPaginas ? 'not-allowed' : 'pointer'
+                }}
+                title="Próxima Página"
+              >
+                <ChevronRight size={14} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* DOCUMENTO DA FICHA TÉCNICA - MODELO ANEXO EXATO */}
