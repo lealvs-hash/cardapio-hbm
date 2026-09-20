@@ -15,7 +15,7 @@ function deriveData(refeicao, proteinas, leguminosas, guarnicoes = []) {
   } else if (prot?.nomeLiquida) {
     protLiquida = prot.nomeLiquida
   } else if (prot) {
-    protLiquida = 'CARNE C/ CALDO LIQUIDIFICADA'
+    protLiquida = 'CARNE COM CALDO/MOLHO LIQUIDIFICADA'
   }
 
   const legNome    = leg?.nomeAbrev   || ''

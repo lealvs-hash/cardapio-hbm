@@ -25,15 +25,25 @@ function loadFromStorage() {
   return null
 }
 
+const PADRAO_LIQUIDA_PROTEINA = 'CARNE COM CALDO/MOLHO LIQUIDIFICADA'
+
+function normalizarProteinas(prots = []) {
+  return prots.map(p => ({
+    ...p,
+    nomeLiquida: p.nomeLiquida !== undefined && p.nomeLiquida !== '' ? p.nomeLiquida : PADRAO_LIQUIDA_PROTEINA,
+  }))
+}
+
 function createInitialState() {
   return {
-    proteinas: PROTEINAS_INICIAIS,
+    proteinas: normalizarProteinas(PROTEINAS_INICIAIS),
     leguminosas: LEGUMINOSAS_INICIAIS,
     guarnicoes: GUARNICOES_INICIAIS,
     saladas: SALADAS_INICIAIS,
     insumos: INSUMOS_INICIAIS,
     fichasTecnicas: FICHAS_TECNICAS_INICIAIS,
     cardapios: {}, // { 'YYYY-MM-DD': { diaSemana, almoco, jantar, observacoes } }
+    rascunhosCardapio: {}, // { 'YYYY-MM-DD': { diaSemana, almoco, jantar, observacoes } }
   }
 }
 
@@ -42,13 +52,14 @@ export function useStore() {
     const saved = loadFromStorage()
     if (saved) {
       return {
-        proteinas: saved.proteinas ?? PROTEINAS_INICIAIS,
+        proteinas: normalizarProteinas(saved.proteinas ?? PROTEINAS_INICIAIS),
         leguminosas: saved.leguminosas ?? LEGUMINOSAS_INICIAIS,
         guarnicoes: saved.guarnicoes ?? GUARNICOES_INICIAIS,
         saladas: saved.saladas ?? SALADAS_INICIAIS,
         insumos: saved.insumos ?? INSUMOS_INICIAIS,
         fichasTecnicas: saved.fichasTecnicas ?? FICHAS_TECNICAS_INICIAIS,
         cardapios: saved.cardapios ?? {},
+        rascunhosCardapio: saved.rascunhosCardapio ?? {},
       }
     }
     return createInitialState()
@@ -60,13 +71,14 @@ export function useStore() {
     const unsubscribe = escutarDocumentoFirestore('hbm_dados', 'sistema', (remoto) => {
       if (remoto) {
         setState(prev => ({
-          proteinas: remoto.proteinas ?? prev.proteinas,
+          proteinas: normalizarProteinas(remoto.proteinas ?? prev.proteinas),
           leguminosas: remoto.leguminosas ?? prev.leguminosas,
           guarnicoes: remoto.guarnicoes ?? prev.guarnicoes,
           saladas: remoto.saladas ?? prev.saladas,
           insumos: remoto.insumos ?? prev.insumos,
           fichasTecnicas: remoto.fichasTecnicas ?? prev.fichasTecnicas,
           cardapios: remoto.cardapios ?? prev.cardapios,
+          rascunhosCardapio: prev.rascunhosCardapio, // rascunhos locais preservados
         }))
       }
     })
@@ -89,10 +101,24 @@ export function useStore() {
   // ──── Cardápio actions ────
 
   const salvarCardapio = useCallback((data, cardapio) => {
+    setState(prev => {
+      const { [data]: _, ...restRascunhos } = prev.rascunhosCardapio || {}
+      return {
+        ...prev,
+        cardapios: {
+          ...prev.cardapios,
+          [data]: cardapio,
+        },
+        rascunhosCardapio: restRascunhos, // ao salvar definitivamente, limpa o rascunho
+      }
+    })
+  }, [])
+
+  const salvarRascunhoCardapio = useCallback((data, cardapio) => {
     setState(prev => ({
       ...prev,
-      cardapios: {
-        ...prev.cardapios,
+      rascunhosCardapio: {
+        ...(prev.rascunhosCardapio || {}),
         [data]: cardapio,
       },
     }))
@@ -101,7 +127,8 @@ export function useStore() {
   const excluirCardapio = useCallback((data) => {
     setState(prev => {
       const { [data]: _, ...rest } = prev.cardapios
-      return { ...prev, cardapios: rest }
+      const { [data]: _r, ...restRascunhos } = prev.rascunhosCardapio || {}
+      return { ...prev, cardapios: rest, rascunhosCardapio: restRascunhos }
     })
   }, [])
 
@@ -292,6 +319,7 @@ export function useStore() {
     state,
     // Cardápios
     salvarCardapio,
+    salvarRascunhoCardapio,
     excluirCardapio,
     // Proteínas
     adicionarProteina,

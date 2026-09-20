@@ -70,7 +70,8 @@ function QuickCreateModal({ tipo, onSave, onClose }) {
   const [form, setForm] = useState({
     categoria: categorias[0],
     nome: '', nomeAbrev: '',
-    nomeBranda: '', nomePastosa: '', nomeLiquida: '',
+    nomeBranda: '', nomePastosa: '',
+    nomeLiquida: tipo === 'proteina' ? 'CARNE COM CALDO/MOLHO LIQUIDIFICADA' : '',
     sufixoPastosa: '', sufixoLiquida: 'LIQUIDIFICADO',
   })
   const set = k => e => setForm(p => ({ ...p, [k]: e.target.value }))
@@ -305,7 +306,7 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
   } else if (prot?.nomeLiquida) {
     protLiquida = prot.nomeLiquida
   } else if (prot) {
-    protLiquida = 'CARNE C/ CALDO LIQUIDIFICADA'
+    protLiquida = 'CARNE COM CALDO/MOLHO LIQUIDIFICADA'
   }
 
   const guardNome = guard?.nomeAbrev || ''
@@ -605,8 +606,8 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
 // Página principal
 // ─────────────────────────────────────────────
 export default function CardapioPage({ store, onOpenFicha, selectedDate: propSelectedDate, setSelectedDate: propSetSelectedDate }) {
-  const { state, salvarCardapio } = store
-  const { proteinas, leguminosas, guarnicoes, saladas = [], cardapios } = state
+  const { state, salvarCardapio, salvarRascunhoCardapio } = store
+  const { proteinas, leguminosas, guarnicoes, saladas = [], cardapios, rascunhosCardapio = {} } = state
 
   const todayStr = new Date().toISOString().slice(0, 10)
   const [internalDate, setInternalDate] = useState(todayStr)
@@ -618,14 +619,20 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
   const [obsLiquidaCompleta, setObsLiquidaCompleta] = useState(OBS_LIQUIDA_PADRAO.liquidaCompleta)
   const [obsLiquidaSemResiduos, setObsLiquidaSemResiduos] = useState(OBS_LIQUIDA_PADRAO.liquidaSemResiduos)
   const [saved, setSaved] = useState(false)
+  const [isLoaded, setIsLoaded] = useState(false)
 
+  // Ao trocar de data, carrega primeiro se houver rascunho em cache, senão o cardápio salvo, senão o padrão limpo
   useEffect(() => {
+    setIsLoaded(false)
+    const draft = rascunhosCardapio[selectedDate]
     const existing = cardapios[selectedDate]
-    if (existing) {
-      setAlmoco({ ...emptyRefeicao('almoco'), ...(existing.almoco ?? {}) })
-      setJantar({ ...emptyRefeicao('jantar'), ...(existing.jantar ?? {}) })
-      setObsLiquidaCompleta(existing.observacoes?.liquidaCompleta ?? OBS_LIQUIDA_PADRAO.liquidaCompleta)
-      setObsLiquidaSemResiduos(existing.observacoes?.liquidaSemResiduos ?? OBS_LIQUIDA_PADRAO.liquidaSemResiduos)
+    const fonte = draft || existing
+
+    if (fonte) {
+      setAlmoco({ ...emptyRefeicao('almoco'), ...(fonte.almoco ?? {}) })
+      setJantar({ ...emptyRefeicao('jantar'), ...(fonte.jantar ?? {}) })
+      setObsLiquidaCompleta(fonte.observacoes?.liquidaCompleta ?? OBS_LIQUIDA_PADRAO.liquidaCompleta)
+      setObsLiquidaSemResiduos(fonte.observacoes?.liquidaSemResiduos ?? OBS_LIQUIDA_PADRAO.liquidaSemResiduos)
     } else {
       setAlmoco(emptyRefeicao('almoco'))
       setJantar(emptyRefeicao('jantar'))
@@ -633,7 +640,21 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
       setObsLiquidaSemResiduos(OBS_LIQUIDA_PADRAO.liquidaSemResiduos)
     }
     setSaved(false)
-  }, [selectedDate, cardapios])
+    // Marca como carregado para começar a salvar rascunhos automáticos
+    setTimeout(() => setIsLoaded(true), 50)
+  }, [selectedDate])
+
+  // Salva rascunho automaticamente a cada alteração, evitando perda ao mudar de aba
+  useEffect(() => {
+    if (!isLoaded) return
+    const cardapioAtual = {
+      diaSemana: getDiaSemana(selectedDate),
+      almoco,
+      jantar,
+      observacoes: { liquidaCompleta: obsLiquidaCompleta, liquidaSemResiduos: obsLiquidaSemResiduos },
+    }
+    salvarRascunhoCardapio(selectedDate, cardapioAtual)
+  }, [almoco, jantar, obsLiquidaCompleta, obsLiquidaSemResiduos, selectedDate, isLoaded])
 
   const handleSalvar = () => {
     salvarCardapio(selectedDate, {
@@ -661,6 +682,19 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
             onChange={e => setSelectedDate(e.target.value)} />
           <div className="dia-semana-badge">{getDiaSemana(selectedDate)}</div>
           {cardapios[selectedDate] && <span className="badge-saved">✓ Salvo</span>}
+          {rascunhosCardapio[selectedDate] && !cardapios[selectedDate] && (
+            <span style={{
+              background: '#fff3e0',
+              color: '#e65100',
+              border: '1px solid #ffe082',
+              fontSize: '11px',
+              padding: '3px 8px',
+              borderRadius: 12,
+              fontWeight: 700
+            }}>
+              ✏️ Rascunho em edição
+            </span>
+          )}
         </div>
         <div className="toolbar-right">
           <button className="btn btn-primary" onClick={handleSalvar}>
