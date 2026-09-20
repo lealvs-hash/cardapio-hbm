@@ -1,4 +1,5 @@
 import React from 'react'
+import { formatarNomePastosa } from '../utils/formatUtils'
 
 function deriveData(refeicao, proteinas, leguminosas, guarnicoes = []) {
   const prot  = proteinas.find(p => p.id === refeicao?.proteinaId)
@@ -6,8 +7,8 @@ function deriveData(refeicao, proteinas, leguminosas, guarnicoes = []) {
   const guard = guarnicoes.find(g => g.id === refeicao?.guarnicaoId)
 
   const protNome = prot?.nomeAbrev || ''
-  const protBranda = prot?.nomeBranda || protNome
-  const protPastosa = prot?.nomePastosa || (prot ? `${prot.nomeAbrev}${prot.sufixoPastosa ? ' ' + prot.sufixoPastosa : ''}` : '')
+  const protBranda = refeicao?.proteinaBrandaManual !== undefined ? refeicao.proteinaBrandaManual : (prot?.nomeBranda || protNome)
+  const protPastosa = refeicao?.proteinaPastosaManual !== undefined ? formatarNomePastosa(refeicao.proteinaPastosaManual) : formatarNomePastosa(prot)
   
   let protLiquida = ''
   if (refeicao?.proteinaLiquidaManual !== undefined) {

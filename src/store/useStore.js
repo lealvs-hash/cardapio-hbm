@@ -12,6 +12,7 @@ import {
   escutarDocumentoFirestore,
   isFirebaseConfigured,
 } from '../services/firebase'
+import { limparDuplicidadeMolho } from '../utils/formatUtils'
 
 const STORAGE_KEY = 'hbm_cardapios_v1'
 
@@ -28,10 +29,39 @@ function loadFromStorage() {
 const PADRAO_LIQUIDA_PROTEINA = 'CARNE COM CALDO/MOLHO LIQUIDIFICADA'
 
 function normalizarProteinas(prots = []) {
-  return prots.map(p => ({
-    ...p,
-    nomeLiquida: p.nomeLiquida !== undefined && p.nomeLiquida !== '' ? p.nomeLiquida : PADRAO_LIQUIDA_PROTEINA,
-  }))
+  return prots.map(p => {
+    let sufixoPastosa = p.sufixoPastosa
+    const baseUpper = (p.nomeAbrev || p.nome || '').toUpperCase()
+    const sufUpper = (sufixoPastosa || '').toUpperCase().trim()
+    if (sufUpper.includes('MOLHO') && (baseUpper.includes('MOLHO') || baseUpper.includes('SUGO'))) {
+      sufixoPastosa = ''
+    }
+    return {
+      ...p,
+      sufixoPastosa,
+      nomePastosa: p.nomePastosa ? limparDuplicidadeMolho(p.nomePastosa) : p.nomePastosa,
+      nomeLiquida: p.nomeLiquida !== undefined && p.nomeLiquida !== '' ? p.nomeLiquida : PADRAO_LIQUIDA_PROTEINA,
+    }
+  })
+}
+
+function normalizarCardapios(cardapios = {}) {
+  const res = {}
+  for (const [data, c] of Object.entries(cardapios)) {
+    if (!c) continue
+    const novoC = { ...c }
+    for (const refKey of ['almoco', 'jantar']) {
+      if (novoC[refKey]) {
+        const ref = { ...novoC[refKey] }
+        if (ref.proteinaPastosaManual) {
+          ref.proteinaPastosaManual = limparDuplicidadeMolho(ref.proteinaPastosaManual)
+        }
+        novoC[refKey] = ref
+      }
+    }
+    res[data] = novoC
+  }
+  return res
 }
 
 function createInitialState() {
@@ -58,8 +88,8 @@ export function useStore() {
         saladas: saved.saladas ?? SALADAS_INICIAIS,
         insumos: saved.insumos ?? INSUMOS_INICIAIS,
         fichasTecnicas: saved.fichasTecnicas ?? FICHAS_TECNICAS_INICIAIS,
-        cardapios: saved.cardapios ?? {},
-        rascunhosCardapio: saved.rascunhosCardapio ?? {},
+        cardapios: normalizarCardapios(saved.cardapios ?? {}),
+        rascunhosCardapio: normalizarCardapios(saved.rascunhosCardapio ?? {}),
       }
     }
     return createInitialState()
@@ -77,8 +107,8 @@ export function useStore() {
           saladas: remoto.saladas ?? prev.saladas,
           insumos: remoto.insumos ?? prev.insumos,
           fichasTecnicas: remoto.fichasTecnicas ?? prev.fichasTecnicas,
-          cardapios: remoto.cardapios ?? prev.cardapios,
-          rascunhosCardapio: prev.rascunhosCardapio, // rascunhos locais preservados
+          cardapios: normalizarCardapios(remoto.cardapios ?? prev.cardapios),
+          rascunhosCardapio: normalizarCardapios(prev.rascunhosCardapio), // rascunhos locais preservados
         }))
       }
     })

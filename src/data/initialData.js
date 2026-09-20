@@ -52,7 +52,7 @@ export const PROTEINAS_INICIAIS = [
     categoria: 'Frango — Peito',
     nome: 'Iscas de Peito de Frango Aceboladas ao Molho Ferrugem',
     nomeAbrev: 'FRANGO ACEBOLADO AO MOLHO FERRUGEM',
-    sufixoPastosa: 'AO MOLHO',
+    sufixoPastosa: '',
     sufixoLiquida: 'LIQUIDIFICADO',
   },
   {
@@ -68,7 +68,7 @@ export const PROTEINAS_INICIAIS = [
     categoria: 'Frango — Peito',
     nome: 'Peito de Frango Desfiado ao Molho de Tomate Rústico',
     nomeAbrev: 'FRANGO DESFIADO AO MOLHO DE TOMATE',
-    sufixoPastosa: 'AO MOLHO',
+    sufixoPastosa: '',
     sufixoLiquida: 'LIQUIDIFICADO',
   },
 
@@ -94,7 +94,7 @@ export const PROTEINAS_INICIAIS = [
     categoria: 'Frango — Sobrecoxa',
     nome: 'Sobrecoxa Desfiada ao Molho Ferrugem Acebolado',
     nomeAbrev: 'SOBRECOXA DESFIADA AO MOLHO FERRUGEM',
-    sufixoPastosa: 'AO MOLHO',
+    sufixoPastosa: '',
     sufixoLiquida: 'LIQUIDIFICADA',
   },
   {
@@ -102,7 +102,7 @@ export const PROTEINAS_INICIAIS = [
     categoria: 'Frango — Sobrecoxa',
     nome: 'Sobrecoxa Ensopada ao Molho Suave de Tomate Pelado',
     nomeAbrev: 'SOBRECOXA AO MOLHO DE TOMATE',
-    sufixoPastosa: 'AO MOLHO',
+    sufixoPastosa: '',
     sufixoLiquida: 'LIQUIDIFICADA',
   },
 
@@ -112,7 +112,7 @@ export const PROTEINAS_INICIAIS = [
     categoria: 'Frango — Moído',
     nome: 'Almôndegas de Frango ao Molho de Tomate Rústico',
     nomeAbrev: 'ALMÔNDEGAS DE FRANGO AO MOLHO',
-    sufixoPastosa: 'AO MOLHO',
+    sufixoPastosa: '',
     sufixoLiquida: 'LIQUIDIFICADO',
   },
   {
@@ -146,7 +146,7 @@ export const PROTEINAS_INICIAIS = [
     categoria: 'Bovina — Moída',
     nome: 'Almôndegas Bovinas ao Molho Ferrugem',
     nomeAbrev: 'ALMÔNDEGAS BOV. AO MOLHO FERRUGEM',
-    sufixoPastosa: 'AO MOLHO',
+    sufixoPastosa: '',
     sufixoLiquida: 'AO MOLHO LIQUIDIFICADO',
   },
   {
@@ -170,7 +170,7 @@ export const PROTEINAS_INICIAIS = [
     categoria: 'Bovina — Moída',
     nome: 'Carne Moída Refogada com Cebola e Extrato de Tomate',
     nomeAbrev: 'CARNE MOÍDA BOV. COM MOLHO',
-    sufixoPastosa: 'COM MOLHO',
+    sufixoPastosa: '',
     sufixoLiquida: 'COM MOLHO LIQUIDIFICADO',
   },
 
@@ -180,7 +180,7 @@ export const PROTEINAS_INICIAIS = [
     categoria: 'Bovina — Coxão de Dentro',
     nome: 'Iscas de Coxão de Dentro Aceboladas ao Molho Ferrugem',
     nomeAbrev: 'COXÃO AO MOLHO FERRUGEM',
-    sufixoPastosa: 'AO MOLHO',
+    sufixoPastosa: '',
     sufixoLiquida: 'LIQUIDIFICADO',
   },
   {
@@ -204,7 +204,7 @@ export const PROTEINAS_INICIAIS = [
     categoria: 'Bovina — Coxão de Dentro',
     nome: 'Iscas de Coxão ao Molho Suave de Extrato de Tomate',
     nomeAbrev: 'COXÃO AO MOLHO DE TOMATE',
-    sufixoPastosa: 'AO MOLHO',
+    sufixoPastosa: '',
     sufixoLiquida: 'LIQUIDIFICADO',
   },
 
@@ -238,7 +238,7 @@ export const PROTEINAS_INICIAIS = [
     categoria: 'Bovina — Patinho',
     nome: 'Iscas de Patinho ao Molho de Tomate Rústico com Ervas',
     nomeAbrev: 'PATINHO AO MOLHO DE TOMATE',
-    sufixoPastosa: 'AO MOLHO',
+    sufixoPastosa: '',
     sufixoLiquida: 'LIQUIDIFICADO',
   },
 
@@ -248,7 +248,7 @@ export const PROTEINAS_INICIAIS = [
     categoria: 'Bovina — Vazio',
     nome: 'Vazio Assado Fatiado ao Molho Acebolado',
     nomeAbrev: 'VAZIO ASSADO AO MOLHO ACEBOLADO',
-    sufixoPastosa: 'AO MOLHO',
+    sufixoPastosa: '',
     sufixoLiquida: 'LIQUIDIFICADO',
   },
   {
@@ -256,7 +256,7 @@ export const PROTEINAS_INICIAIS = [
     categoria: 'Bovina — Vazio',
     nome: 'Vazio Desfiado ao Molho de Tomate Pelado e Cebola',
     nomeAbrev: 'VAZIO DESFIADO AO MOLHO',
-    sufixoPastosa: 'AO MOLHO',
+    sufixoPastosa: '',
     sufixoLiquida: 'LIQUIDIFICADO',
   },
   {
@@ -264,7 +264,7 @@ export const PROTEINAS_INICIAIS = [
     categoria: 'Bovina — Vazio',
     nome: 'Cubos de Vazio Cozidos ao Molho Ferrugem Rústico',
     nomeAbrev: 'VAZIO AO MOLHO FERRUGEM',
-    sufixoPastosa: 'AO MOLHO',
+    sufixoPastosa: '',
     sufixoLiquida: 'LIQUIDIFICADO',
   },
   {
@@ -282,7 +282,7 @@ export const PROTEINAS_INICIAIS = [
     categoria: 'Suíno — Pernil',
     nome: 'Iscas de Pernil Aceboladas ao Molho de Extrato de Tomate',
     nomeAbrev: 'PERNIL ACEBOLADO AO MOLHO',
-    sufixoPastosa: 'AO MOLHO',
+    sufixoPastosa: '',
     sufixoLiquida: 'LIQUIDIFICADO',
   },
   {
@@ -324,7 +324,7 @@ export const PROTEINAS_INICIAIS = [
     categoria: 'Peixe — Filé',
     nome: 'Filé de Peixe Ensopado ao Molho de Tomate com Pimentão',
     nomeAbrev: 'FILÉ DE PEIXE AO MOLHO DE TOMATE',
-    sufixoPastosa: 'AO MOLHO',
+    sufixoPastosa: '',
     sufixoLiquida: 'LIQUIDIFICADO',
   },
   {
@@ -340,7 +340,7 @@ export const PROTEINAS_INICIAIS = [
     categoria: 'Peixe — Filé',
     nome: 'Filé de Peixe ao Molho Cremoso de Requeijão com Milho',
     nomeAbrev: 'FILÉ DE PEIXE AO CREME DE REQUEIJÃO',
-    sufixoPastosa: 'AO MOLHO',
+    sufixoPastosa: '',
     sufixoLiquida: 'LIQUIDIFICADO',
   },
 ]

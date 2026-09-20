@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Plus, Pencil, Trash2, X, Check, FileText, ChevronDown, Filter, Search, Copy } from 'lucide-react'
+import { formatarNomePastosa } from '../utils/formatUtils'
 
 // ── Modal for creating/editing a dish with consistency options and ficha técnica ──
 function ModalPreparacao({ initial, onSave, onClose, titulo, tipo = 'proteina', onOpenFicha }) {
@@ -463,7 +464,7 @@ export default function BancoPratos({ store, onOpenFicha }) {
                             <td style={{ fontWeight: 600 }}>{p.nome}</td>
                             <td className="mono" style={{ color: '#0d47a1', fontWeight: 700 }}>{p.nomeAbrev}</td>
                             <td className="mono" style={{ color: '#2e7d32' }}>{p.nomeBranda || p.nomeAbrev}</td>
-                            <td className="mono" style={{ color: '#e65100' }}>{p.nomePastosa || `${p.nomeAbrev}${p.sufixoPastosa ? ' ' + p.sufixoPastosa : ''}`}</td>
+                            <td className="mono" style={{ color: '#e65100' }}>{formatarNomePastosa(p)}</td>
                             <td style={{ textAlign: 'center' }}>
                               {ficha ? (
                                 <button

@@ -3,6 +3,7 @@ import { Printer, Save, Plus, X, Check, ChevronDown } from 'lucide-react'
 import PrintView from '../components/PrintView'
 import { DIAS_SEMANA, BASES_DIETA, OBS_LIQUIDA_PADRAO } from '../data/initialData'
 import { verificarRepeticaoPrato } from '../utils/repetitionUtils'
+import { formatarNomePastosa } from '../utils/formatUtils'
 
 // ─────────────────────────────────────────────
 // Helpers
@@ -298,7 +299,7 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
   // Derived display values
   const protNome = prot?.nomeAbrev || ''
   const protBranda = r.proteinaBrandaManual !== undefined ? r.proteinaBrandaManual : (prot?.nomeBranda || protNome)
-  const protPastosa = r.proteinaPastosaManual !== undefined ? r.proteinaPastosaManual : (prot?.nomePastosa || (prot ? `${prot.nomeAbrev}${prot.sufixoPastosa ? ' ' + prot.sufixoPastosa : ''}` : ''))
+  const protPastosa = r.proteinaPastosaManual !== undefined ? formatarNomePastosa(r.proteinaPastosaManual) : formatarNomePastosa(prot)
   
   let protLiquida = ''
   if (r.proteinaLiquidaManual !== undefined) {
@@ -481,7 +482,7 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
                     onChange({ ...r, proteinaPastosaId: undefined, proteinaPastosaManual: undefined })
                   } else {
                     const p = proteinas.find(x => x.id === val)
-                    const pastosaStr = p ? (p.nomePastosa || `${p.nomeAbrev}${p.sufixoPastosa ? ' ' + p.sufixoPastosa : ''}`) : ''
+                    const pastosaStr = formatarNomePastosa(p)
                     onChange({
                       ...r,
                       proteinaPastosaId: val,
