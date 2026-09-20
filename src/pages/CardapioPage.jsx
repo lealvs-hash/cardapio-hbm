@@ -4,6 +4,7 @@ import PrintView from '../components/PrintView'
 import { DIAS_SEMANA, BASES_DIETA, OBS_LIQUIDA_PADRAO } from '../data/initialData'
 import { verificarRepeticaoPrato } from '../utils/repetitionUtils'
 import { formatarNomePastosa } from '../utils/formatUtils'
+import DishSelectDropdown from '../components/DishSelectDropdown'
 
 // ─────────────────────────────────────────────
 // Helpers
@@ -481,36 +482,18 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
               <span className="row-label-sub">LEGUMINOSA</span>
             </td>
             <td className="cardapio-td edit-cell">
-              <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                <select className="table-select" style={{ flex: 1, minWidth: 0 }} value={r.leguminosaId} onChange={handleLegChange}>
-                  <option value="__add__">+ Prato</option>
-                  <option value="">— Selecionar —</option>
-                  {leguminosas.map(l => <option key={l.id} value={l.id}>{l.nome}</option>)}
-                </select>
-                {leg && (
-                  <button
-                    type="button"
-                    className="icon-btn no-print"
-                    onClick={() => setEditItem({ tipo: 'leguminosa', item: leg })}
-                    title={`Editar "${leg.nome}"`}
-                    style={{
-                      padding: '3px 5px',
-                      background: '#e3f2fd',
-                      border: '1px solid #90caf9',
-                      color: '#1565c0',
-                      borderRadius: 4,
-                      cursor: 'pointer',
-                      flexShrink: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginLeft: 4,
-                    }}
-                  >
-                    <Pencil size={12} />
-                  </button>
-                )}
-              </div>
+              <DishSelectDropdown
+                value={r.leguminosaId}
+                options={leguminosas}
+                groupBy={null}
+                placeholder="— Selecionar —"
+                onChange={val => {
+                  const l = leguminosas.find(x => x.id === val)
+                  onChange({ ...r, leguminosaId: val, leguminosaAbrev: l?.nomeAbrev || '' })
+                }}
+                onAdd={() => setQC({ tipo: 'leguminosa', field: 'leguminosaId' })}
+                onEdit={item => setEditItem({ tipo: 'leguminosa', item })}
+              />
             </td>
             <DCell val={derived.legDM}      />
             <DCell val={derived.legBranda}  />
@@ -524,42 +507,15 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
               <span className="row-label-main">PROTEÍNA</span>
             </td>
             <td className="cardapio-td edit-cell">
-              <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                <select className="table-select" style={{ flex: 1, minWidth: 0 }} value={r.proteinaId} onChange={handleProteinaChange}>
-                  <option value="__add__">+ Prato</option>
-                  <option value="">— Selecionar —</option>
-                  {cats.map(cat => (
-                    <optgroup key={cat} label={cat}>
-                      {proteinas.filter(p => p.categoria === cat).map(p => (
-                        <option key={p.id} value={p.id}>{p.nome}</option>
-                      ))}
-                    </optgroup>
-                  ))}
-                </select>
-                {prot && (
-                  <button
-                    type="button"
-                    className="icon-btn no-print"
-                    onClick={() => setEditItem({ tipo: 'proteina', item: prot })}
-                    title={`Editar "${prot.nome}" no banco`}
-                    style={{
-                      padding: '3px 5px',
-                      background: '#e3f2fd',
-                      border: '1px solid #90caf9',
-                      color: '#1565c0',
-                      borderRadius: 4,
-                      cursor: 'pointer',
-                      flexShrink: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginLeft: 4,
-                    }}
-                  >
-                    <Pencil size={12} />
-                  </button>
-                )}
-              </div>
+              <DishSelectDropdown
+                value={r.proteinaId}
+                options={proteinas}
+                groupBy="categoria"
+                placeholder="— Selecionar —"
+                onChange={val => onChange({ ...r, proteinaId: val })}
+                onAdd={() => setQC({ tipo: 'proteina', field: 'proteinaId' })}
+                onEdit={item => setEditItem({ tipo: 'proteina', item })}
+              />
               {repProt.servidoAntes && (
                 <div className="no-print" style={{ marginTop: 2, textAlign: 'left' }}>
                   {repProt.nivelAlerta === 'repetido' ? (
@@ -580,123 +536,51 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
             </td>
             <DCell val={derived.protDM} />
             <td className="cardapio-td edit-cell" title="Proteína para Dieta Branda (por padrão adapta da Dieta Livre ou escolha outra)">
-              <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                <select
-                  className="table-select"
-                  style={{ flex: 1, minWidth: 0 }}
-                  value={r.proteinaBrandaId !== undefined ? r.proteinaBrandaId : ''}
-                  onChange={e => {
-                    const val = e.target.value
-                    if (val === '__padrao__') {
-                      onChange({ ...r, proteinaBrandaId: undefined, proteinaBrandaManual: undefined })
-                    } else {
-                      const p = proteinas.find(x => x.id === val)
-                      onChange({
-                        ...r,
-                        proteinaBrandaId: val,
-                        proteinaBrandaManual: p ? (p.nomeBranda || p.nomeAbrev) : '',
-                      })
-                    }
-                  }}
-                >
-                  <option value="__padrao__">
-                    {derived.protBranda ? derived.protBranda : '— Selecionar —'}
-                  </option>
-                  {cats.map(cat => (
-                    <optgroup key={cat} label={cat}>
-                      {proteinas.filter(p => p.categoria === cat).map(p => (
-                        <option key={p.id} value={p.id}>{p.nome}</option>
-                      ))}
-                    </optgroup>
-                  ))}
-                </select>
-                {r.proteinaBrandaId && r.proteinaBrandaId !== '__padrao__' && (
-                  <button
-                    type="button"
-                    className="icon-btn no-print"
-                    onClick={() => {
-                      const altP = proteinas.find(x => x.id === r.proteinaBrandaId)
-                      if (altP) setEditItem({ tipo: 'proteina', item: altP })
-                    }}
-                    title="Editar este prato alternativo"
-                    style={{
-                      padding: '3px 5px',
-                      background: '#e8f5e9',
-                      border: '1px solid #a5d6a7',
-                      color: '#2e7d32',
-                      borderRadius: 4,
-                      cursor: 'pointer',
-                      flexShrink: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginLeft: 4,
-                    }}
-                  >
-                    <Pencil size={11} />
-                  </button>
-                )}
-              </div>
+              <DishSelectDropdown
+                value={r.proteinaBrandaId}
+                options={proteinas}
+                groupBy="categoria"
+                placeholder="— Selecionar —"
+                defaultLabel={derived.protBranda}
+                onChange={val => {
+                  if (val === '__padrao__' || !val) {
+                    onChange({ ...r, proteinaBrandaId: undefined, proteinaBrandaManual: undefined })
+                  } else {
+                    const p = proteinas.find(x => x.id === val)
+                    onChange({
+                      ...r,
+                      proteinaBrandaId: val,
+                      proteinaBrandaManual: p ? (p.nomeBranda || p.nomeAbrev) : '',
+                    })
+                  }
+                }}
+                onAdd={() => setQC({ tipo: 'proteina', field: 'proteinaId' })}
+                onEdit={item => setEditItem({ tipo: 'proteina', item })}
+              />
             </td>
             <td className="cardapio-td edit-cell" title="Proteína para Dieta Pastosa (por padrão adapta da Dieta Livre ou escolha outra)">
-              <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                <select
-                  className="table-select"
-                  style={{ flex: 1, minWidth: 0 }}
-                  value={r.proteinaPastosaId !== undefined ? r.proteinaPastosaId : ''}
-                  onChange={e => {
-                    const val = e.target.value
-                    if (val === '__padrao__') {
-                      onChange({ ...r, proteinaPastosaId: undefined, proteinaPastosaManual: undefined })
-                    } else {
-                      const p = proteinas.find(x => x.id === val)
-                      const pastosaStr = formatarNomePastosa(p)
-                      onChange({
-                        ...r,
-                        proteinaPastosaId: val,
-                        proteinaPastosaManual: pastosaStr,
-                      })
-                    }
-                  }}
-                >
-                  <option value="__padrao__">
-                    {derived.protPastosa ? derived.protPastosa : '— Selecionar —'}
-                  </option>
-                  {cats.map(cat => (
-                    <optgroup key={cat} label={cat}>
-                      {proteinas.filter(p => p.categoria === cat).map(p => (
-                        <option key={p.id} value={p.id}>{p.nome}</option>
-                      ))}
-                    </optgroup>
-                  ))}
-                </select>
-                {r.proteinaPastosaId && r.proteinaPastosaId !== '__padrao__' && (
-                  <button
-                    type="button"
-                    className="icon-btn no-print"
-                    onClick={() => {
-                      const altP = proteinas.find(x => x.id === r.proteinaPastosaId)
-                      if (altP) setEditItem({ tipo: 'proteina', item: altP })
-                    }}
-                    title="Editar este prato alternativo"
-                    style={{
-                      padding: '3px 5px',
-                      background: '#fff3e0',
-                      border: '1px solid #ffcc80',
-                      color: '#e65100',
-                      borderRadius: 4,
-                      cursor: 'pointer',
-                      flexShrink: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginLeft: 4,
-                    }}
-                  >
-                    <Pencil size={11} />
-                  </button>
-                )}
-              </div>
+              <DishSelectDropdown
+                value={r.proteinaPastosaId}
+                options={proteinas}
+                groupBy="categoria"
+                placeholder="— Selecionar —"
+                defaultLabel={derived.protPastosa}
+                onChange={val => {
+                  if (val === '__padrao__' || !val) {
+                    onChange({ ...r, proteinaPastosaId: undefined, proteinaPastosaManual: undefined })
+                  } else {
+                    const p = proteinas.find(x => x.id === val)
+                    const pastosaStr = formatarNomePastosa(p)
+                    onChange({
+                      ...r,
+                      proteinaPastosaId: val,
+                      proteinaPastosaManual: pastosaStr,
+                    })
+                  }
+                }}
+                onAdd={() => setQC({ tipo: 'proteina', field: 'proteinaId' })}
+                onEdit={item => setEditItem({ tipo: 'proteina', item })}
+              />
             </td>
             <td className="cardapio-td edit-cell" title="Líquida Pastosa (Carne com caldo liquidificada — pode alterar ou deixar em branco)">
               <input
@@ -716,36 +600,25 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
               <span className="row-label-main">GUARNIÇÃO</span>
             </td>
             <td className="cardapio-td edit-cell">
-              <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                <select className="table-select" style={{ flex: 1, minWidth: 0 }} value={r.guarnicaoId} onChange={handleGuardChange}>
-                  <option value="__add__">+ Prato</option>
-                  <option value="">— Sem guarnição —</option>
-                  {guarnicoes.map(g => <option key={g.id} value={g.id}>{g.nome}</option>)}
-                </select>
-                {guard && (
-                  <button
-                    type="button"
-                    className="icon-btn no-print"
-                    onClick={() => setEditItem({ tipo: 'guarnicao', item: guard })}
-                    title={`Editar "${guard.nome}" no banco`}
-                    style={{
-                      padding: '3px 5px',
-                      background: '#e3f2fd',
-                      border: '1px solid #90caf9',
-                      color: '#1565c0',
-                      borderRadius: 4,
-                      cursor: 'pointer',
-                      flexShrink: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginLeft: 4,
-                    }}
-                  >
-                    <Pencil size={12} />
-                  </button>
-                )}
-              </div>
+              <DishSelectDropdown
+                value={r.guarnicaoId}
+                options={guarnicoes}
+                groupBy={null}
+                placeholder="— Sem guarnição —"
+                onChange={val => {
+                  const g = guarnicoes.find(x => x.id === val)
+                  onChange({
+                    ...r,
+                    guarnicaoId: val,
+                    guarnicaoAbrev: g?.nomeAbrev || '',
+                    guarnicaoBranda: g ? (g.nomeBranda || g.nomeAbrev) : '',
+                    guarnicaoPastosa: g ? (g.nomePastosa || '') : '',
+                    guarnicaoLiquida: g ? (g.nomeLiquida || '') : '',
+                  })
+                }}
+                onAdd={() => setQC({ tipo: 'guarnicao', field: 'guarnicaoId' })}
+                onEdit={item => setEditItem({ tipo: 'guarnicao', item })}
+              />
               {repGuard.servidoAntes && (
                 <div className="no-print" style={{ marginTop: 2, textAlign: 'left' }}>
                   {repGuard.nivelAlerta === 'repetido' ? (
@@ -805,36 +678,18 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
                 <span className="row-label-main">SALADA</span>
               </td>
               <td className="cardapio-td edit-cell">
-                <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                  <select className="table-select" style={{ flex: 1, minWidth: 0 }} value={r.saladaId} onChange={handleSaladaChange}>
-                    <option value="__add__">+ Prato</option>
-                    <option value="">— Sem salada —</option>
-                    {saladas.map(s => <option key={s.id} value={s.id}>{s.nome}</option>)}
-                  </select>
-                  {sal && (
-                    <button
-                      type="button"
-                      className="icon-btn no-print"
-                      onClick={() => setEditItem({ tipo: 'salada', item: sal })}
-                      title={`Editar "${sal.nome}" no banco`}
-                      style={{
-                        padding: '3px 5px',
-                        background: '#e3f2fd',
-                        border: '1px solid #90caf9',
-                        color: '#1565c0',
-                        borderRadius: 4,
-                        cursor: 'pointer',
-                        flexShrink: 0,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginLeft: 4,
-                      }}
-                    >
-                      <Pencil size={12} />
-                    </button>
-                  )}
-                </div>
+                <DishSelectDropdown
+                  value={r.saladaId}
+                  options={saladas}
+                  groupBy={null}
+                  placeholder="— Sem salada —"
+                  onChange={val => {
+                    const s = saladas.find(x => x.id === val)
+                    onChange({ ...r, saladaId: val, saladaAbrev: s?.nomeAbrev || '' })
+                  }}
+                  onAdd={() => setQC({ tipo: 'salada', field: 'saladaId' })}
+                  onEdit={item => setEditItem({ tipo: 'salada', item })}
+                />
               </td>
               <DCell val={derived.salDM} />
               <DCell val="" empty />
