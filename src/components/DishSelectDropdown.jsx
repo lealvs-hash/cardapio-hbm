@@ -11,6 +11,9 @@ export default function DishSelectDropdown({
   groupBy = 'categoria',
   placeholder = '— Selecionar —',
   defaultLabel = '',
+  defaultItemId = '',
+  formatOptionName,
+  formatOptionSecondary,
   title = '',
   style = {},
 }) {
@@ -28,7 +31,7 @@ export default function DishSelectDropdown({
   let isDefault = false
 
   if (selectedItem) {
-    triggerText = selectedItem.nomeAbrev || selectedItem.nome
+    triggerText = formatOptionName ? formatOptionName(selectedItem) : (selectedItem.nomeAbrev || selectedItem.nome)
   } else if (defaultLabel) {
     triggerText = defaultLabel
     isDefault = true
@@ -104,10 +107,12 @@ export default function DishSelectDropdown({
   const filteredOptions = options.filter(item => {
     if (!searchTerm.trim()) return true
     const term = searchTerm.toLowerCase()
+    const formatted = formatOptionName ? (formatOptionName(item) || '').toLowerCase() : ''
     return (
       (item.nome || '').toLowerCase().includes(term) ||
       (item.nomeAbrev || '').toLowerCase().includes(term) ||
-      (item.categoria || '').toLowerCase().includes(term)
+      (item.categoria || '').toLowerCase().includes(term) ||
+      formatted.includes(term)
     )
   })
 
@@ -119,6 +124,134 @@ export default function DishSelectDropdown({
       if (!grouped[cat]) grouped[cat] = []
       grouped[cat].push(item)
     })
+  }
+
+  // Renderiza uma linha de item da lista
+  const renderItemRow = (item) => {
+    const isExplicitlySelected = item.id === value
+    const isDefaultItem = !value && Boolean(defaultItemId) && item.id === defaultItemId
+    const isHighlighted = isExplicitlySelected || isDefaultItem
+
+    const primaryName = formatOptionName ? formatOptionName(item) : item.nome
+    const subText = formatOptionSecondary
+      ? formatOptionSecondary(item)
+      : (item.nomeAbrev && item.nomeAbrev !== item.nome ? `DL/DM: ${item.nomeAbrev}` : '')
+
+    return (
+      <div
+        key={item.id}
+        onClick={() => {
+          onChange(item.id)
+          setIsOpen(false)
+        }}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '6px 10px',
+          cursor: 'pointer',
+          backgroundColor: isExplicitlySelected ? '#e3f2fd' : (isDefaultItem ? '#f1f8e9' : 'transparent'),
+          borderLeft: isExplicitlySelected ? '3px solid #1565c0' : (isDefaultItem ? '3px solid #4caf50' : '3px solid transparent'),
+          borderBottom: '1px solid #f8fafc',
+          transition: 'background-color 0.1s ease',
+        }}
+        onMouseEnter={e => {
+          if (!isHighlighted) e.currentTarget.style.backgroundColor = '#f8fafc'
+        }}
+        onMouseLeave={e => {
+          if (!isHighlighted) e.currentTarget.style.backgroundColor = 'transparent'
+        }}
+      >
+        <div style={{ flex: 1, minWidth: 0, paddingRight: 8 }}>
+          <div style={{
+            fontSize: '11px',
+            fontWeight: isHighlighted ? 800 : 600,
+            color: isExplicitlySelected ? '#0d47a1' : (isDefaultItem ? '#2e7d32' : '#1e293b'),
+            textTransform: 'uppercase',
+            lineHeight: 1.25,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            flexWrap: 'wrap',
+          }}>
+            <span>{primaryName}</span>
+            {isDefaultItem && (
+              <span style={{
+                background: '#e8f5e9',
+                color: '#2e7d32',
+                border: '1px solid #c8e6c9',
+                fontSize: '8.5px',
+                padding: '0 4px',
+                borderRadius: 3,
+                fontWeight: 700,
+                textTransform: 'none',
+              }}>
+                ✓ Padrão Dieta Livre
+              </span>
+            )}
+            {isExplicitlySelected && (
+              <span style={{
+                background: '#e3f2fd',
+                color: '#1565c0',
+                border: '1px solid #bbdefb',
+                fontSize: '8.5px',
+                padding: '0 4px',
+                borderRadius: 3,
+                fontWeight: 700,
+                textTransform: 'none',
+              }}>
+                ✓ Selecionado
+              </span>
+            )}
+          </div>
+          {subText && (
+            <div style={{ fontSize: '9.5px', color: '#64748b', marginTop: 1 }}>
+              {subText}
+            </div>
+          )}
+        </div>
+
+        {/* Botão Ícone de Lápis para editar nesta parte! */}
+        {onEdit && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              setIsOpen(false)
+              onEdit(item)
+            }}
+            title={`Editar "${item.nome}"`}
+            style={{
+              padding: '3px 7px',
+              background: '#ffffff',
+              border: '1px solid #90caf9',
+              borderRadius: 4,
+              color: '#1565c0',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 3,
+              fontSize: '10px',
+              fontWeight: 700,
+              flexShrink: 0,
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = '#1565c0'
+              e.currentTarget.style.color = '#ffffff'
+              e.currentTarget.style.borderColor = '#0d47a1'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = '#ffffff'
+              e.currentTarget.style.color = '#1565c0'
+              e.currentTarget.style.borderColor = '#90caf9'
+            }}
+          >
+            <Pencil size={11} />
+            <span>Editar</span>
+          </button>
+        )}
+      </div>
+    )
   }
 
   return (
@@ -317,180 +450,11 @@ export default function DishSelectDropdown({
                   </div>
 
                   {/* Itens da Categoria */}
-                  {itens.map(item => {
-                    const isSelected = item.id === value
-                    return (
-                      <div
-                        key={item.id}
-                        onClick={() => {
-                          onChange(item.id)
-                          setIsOpen(false)
-                        }}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '6px 10px',
-                          cursor: 'pointer',
-                          backgroundColor: isSelected ? '#e3f2fd' : 'transparent',
-                          borderLeft: isSelected ? '3px solid #1565c0' : '3px solid transparent',
-                          borderBottom: '1px solid #f8fafc',
-                          transition: 'background-color 0.1s ease',
-                        }}
-                        onMouseEnter={e => {
-                          if (!isSelected) e.currentTarget.style.backgroundColor = '#f8fafc'
-                        }}
-                        onMouseLeave={e => {
-                          if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'
-                        }}
-                      >
-                        <div style={{ flex: 1, minWidth: 0, paddingRight: 8 }}>
-                          <div style={{
-                            fontSize: '11px',
-                            fontWeight: isSelected ? 800 : 600,
-                            color: isSelected ? '#0d47a1' : '#1e293b',
-                            textTransform: 'uppercase',
-                            lineHeight: 1.25,
-                          }}>
-                            {item.nome}
-                          </div>
-                          {item.nomeAbrev && item.nomeAbrev !== item.nome && (
-                            <div style={{ fontSize: '9.5px', color: '#64748b', marginTop: 1 }}>
-                              DL/DM: <strong style={{ color: '#0d47a1' }}>{item.nomeAbrev}</strong>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Botão Ícone de Lápis para editar nesta parte! */}
-                        {onEdit && (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setIsOpen(false)
-                              onEdit(item)
-                            }}
-                            title={`Editar "${item.nome}"`}
-                            style={{
-                              padding: '3px 7px',
-                              background: '#ffffff',
-                              border: '1px solid #90caf9',
-                              borderRadius: 4,
-                              color: '#1565c0',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 3,
-                              fontSize: '10px',
-                              fontWeight: 700,
-                              flexShrink: 0,
-                            }}
-                            onMouseEnter={e => {
-                              e.currentTarget.style.background = '#1565c0'
-                              e.currentTarget.style.color = '#ffffff'
-                              e.currentTarget.style.borderColor = '#0d47a1'
-                            }}
-                            onMouseLeave={e => {
-                              e.currentTarget.style.background = '#ffffff'
-                              e.currentTarget.style.color = '#1565c0'
-                              e.currentTarget.style.borderColor = '#90caf9'
-                            }}
-                          >
-                            <Pencil size={11} />
-                            <span>Editar</span>
-                          </button>
-                        )}
-                      </div>
-                    )
-                  })}
+                  {itens.map(renderItemRow)}
                 </div>
               ))
             ) : (
-              filteredOptions.map(item => {
-                const isSelected = item.id === value
-                return (
-                  <div
-                    key={item.id}
-                    onClick={() => {
-                      onChange(item.id)
-                      setIsOpen(false)
-                    }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '6px 10px',
-                      cursor: 'pointer',
-                      backgroundColor: isSelected ? '#e3f2fd' : 'transparent',
-                      borderLeft: isSelected ? '3px solid #1565c0' : '3px solid transparent',
-                      borderBottom: '1px solid #f8fafc',
-                    }}
-                    onMouseEnter={e => {
-                      if (!isSelected) e.currentTarget.style.backgroundColor = '#f8fafc'
-                    }}
-                    onMouseLeave={e => {
-                      if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'
-                    }}
-                  >
-                    <div style={{ flex: 1, minWidth: 0, paddingRight: 8 }}>
-                      <div style={{
-                        fontSize: '11px',
-                        fontWeight: isSelected ? 800 : 600,
-                        color: isSelected ? '#0d47a1' : '#1e293b',
-                        textTransform: 'uppercase',
-                        lineHeight: 1.25,
-                      }}>
-                        {item.nome}
-                      </div>
-                      {item.nomeAbrev && item.nomeAbrev !== item.nome && (
-                        <div style={{ fontSize: '9.5px', color: '#64748b', marginTop: 1 }}>
-                          DL/DM: <strong style={{ color: '#0d47a1' }}>{item.nomeAbrev}</strong>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Botão Ícone de Lápis para editar nesta parte! */}
-                    {onEdit && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setIsOpen(false)
-                          onEdit(item)
-                        }}
-                        title={`Editar "${item.nome}"`}
-                        style={{
-                          padding: '3px 7px',
-                          background: '#ffffff',
-                          border: '1px solid #90caf9',
-                          borderRadius: 4,
-                          color: '#1565c0',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 3,
-                          fontSize: '10px',
-                          fontWeight: 700,
-                          flexShrink: 0,
-                        }}
-                        onMouseEnter={e => {
-                          e.currentTarget.style.background = '#1565c0'
-                          e.currentTarget.style.color = '#ffffff'
-                          e.currentTarget.style.borderColor = '#0d47a1'
-                        }}
-                        onMouseLeave={e => {
-                          e.currentTarget.style.background = '#ffffff'
-                          e.currentTarget.style.color = '#1565c0'
-                          e.currentTarget.style.borderColor = '#90caf9'
-                        }}
-                      >
-                        <Pencil size={11} />
-                        <span>Editar</span>
-                      </button>
-                    )}
-                  </div>
-                )
-              })
+              filteredOptions.map(renderItemRow)
             )}
           </div>
         </div>,

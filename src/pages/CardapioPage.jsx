@@ -242,6 +242,8 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
   const [editItem, setEditItem] = useState(null) // { tipo, item }
 
   const prot  = proteinas.find(p  => p.id  === r.proteinaId)
+  const altProtBranda = proteinas.find(p => p.id === r.proteinaBrandaId)
+  const altProtPastosa = proteinas.find(p => p.id === r.proteinaPastosaId)
   const leg   = leguminosas.find(l => l.id === r.leguminosaId)
   const guard = guarnicoes.find(g  => g.id  === r.guarnicaoId)
   const sal   = saladas.find(s    => s.id   === r.saladaId)
@@ -261,7 +263,16 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
       store.adicionarProteina(item)
       // If tipo=base, field is a base key; if proteina, field is proteinaId
       if (qc.field === 'proteinaId') {
-        onChange({ ...r, proteinaId: id })
+        onChange({
+          ...r,
+          proteinaId: id,
+          proteinaAbrev: item.nomeAbrev,
+          proteinaBrandaId: undefined,
+          proteinaBrandaManual: undefined,
+          proteinaPastosaId: undefined,
+          proteinaPastosaManual: undefined,
+          proteinaLiquidaManual: undefined,
+        })
       } else {
         // base field: store nomeAbrev as value
         onChange({ ...r, [qc.field]: item.nomeAbrev })
@@ -350,9 +361,19 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
     )
   }
 
-  const handleProteinaChange = (e) => {
-    if (e.target.value === '__add__') { setQC({ tipo: 'proteina', field: 'proteinaId' }); return }
-    onChange({ ...r, proteinaId: e.target.value })
+  const handleProteinaSelect = (val) => {
+    const p = proteinas.find(x => x.id === val)
+    onChange({
+      ...r,
+      proteinaId: val,
+      proteinaAbrev: p?.nomeAbrev || '',
+      // Reseta qualquer trava manual para que Branda, Pastosa e Líquida sigam a nova proteína da Dieta Livre
+      proteinaBrandaId: undefined,
+      proteinaBrandaManual: undefined,
+      proteinaPastosaId: undefined,
+      proteinaPastosaManual: undefined,
+      proteinaLiquidaManual: undefined,
+    })
   }
   const handleLegChange = (e) => {
     if (e.target.value === '__add__') { setQC({ tipo: 'leguminosa', field: 'leguminosaId' }); return }
@@ -378,8 +399,13 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
 
   // Derived display values
   const protNome = prot?.nomeAbrev || ''
-  const protBranda = r.proteinaBrandaManual !== undefined ? r.proteinaBrandaManual : (prot?.nomeBranda || protNome)
-  const protPastosa = r.proteinaPastosaManual !== undefined ? formatarNomePastosa(r.proteinaPastosaManual) : formatarNomePastosa(prot)
+  const protBranda = r.proteinaBrandaManual !== undefined 
+    ? r.proteinaBrandaManual 
+    : (altProtBranda ? (altProtBranda.nomeBranda || altProtBranda.nomeAbrev) : (prot?.nomeBranda || protNome))
+
+  const protPastosa = r.proteinaPastosaManual !== undefined 
+    ? formatarNomePastosa(r.proteinaPastosaManual) 
+    : (altProtPastosa ? formatarNomePastosa(altProtPastosa) : formatarNomePastosa(prot))
   
   let protLiquida = ''
   if (r.proteinaLiquidaManual !== undefined) {
@@ -512,7 +538,7 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
                 options={proteinas}
                 groupBy="categoria"
                 placeholder="— Selecionar —"
-                onChange={val => onChange({ ...r, proteinaId: val })}
+                onChange={handleProteinaSelect}
                 onAdd={() => setQC({ tipo: 'proteina', field: 'proteinaId' })}
                 onEdit={item => setEditItem({ tipo: 'proteina', item })}
               />
@@ -542,8 +568,11 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
                 groupBy="categoria"
                 placeholder="— Selecionar —"
                 defaultLabel={derived.protBranda}
+                defaultItemId={r.proteinaId}
+                formatOptionName={item => item.nomeBranda || item.nomeAbrev || item.nome}
+                formatOptionSecondary={item => item.nomeAbrev && item.nomeAbrev !== (item.nomeBranda || item.nome) ? `Livre: ${item.nomeAbrev}` : ''}
                 onChange={val => {
-                  if (val === '__padrao__' || !val) {
+                  if (val === '__padrao__' || !val || val === r.proteinaId) {
                     onChange({ ...r, proteinaBrandaId: undefined, proteinaBrandaManual: undefined })
                   } else {
                     const p = proteinas.find(x => x.id === val)
@@ -565,8 +594,11 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
                 groupBy="categoria"
                 placeholder="— Selecionar —"
                 defaultLabel={derived.protPastosa}
+                defaultItemId={r.proteinaId}
+                formatOptionName={item => formatarNomePastosa(item)}
+                formatOptionSecondary={item => item.nomeAbrev ? `Livre: ${item.nomeAbrev}` : ''}
                 onChange={val => {
-                  if (val === '__padrao__' || !val) {
+                  if (val === '__padrao__' || !val || val === r.proteinaId) {
                     onChange({ ...r, proteinaPastosaId: undefined, proteinaPastosaManual: undefined })
                   } else {
                     const p = proteinas.find(x => x.id === val)

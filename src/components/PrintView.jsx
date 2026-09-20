@@ -3,12 +3,19 @@ import { formatarNomePastosa } from '../utils/formatUtils'
 
 function deriveData(refeicao, proteinas, leguminosas, guarnicoes = []) {
   const prot  = proteinas.find(p => p.id === refeicao?.proteinaId)
+  const altProtBranda = proteinas.find(p => p.id === refeicao?.proteinaBrandaId)
+  const altProtPastosa = proteinas.find(p => p.id === refeicao?.proteinaPastosaId)
   const leg   = leguminosas.find(l => l.id === refeicao?.leguminosaId)
   const guard = guarnicoes.find(g => g.id === refeicao?.guarnicaoId)
 
   const protNome = prot?.nomeAbrev || ''
-  const protBranda = refeicao?.proteinaBrandaManual !== undefined ? refeicao.proteinaBrandaManual : (prot?.nomeBranda || protNome)
-  const protPastosa = refeicao?.proteinaPastosaManual !== undefined ? formatarNomePastosa(refeicao.proteinaPastosaManual) : formatarNomePastosa(prot)
+  const protBranda = refeicao?.proteinaBrandaManual !== undefined 
+    ? refeicao.proteinaBrandaManual 
+    : (altProtBranda ? (altProtBranda.nomeBranda || altProtBranda.nomeAbrev) : (prot?.nomeBranda || protNome))
+
+  const protPastosa = refeicao?.proteinaPastosaManual !== undefined 
+    ? formatarNomePastosa(refeicao.proteinaPastosaManual) 
+    : (altProtPastosa ? formatarNomePastosa(altProtPastosa) : formatarNomePastosa(prot))
   
   let protLiquida = ''
   if (refeicao?.proteinaLiquidaManual !== undefined) {
