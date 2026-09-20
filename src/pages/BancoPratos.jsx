@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Plus, Pencil, Trash2, X, Check, FileText, ChevronDown, Filter, Search } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, Check, FileText, ChevronDown, Filter, Search, Copy } from 'lucide-react'
 
 // ── Modal for creating/editing a dish with consistency options and ficha técnica ──
 function ModalPreparacao({ initial, onSave, onClose, titulo, tipo = 'proteina', onOpenFicha }) {
@@ -218,7 +218,23 @@ function SimpleTable({ titulo, emoji, items = [], onAdd, onEdit, onDelete, empty
                 {fields.map(f => (
                   <td key={f.key} className={f.mono ? 'mono' : ''}>{item[f.key]}</td>
                 ))}
-                <td style={{ textAlign: 'center' }}>
+                <td style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
+                  <button
+                    className="icon-btn"
+                    onClick={() => {
+                      const copia = {
+                        ...item,
+                        id: undefined,
+                        nome: `${item.nome} (Cópia)`,
+                        nomeAbrev: `${item.nomeAbrev || item.nome} CÓPIA`.slice(0, 45),
+                      }
+                      onAdd(copia)
+                    }}
+                    title="Duplicar / Copiar"
+                    style={{ color: '#0277bd' }}
+                  >
+                    <Copy size={14} />
+                  </button>
                   <button className="icon-btn" onClick={() => setEditingId(item.id)} title="Editar"><Pencil size={14} /></button>
                   <button
                     className="icon-btn red"
@@ -400,13 +416,16 @@ export default function BancoPratos({ store, onOpenFicha }) {
           {/* Modal de Proteína */}
           {modalProteina && (
             <ModalPreparacao
-              titulo={modalProteina === 'new' ? 'Cadastrar Nova Proteína' : 'Editar Proteína'}
+              titulo={modalProteina === 'new' ? 'Cadastrar Nova Proteína' : modalProteina._isCopia ? 'Copiar / Duplicar Proteína' : 'Editar Proteína'}
               initial={modalProteina !== 'new' ? modalProteina : undefined}
               onClose={() => setModalProteina(null)}
               onOpenFicha={onOpenFicha}
               onSave={(data) => {
-                if (modalProteina === 'new') adicionarProteina(data)
-                else editarProteina(modalProteina.id, data)
+                if (modalProteina === 'new' || modalProteina._isCopia || !modalProteina.id) {
+                  adicionarProteina(data)
+                } else {
+                  editarProteina(modalProteina.id, data)
+                }
                 setModalProteina(null)
               }}
             />
@@ -493,7 +512,24 @@ export default function BancoPratos({ store, onOpenFicha }) {
                                 </button>
                               )}
                             </td>
-                            <td style={{ textAlign: 'center' }}>
+                            <td style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
+                              <button
+                                className="icon-btn"
+                                onClick={() => {
+                                  // Abre a modal já preenchida com os dados copiados mas como um novo item
+                                  const copia = {
+                                    ...p,
+                                    id: undefined,
+                                    nome: `${p.nome} (Cópia)`,
+                                    nomeAbrev: `${p.nomeAbrev} CÓPIA`.slice(0, 45),
+                                  }
+                                  setModalProteina(copia)
+                                }}
+                                title="Duplicar / Copiar Prato"
+                                style={{ color: '#0277bd' }}
+                              >
+                                <Copy size={14} />
+                              </button>
                               <button className="icon-btn" onClick={() => setModalProteina(p)} title="Editar"><Pencil size={14} /></button>
                               <button
                                 className="icon-btn red"
@@ -556,13 +592,16 @@ export default function BancoPratos({ store, onOpenFicha }) {
           {modalGuarnicao && (
             <ModalPreparacao
               tipo="guarnicao"
-              titulo={modalGuarnicao === 'new' ? 'Cadastrar Nova Guarnição' : 'Editar Guarnição'}
+              titulo={modalGuarnicao === 'new' ? 'Cadastrar Nova Guarnição' : modalGuarnicao._isCopia ? 'Copiar / Duplicar Guarnição' : 'Editar Guarnição'}
               initial={modalGuarnicao !== 'new' ? modalGuarnicao : undefined}
               onClose={() => setModalGuarnicao(null)}
               onOpenFicha={onOpenFicha}
               onSave={(data) => {
-                if (modalGuarnicao === 'new') adicionarGuarnicao(data)
-                else editarGuarnicao(modalGuarnicao.id, data)
+                if (modalGuarnicao === 'new' || modalGuarnicao._isCopia || !modalGuarnicao.id) {
+                  adicionarGuarnicao(data)
+                } else {
+                  editarGuarnicao(modalGuarnicao.id, data)
+                }
                 setModalGuarnicao(null)
               }}
             />
@@ -638,7 +677,24 @@ export default function BancoPratos({ store, onOpenFicha }) {
                           </button>
                         )}
                       </td>
-                      <td style={{ textAlign: 'center' }}>
+                      <td style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
+                        <button
+                          className="icon-btn"
+                          onClick={() => {
+                            const copia = {
+                              ...g,
+                              id: undefined,
+                              nome: `${g.nome} (Cópia)`,
+                              nomeAbrev: `${g.nomeAbrev} CÓPIA`.slice(0, 45),
+                              _isCopia: true,
+                            }
+                            setModalGuarnicao(copia)
+                          }}
+                          title="Duplicar / Copiar Guarnição"
+                          style={{ color: '#0277bd' }}
+                        >
+                          <Copy size={14} />
+                        </button>
                         <button className="icon-btn" onClick={() => setModalGuarnicao(g)} title="Editar"><Pencil size={14} /></button>
                         <button
                           className="icon-btn red"
