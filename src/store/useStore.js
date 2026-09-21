@@ -103,6 +103,26 @@ function createInitialState() {
   }
 }
 
+function mesclarListasPorId(remoto = [], local = []) {
+  if (!Array.isArray(remoto)) return local || []
+  if (!Array.isArray(local) || local.length === 0) return remoto
+  
+  const map = new Map()
+  for (const item of remoto) {
+    if (!item) continue
+    const chave = (item.id || item.nomeAbrev || item.nome || '').trim().toUpperCase()
+    if (chave) map.set(chave, item)
+  }
+  for (const item of local) {
+    if (!item) continue
+    const chave = (item.id || item.nomeAbrev || item.nome || '').trim().toUpperCase()
+    if (chave && !map.has(chave)) {
+      map.set(chave, item)
+    }
+  }
+  return Array.from(map.values())
+}
+
 export function useStore() {
   const [dbStatus, setDbStatus] = useState('conectando') // 'conectado' | 'salvando' | 'offline'
   const isInitialLoadRef = useRef(true)
@@ -125,7 +145,7 @@ export function useStore() {
     return createInitialState()
   })
 
-  // Sincronização em tempo real com o Firebase Realtime Database
+  // Sincronização em tempo real com o Firebase Cloud Firestore
   useEffect(() => {
     if (!isFirebaseConfigured) {
       setDbStatus('offline')
@@ -135,16 +155,37 @@ export function useStore() {
     const unsubscribe = escutarDadosBD((remoto, exists) => {
       if (exists && remoto) {
         isRemoteUpdateRef.current = true
-        setState(prev => ({
-          proteinas: normalizarProteinas(remoto.proteinas ?? prev.proteinas),
-          leguminosas: remoto.leguminosas ?? prev.leguminosas,
-          guarnicoes: remoto.guarnicoes ?? prev.guarnicoes,
-          saladas: remoto.saladas ?? prev.saladas,
-          insumos: remoto.insumos ?? prev.insumos,
-          fichasTecnicas: remoto.fichasTecnicas ?? prev.fichasTecnicas,
-          cardapios: normalizarCardapios(remoto.cardapios ?? prev.cardapios),
-          rascunhosCardapio: normalizarCardapios(prev.rascunhosCardapio), // rascunhos locais preservados
-        }))
+        setState(prev => {
+          const proteinasMescladas = normalizarProteinas(mesclarListasPorId(remoto.proteinas, prev.proteinas))
+          const guarnicoesMescladas = mesclarListasPorId(remoto.guarnicoes, prev.guarnicoes)
+          const leguminosasMescladas = mesclarListasPorId(remoto.leguminosas, prev.leguminosas)
+          const saladasMescladas = mesclarListasPorId(remoto.saladas, prev.saladas)
+          const fichasMescladas = mesclarListasPorId(remoto.fichasTecnicas, prev.fichasTecnicas)
+          const cardapiosMesclados = { ...(remoto.cardapios || {}), ...(prev.cardapios || {}) }
+
+          // Se no carregamento inicial o navegador tinha pratos criados localmente que não estavam no BD remoto, persiste a mescla
+          if (isInitialLoadRef.current && ((prev.proteinas?.length || 0) > (remoto.proteinas?.length || 0))) {
+            setTimeout(() => {
+              salvarDadosBD({
+                ...remoto,
+                proteinas: proteinasMescladas,
+                guarnicoes: guarnicoesMescladas,
+                cardapios: cardapiosMesclados,
+              })
+            }, 600)
+          }
+
+          return {
+            proteinas: proteinasMescladas,
+            leguminosas: leguminosasMescladas,
+            guarnicoes: guarnicoesMescladas,
+            saladas: saladasMescladas,
+            insumos: remoto.insumos ?? prev.insumos,
+            fichasTecnicas: fichasMescladas,
+            cardapios: normalizarCardapios(cardapiosMesclados),
+            rascunhosCardapio: normalizarCardapios(prev.rascunhosCardapio),
+          }
+        })
         setDbStatus('conectado')
       } else if (!exists && isInitialLoadRef.current) {
         // Se o nó ainda não existe no Firebase, envia o estado inicial/local
