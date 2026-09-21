@@ -390,12 +390,25 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
   }
 
   const handleProteinaSelect = (val) => {
-    const p = proteinas.find(x => x.id === val)
+    if (!val) {
+      onChange({
+        ...r,
+        proteinaId: '',
+        proteinaAbrev: '',
+        proteinaBrandaId: undefined,
+        proteinaBrandaManual: undefined,
+        proteinaPastosaId: undefined,
+        proteinaPastosaManual: undefined,
+        proteinaLiquidaManual: undefined,
+      })
+      return
+    }
+    const p = proteinas.find(x => x && x.id === val)
     onChange({
       ...r,
       proteinaId: val,
-      proteinaAbrev: p?.nomeAbrev || '',
-      // Reseta qualquer trava manual para que Branda, Pastosa e Líquida sigam a nova proteína da Dieta Livre
+      proteinaAbrev: p?.nomeAbrev || p?.nome || '',
+      // Puxa automaticamente as versões branda e pastosa que foram cadastradas no prato escolhido!
       proteinaBrandaId: undefined,
       proteinaBrandaManual: undefined,
       proteinaPastosaId: undefined,
@@ -426,17 +439,29 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
   }
 
   // Derived display values
-  const protNome = prot?.nomeAbrev || ''
-  const protBranda = r.proteinaBrandaManual !== undefined 
-    ? r.proteinaBrandaManual 
-    : (altProtBranda ? (altProtBranda.nomeBranda || altProtBranda.nomeAbrev) : (prot?.nomeBranda || protNome))
+  const protNome = prot?.nomeAbrev || prot?.nome || ''
+  
+  // Se Dieta Livre não tem proteína selecionada, Branda e Pastosa devem ficar em BRANCO (a menos que tenha uma escolha explícita)
+  let protBranda = ''
+  if (r.proteinaBrandaManual !== undefined && r.proteinaBrandaManual !== '') {
+    protBranda = r.proteinaBrandaManual
+  } else if (altProtBranda) {
+    protBranda = altProtBranda.nomeBranda || altProtBranda.nomeAbrev || altProtBranda.nome || ''
+  } else if (prot) {
+    protBranda = prot.nomeBranda || protNome
+  }
 
-  const protPastosa = r.proteinaPastosaManual !== undefined 
-    ? formatarNomePastosa(r.proteinaPastosaManual) 
-    : (altProtPastosa ? formatarNomePastosa(altProtPastosa) : formatarNomePastosa(prot))
+  let protPastosa = ''
+  if (r.proteinaPastosaManual !== undefined && r.proteinaPastosaManual !== '') {
+    protPastosa = formatarNomePastosa(r.proteinaPastosaManual)
+  } else if (altProtPastosa) {
+    protPastosa = formatarNomePastosa(altProtPastosa)
+  } else if (prot) {
+    protPastosa = formatarNomePastosa(prot)
+  }
   
   let protLiquida = ''
-  if (r.proteinaLiquidaManual !== undefined) {
+  if (r.proteinaLiquidaManual !== undefined && r.proteinaLiquidaManual !== '') {
     protLiquida = r.proteinaLiquidaManual
   } else if (prot?.nomeLiquida) {
     protLiquida = prot.nomeLiquida

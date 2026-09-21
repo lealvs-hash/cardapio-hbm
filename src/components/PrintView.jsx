@@ -8,17 +8,27 @@ function deriveData(refeicao, proteinas, leguminosas, guarnicoes = []) {
   const leg   = leguminosas.find(l => l.id === refeicao?.leguminosaId)
   const guard = guarnicoes.find(g => g.id === refeicao?.guarnicaoId)
 
-  const protNome = prot?.nomeAbrev || ''
-  const protBranda = refeicao?.proteinaBrandaManual !== undefined 
-    ? refeicao.proteinaBrandaManual 
-    : (altProtBranda ? (altProtBranda.nomeBranda || altProtBranda.nomeAbrev) : (prot?.nomeBranda || protNome))
+  const protNome = prot?.nomeAbrev || prot?.nome || ''
+  let protBranda = ''
+  if (refeicao?.proteinaBrandaManual !== undefined && refeicao.proteinaBrandaManual !== '') {
+    protBranda = refeicao.proteinaBrandaManual
+  } else if (altProtBranda) {
+    protBranda = altProtBranda.nomeBranda || altProtBranda.nomeAbrev || altProtBranda.nome || ''
+  } else if (prot) {
+    protBranda = prot.nomeBranda || protNome
+  }
 
-  const protPastosa = refeicao?.proteinaPastosaManual !== undefined 
-    ? formatarNomePastosa(refeicao.proteinaPastosaManual) 
-    : (altProtPastosa ? formatarNomePastosa(altProtPastosa) : formatarNomePastosa(prot))
+  let protPastosa = ''
+  if (refeicao?.proteinaPastosaManual !== undefined && refeicao.proteinaPastosaManual !== '') {
+    protPastosa = formatarNomePastosa(refeicao.proteinaPastosaManual)
+  } else if (altProtPastosa) {
+    protPastosa = formatarNomePastosa(altProtPastosa)
+  } else if (prot) {
+    protPastosa = formatarNomePastosa(prot)
+  }
   
   let protLiquida = ''
-  if (refeicao?.proteinaLiquidaManual !== undefined) {
+  if (refeicao?.proteinaLiquidaManual !== undefined && refeicao.proteinaLiquidaManual !== '') {
     protLiquida = refeicao.proteinaLiquidaManual
   } else if (prot?.nomeLiquida) {
     protLiquida = prot.nomeLiquida

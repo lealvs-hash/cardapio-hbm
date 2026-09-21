@@ -53,16 +53,18 @@ function normalizarProteinas(prots = []) {
   if (!Array.isArray(prots)) return []
   return prots
     .filter(p => p && typeof p === 'object')
-    .map(p => {
+    .map((p, idx) => {
+      const id = p.id || `prot_norm_${idx}_${Date.now()}`
       let sufixoPastosa = p.sufixoPastosa || ''
       const baseUpper = (p.nomeAbrev || p.nome || '').toUpperCase()
       const sufUpper = (sufixoPastosa || '').toUpperCase().trim()
       if (sufUpper.includes('MOLHO') && (baseUpper.includes('MOLHO') || baseUpper.includes('SUGO'))) {
         sufixoPastosa = ''
       }
-      const inicial = mapIniciais.get(p.id)
+      const inicial = mapIniciais.get(id)
       return {
         ...p,
+        id,
         sufixoPastosa,
         nomeBranda: p.nomeBranda || inicial?.nomeBranda || p.nomeAbrev || p.nome || '',
         nomePastosa: p.nomePastosa ? limparDuplicidadeMolho(p.nomePastosa) : (inicial?.nomePastosa ? limparDuplicidadeMolho(inicial.nomePastosa) : p.nomePastosa),
@@ -264,16 +266,17 @@ export function useStore() {
   // ──── Proteínas actions ────
 
   const adicionarProteina = useCallback((proteina) => {
+    const id = proteina.id || `custom_p_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
     setState(prev => ({
       ...prev,
-      proteinas: [...prev.proteinas, { id: `custom_p_${Date.now()}`, ...proteina }],
+      proteinas: [...prev.proteinas, { ...proteina, id }],
     }))
   }, [])
 
   const editarProteina = useCallback((id, dados) => {
     setState(prev => ({
       ...prev,
-      proteinas: prev.proteinas.map(p => p.id === id ? { ...p, ...dados } : p),
+      proteinas: prev.proteinas.map(p => p.id === id ? { ...p, ...dados, id } : p),
     }))
   }, [])
 
@@ -303,16 +306,17 @@ export function useStore() {
   // ──── Leguminosas actions ────
 
   const adicionarLeguminosa = useCallback((leg) => {
+    const id = leg.id || `custom_l_${Date.now()}`
     setState(prev => ({
       ...prev,
-      leguminosas: [...prev.leguminosas, { id: `custom_l_${Date.now()}`, ...leg }],
+      leguminosas: [...prev.leguminosas, { ...leg, id }],
     }))
   }, [])
 
   const editarLeguminosa = useCallback((id, dados) => {
     setState(prev => ({
       ...prev,
-      leguminosas: prev.leguminosas.map(l => l.id === id ? { ...l, ...dados } : l),
+      leguminosas: prev.leguminosas.map(l => l.id === id ? { ...l, ...dados, id } : l),
     }))
   }, [])
 
@@ -326,16 +330,17 @@ export function useStore() {
   // ──── Guarnições actions ────
 
   const adicionarGuarnicao = useCallback((g) => {
+    const id = g.id || `custom_g_${Date.now()}`
     setState(prev => ({
       ...prev,
-      guarnicoes: [...prev.guarnicoes, { id: `custom_g_${Date.now()}`, ...g }],
+      guarnicoes: [...prev.guarnicoes, { ...g, id }],
     }))
   }, [])
 
   const editarGuarnicao = useCallback((id, dados) => {
     setState(prev => ({
       ...prev,
-      guarnicoes: prev.guarnicoes.map(g => g.id === id ? { ...g, ...dados } : g),
+      guarnicoes: prev.guarnicoes.map(g => g.id === id ? { ...g, ...dados, id } : g),
     }))
   }, [])
 

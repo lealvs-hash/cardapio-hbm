@@ -23,8 +23,10 @@ export default function DishSelectDropdown({
   const dropdownRef = useRef(null)
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 320, openUp: false })
 
-  // Encontra o item atualmente selecionado
-  const selectedItem = options.find(o => o.id === value)
+  // Encontra o item atualmente selecionado (apenas se value for válido e não vazio)
+  const selectedItem = (value !== undefined && value !== null && value !== '')
+    ? options.find(o => o && o.id && o.id === value)
+    : null
 
   // Texto a ser exibido no botão gatilho
   let triggerText = placeholder
@@ -32,8 +34,8 @@ export default function DishSelectDropdown({
 
   if (selectedItem) {
     triggerText = formatOptionName ? formatOptionName(selectedItem) : (selectedItem.nomeAbrev || selectedItem.nome)
-  } else if (defaultLabel) {
-    triggerText = defaultLabel
+  } else if (defaultLabel && typeof defaultLabel === 'string' && defaultLabel.trim()) {
+    triggerText = defaultLabel.trim()
     isDefault = true
   }
 
