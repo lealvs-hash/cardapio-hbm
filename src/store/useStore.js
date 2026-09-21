@@ -15,34 +15,56 @@ import {
 import { limparDuplicidadeMolho } from '../utils/formatUtils'
 
 const STORAGE_KEY = 'hbm_cardapios_v1'
+const BACKUP_KEY = 'hbm_cardapios_backup_v1'
 
 function loadFromStorage() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) return JSON.parse(raw)
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      if (parsed && typeof parsed === 'object') return parsed
+    }
   } catch (e) {
-    console.warn('Erro ao carregar dados:', e)
+    console.warn('Erro ao carregar dados principais:', e)
   }
+
+  // Se o dado principal não estiver presente ou falhar, tenta restaurar o backup automático
+  try {
+    const backupRaw = localStorage.getItem(BACKUP_KEY)
+    if (backupRaw) {
+      const parsedBackup = JSON.parse(backupRaw)
+      if (parsedBackup && typeof parsedBackup === 'object') {
+        console.info('🛡️ Restaurando dados a partir do backup automático local.')
+        return parsedBackup
+      }
+    }
+  } catch (e) {
+    console.warn('Erro ao carregar backup:', e)
+  }
+
   return null
 }
 
 const PADRAO_LIQUIDA_PROTEINA = 'CARNE COM CALDO/MOLHO LIQUIDIFICADA'
 
 function normalizarProteinas(prots = []) {
-  return prots.map(p => {
-    let sufixoPastosa = p.sufixoPastosa
-    const baseUpper = (p.nomeAbrev || p.nome || '').toUpperCase()
-    const sufUpper = (sufixoPastosa || '').toUpperCase().trim()
-    if (sufUpper.includes('MOLHO') && (baseUpper.includes('MOLHO') || baseUpper.includes('SUGO'))) {
-      sufixoPastosa = ''
-    }
-    return {
-      ...p,
-      sufixoPastosa,
-      nomePastosa: p.nomePastosa ? limparDuplicidadeMolho(p.nomePastosa) : p.nomePastosa,
-      nomeLiquida: p.nomeLiquida !== undefined && p.nomeLiquida !== '' ? p.nomeLiquida : PADRAO_LIQUIDA_PROTEINA,
-    }
-  })
+  if (!Array.isArray(prots)) return []
+  return prots
+    .filter(p => p && typeof p === 'object')
+    .map(p => {
+      let sufixoPastosa = p.sufixoPastosa || ''
+      const baseUpper = (p.nomeAbrev || p.nome || '').toUpperCase()
+      const sufUpper = (sufixoPastosa || '').toUpperCase().trim()
+      if (sufUpper.includes('MOLHO') && (baseUpper.includes('MOLHO') || baseUpper.includes('SUGO'))) {
+        sufixoPastosa = ''
+      }
+      return {
+        ...p,
+        sufixoPastosa,
+        nomePastosa: p.nomePastosa ? limparDuplicidadeMolho(p.nomePastosa) : p.nomePastosa,
+        nomeLiquida: p.nomeLiquida !== undefined && p.nomeLiquida !== '' ? p.nomeLiquida : PADRAO_LIQUIDA_PROTEINA,
+      }
+    })
 }
 
 function normalizarCardapios(cardapios = {}) {
@@ -118,6 +140,10 @@ export function useStore() {
   // Persistir no localStorage e no Firestore a cada alteração
   useEffect(() => {
     try {
+      const currentRaw = localStorage.getItem(STORAGE_KEY)
+      if (currentRaw) {
+        localStorage.setItem(BACKUP_KEY, currentRaw)
+      }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
     } catch (e) {
       console.warn('Erro ao salvar dados localmente:', e)
@@ -323,13 +349,14 @@ export function useStore() {
         try {
           const imported = JSON.parse(e.target.result)
           setState({
-            proteinas: imported.proteinas ?? PROTEINAS_INICIAIS,
+            proteinas: normalizarProteinas(imported.proteinas ?? PROTEINAS_INICIAIS),
             leguminosas: imported.leguminosas ?? LEGUMINOSAS_INICIAIS,
             guarnicoes: imported.guarnicoes ?? GUARNICOES_INICIAIS,
             saladas: imported.saladas ?? SALADAS_INICIAIS,
             insumos: imported.insumos ?? INSUMOS_INICIAIS,
             fichasTecnicas: imported.fichasTecnicas ?? FICHAS_TECNICAS_INICIAIS,
-            cardapios: imported.cardapios ?? {},
+            cardapios: normalizarCardapios(imported.cardapios ?? {}),
+            rascunhosCardapio: normalizarCardapios(imported.rascunhosCardapio ?? {}),
           })
           resolve()
         } catch (err) {
