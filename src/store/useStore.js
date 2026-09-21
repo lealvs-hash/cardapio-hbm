@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import {
   PROTEINAS_INICIAIS,
   LEGUMINOSAS_INICIAIS,
@@ -8,8 +8,8 @@ import {
   FICHAS_TECNICAS_INICIAIS,
 } from '../data/initialData'
 import {
-  salvarDocumentoFirestore,
-  escutarDocumentoFirestore,
+  salvarDadosBD,
+  escutarDadosBD,
   isFirebaseConfigured,
 } from '../services/firebase'
 import { limparDuplicidadeMolho } from '../utils/formatUtils'
@@ -100,6 +100,10 @@ function createInitialState() {
 }
 
 export function useStore() {
+  const [dbStatus, setDbStatus] = useState('conectando') // 'conectado' | 'salvando' | 'offline'
+  const isInitialLoadRef = useRef(true)
+  const isRemoteUpdateRef = useRef(false)
+
   const [state, setState] = useState(() => {
     const saved = loadFromStorage()
     if (saved) {
@@ -117,11 +121,16 @@ export function useStore() {
     return createInitialState()
   })
 
-  // Sincronização em tempo real com o Firestore (quando ativado no .env.local)
+  // Sincronização em tempo real com o Firebase Realtime Database
   useEffect(() => {
-    if (!isFirebaseConfigured) return
-    const unsubscribe = escutarDocumentoFirestore('hbm_dados', 'sistema', (remoto) => {
-      if (remoto) {
+    if (!isFirebaseConfigured) {
+      setDbStatus('offline')
+      return
+    }
+
+    const unsubscribe = escutarDadosBD((remoto, exists) => {
+      if (exists && remoto) {
+        isRemoteUpdateRef.current = true
         setState(prev => ({
           proteinas: normalizarProteinas(remoto.proteinas ?? prev.proteinas),
           leguminosas: remoto.leguminosas ?? prev.leguminosas,
@@ -132,12 +141,20 @@ export function useStore() {
           cardapios: normalizarCardapios(remoto.cardapios ?? prev.cardapios),
           rascunhosCardapio: normalizarCardapios(prev.rascunhosCardapio), // rascunhos locais preservados
         }))
+        setDbStatus('conectado')
+      } else if (!exists && isInitialLoadRef.current) {
+        // Se o nó ainda não existe no Firebase, envia o estado inicial/local
+        salvarDadosBD(state).then(ok => {
+          if (ok) setDbStatus('conectado')
+        })
       }
+      isInitialLoadRef.current = false
     })
+
     return () => unsubscribe && unsubscribe()
   }, [])
 
-  // Persistir no localStorage e no Firestore a cada alteração
+  // Persistir no localStorage e no Firebase Realtime Database a cada alteração
   useEffect(() => {
     try {
       const currentRaw = localStorage.getItem(STORAGE_KEY)
@@ -149,8 +166,19 @@ export function useStore() {
       console.warn('Erro ao salvar dados localmente:', e)
     }
 
-    if (isFirebaseConfigured) {
-      salvarDocumentoFirestore('hbm_dados', 'sistema', state)
+    if (isRemoteUpdateRef.current) {
+      isRemoteUpdateRef.current = false
+      return
+    }
+
+    if (isFirebaseConfigured && !isInitialLoadRef.current) {
+      setDbStatus('salvando')
+      const timer = setTimeout(() => {
+        salvarDadosBD(state).then(ok => {
+          if (ok) setDbStatus('conectado')
+        })
+      }, 350)
+      return () => clearTimeout(timer)
     }
   }, [state])
 
@@ -405,6 +433,8 @@ export function useStore() {
     exportarDados,
     importarDados,
     resetarDados,
+    // Status do Banco de Dados
+    dbStatus,
   }
 }
 

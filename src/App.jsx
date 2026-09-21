@@ -104,6 +104,7 @@ export default function App() {
         exportarDados={store.exportarDados}
         importarDados={store.importarDados}
         resetarDados={store.resetarDados}
+        dbStatus={store.dbStatus}
       />
       <main className="main-content">
         {activePage === 'cardapio' && (
