@@ -1,15 +1,15 @@
-// Serviço de integração com o Firebase Realtime Database
+// Serviço de integração com o Firebase Firestore
 import { initializeApp } from 'firebase/app'
-import { getDatabase, ref, set, onValue, get } from 'firebase/database'
+import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'firebase/firestore'
 
+// Configuração do Firebase dedicada ao projeto cardapio-hbm
 const firebaseConfig = {
-  apiKey: 'AIzaSyA5Q9EpYeCSC6Kv3zqDfjZ82N_BTwoaBcg',
-  authDomain: 'dietas-hospital-brigada.firebaseapp.com',
-  projectId: 'dietas-hospital-brigada',
-  storageBucket: 'dietas-hospital-brigada.firebasestorage.app',
-  messagingSenderId: '1073488384765',
-  appId: '1:1073488384765:web:7683434699089bd5d4a494',
-  databaseURL: 'https://dietas-hospital-brigada-default-rtdb.firebaseio.com',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'AIzaSyDUG1_6EaPjgudwLziskTj_TB5gdvQV0pQ',
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'cardapio-hbm.firebaseapp.com',
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'cardapio-hbm',
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'cardapio-hbm.firebasestorage.app',
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '109930712177',
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:109930712177:web:ce125d8f05fdb01644c5d0',
 }
 
 let app = null
@@ -18,69 +18,70 @@ let isFirebaseConfigured = false
 
 try {
   app = initializeApp(firebaseConfig)
-  db = getDatabase(app)
+  db = getFirestore(app)
   isFirebaseConfigured = true
-  console.log('🔥 Firebase Realtime Database conectado com sucesso ao projeto:', firebaseConfig.projectId)
+  console.log('🔥 Firebase Firestore conectado com sucesso ao projeto:', firebaseConfig.projectId)
 } catch (err) {
-  console.warn('⚠️ Erro ao inicializar Firebase Realtime Database:', err)
+  console.warn('⚠️ Erro ao inicializar Firebase Firestore:', err)
 }
 
-const DB_NODE = 'hbm_cardapios_app'
+const COLECAO = 'hbm_dados'
+const DOC_ID = 'sistema'
 
 /**
- * Salva os dados no nó principal do Firebase Realtime Database
+ * Salva os dados no documento principal do Firestore
  */
 export async function salvarDadosBD(dados) {
   if (!db || !isFirebaseConfigured) return false
   try {
-    const dbRef = ref(db, DB_NODE)
-    // Sanitização para remover valores undefined que o Firebase rejeita
+    const docRef = doc(db, COLECAO, DOC_ID)
+    // Sanitização para remover valores undefined que o Firestore rejeita
     const payload = JSON.parse(JSON.stringify(dados))
-    await set(dbRef, payload)
+    await setDoc(docRef, payload, { merge: true })
     return true
   } catch (e) {
-    console.warn('⚠️ Erro ao salvar dados no Firebase BD:', e)
+    console.warn('⚠️ Erro ao salvar dados no Firestore:', e)
     return false
   }
 }
 
 /**
- * Escuta atualizações em tempo real do nó principal do Firebase
+ * Escuta atualizações em tempo real do documento principal do Firestore
  */
 export function escutarDadosBD(onData) {
   if (!db || !isFirebaseConfigured) return () => {}
   try {
-    const dbRef = ref(db, DB_NODE)
-    return onValue(
-      dbRef,
+    const docRef = doc(db, COLECAO, DOC_ID)
+    return onSnapshot(
+      docRef,
       (snapshot) => {
         if (snapshot.exists()) {
-          onData(snapshot.val(), true)
+          onData(snapshot.data(), true)
         } else {
           onData(null, false)
         }
       },
       (err) => {
-        console.warn('⚠️ Erro na sincronização em tempo real do Firebase:', err)
+        console.warn('⚠️ Erro na sincronização em tempo real do Firestore:', err)
       }
     )
   } catch (e) {
-    console.warn('⚠️ Erro ao conectar listener do Firebase:', e)
+    console.warn('⚠️ Erro ao conectar listener do Firestore:', e)
     return () => {}
   }
 }
 
 /**
- * Carrega dados uma única vez do Firebase
+ * Carrega dados uma única vez do Firestore
  */
 export async function carregarDadosBD() {
   if (!db || !isFirebaseConfigured) return null
   try {
-    const dbRef = ref(db, DB_NODE)
-    const snap = await get(dbRef)
-    if (snap.exists()) return snap.val()
+    const docRef = doc(db, COLECAO, DOC_ID)
+    const snap = await getDoc(docRef)
+    if (snap.exists()) return snap.data()
   } catch (e) {
-    console.warn('⚠️ Erro ao carregar dados do Firebase:', e)
+    console.warn('⚠️ Erro ao carregar dados do Firestore:', e)
   }
   return null
 }

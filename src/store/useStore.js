@@ -47,6 +47,8 @@ function loadFromStorage() {
 
 const PADRAO_LIQUIDA_PROTEINA = 'CARNE COM CALDO/MOLHO LIQUIDIFICADA'
 
+const mapIniciais = new Map(PROTEINAS_INICIAIS.map(item => [item.id, item]))
+
 function normalizarProteinas(prots = []) {
   if (!Array.isArray(prots)) return []
   return prots
@@ -58,10 +60,12 @@ function normalizarProteinas(prots = []) {
       if (sufUpper.includes('MOLHO') && (baseUpper.includes('MOLHO') || baseUpper.includes('SUGO'))) {
         sufixoPastosa = ''
       }
+      const inicial = mapIniciais.get(p.id)
       return {
         ...p,
         sufixoPastosa,
-        nomePastosa: p.nomePastosa ? limparDuplicidadeMolho(p.nomePastosa) : p.nomePastosa,
+        nomeBranda: p.nomeBranda || inicial?.nomeBranda || p.nomeAbrev || p.nome || '',
+        nomePastosa: p.nomePastosa ? limparDuplicidadeMolho(p.nomePastosa) : (inicial?.nomePastosa ? limparDuplicidadeMolho(inicial.nomePastosa) : p.nomePastosa),
         nomeLiquida: p.nomeLiquida !== undefined && p.nomeLiquida !== '' ? p.nomeLiquida : PADRAO_LIQUIDA_PROTEINA,
       }
     })
