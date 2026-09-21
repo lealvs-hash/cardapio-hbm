@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Plus, Pencil, Trash2, X, Check, FileText, ChevronDown, Filter, Search, Copy } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, Check, FileText, ChevronDown, Filter, Search, Copy, GripVertical } from 'lucide-react'
 import { formatarNomePastosa } from '../utils/formatUtils'
 
 // ── Modal for creating/editing a dish with consistency options and ficha técnica ──
@@ -330,9 +330,9 @@ const GRUPOS_CARNES = [
 export default function BancoPratos({ store, onOpenFicha }) {
   const {
     state,
-    adicionarProteina, editarProteina, excluirProteina,
+    adicionarProteina, editarProteina, excluirProteina, moverProteina,
     adicionarLeguminosa, editarLeguminosa, excluirLeguminosa,
-    adicionarGuarnicao, editarGuarnicao, excluirGuarnicao,
+    adicionarGuarnicao, editarGuarnicao, excluirGuarnicao, moverGuarnicao,
     adicionarSalada, editarSalada, excluirSalada,
   } = store
 
@@ -343,6 +343,10 @@ export default function BancoPratos({ store, onOpenFicha }) {
   // Sub-filtro dentro de Proteínas (Bovina, Frango, Suíno, Peixe, Todos)
   const [subGrupoCarne, setSubGrupoCarne] = useState('TODOS')
   const [busca, setBusca] = useState('')
+
+  // Estado para Reordenação Drag & Drop (quadradinhos de puxar)
+  const [draggedId, setDraggedId] = useState(null)
+  const [dragOverId, setDragOverId] = useState(null)
 
   // Modal de Proteína e Guarnição
   const [modalProteina, setModalProteina] = useState(null) // null | 'new' | item
@@ -480,6 +484,7 @@ export default function BancoPratos({ store, onOpenFicha }) {
                   <table className="banco-table">
                     <thead>
                       <tr>
+                        <th style={{ width: '38px', textAlign: 'center' }} title="Segurar e puxar para reordenar"></th>
                         <th style={{ width: '32%' }}>Nome do Prato (DL e DM)</th>
                         <th style={{ width: '22%' }}>Opção Branda</th>
                         <th style={{ width: '22%' }}>Opção Pastosa</th>
@@ -491,8 +496,53 @@ export default function BancoPratos({ store, onOpenFicha }) {
                       {itensCat.map(p => {
                         const ficha = getFichaDoPrato(p, fichasTecnicas)
                         const custo = calcularCustoPorcao(ficha)
+                        const isDragging = draggedId === p.id
+                        const isOver = dragOverId === p.id && !isDragging
+
                         return (
-                          <tr key={p.id}>
+                          <tr
+                            key={p.id}
+                            onDragOver={(e) => {
+                              e.preventDefault()
+                              e.dataTransfer.dropEffect = 'move'
+                              if (dragOverId !== p.id) setDragOverId(p.id)
+                            }}
+                            onDragLeave={() => {
+                              if (dragOverId === p.id) setDragOverId(null)
+                            }}
+                            onDrop={(e) => {
+                              e.preventDefault()
+                              if (draggedId && draggedId !== p.id) {
+                                moverProteina(draggedId, p.id)
+                              }
+                              setDraggedId(null)
+                              setDragOverId(null)
+                            }}
+                            style={{
+                              opacity: isDragging ? 0.35 : 1,
+                              background: isOver ? '#e3f2fd' : undefined,
+                              borderTop: isOver ? '2px solid #1976d2' : undefined,
+                              transition: 'background 0.15s ease, opacity 0.15s ease',
+                            }}
+                          >
+                            <td className="drag-handle-cell">
+                              <div
+                                draggable
+                                onDragStart={(e) => {
+                                  setDraggedId(p.id)
+                                  e.dataTransfer.effectAllowed = 'move'
+                                  e.dataTransfer.setData('text/plain', p.id)
+                                }}
+                                onDragEnd={() => {
+                                  setDraggedId(null)
+                                  setDragOverId(null)
+                                }}
+                                className="drag-grip-handle"
+                                title="Segure e arraste para cima ou para baixo para reordenar o prato"
+                              >
+                                <GripVertical size={16} />
+                              </div>
+                            </td>
                             <td style={{ fontWeight: 700, color: '#0d47a1' }}>{p.nomeAbrev || p.nome}</td>
                             <td className="mono" style={{ color: '#2e7d32' }}>{p.nomeBranda || p.nomeAbrev || p.nome}</td>
                             <td className="mono" style={{ color: '#e65100' }}>{formatarNomePastosa(p)}</td>
@@ -643,6 +693,7 @@ export default function BancoPratos({ store, onOpenFicha }) {
             <table className="banco-table">
               <thead>
                 <tr>
+                  <th style={{ width: '38px', textAlign: 'center' }} title="Segurar e puxar para reordenar"></th>
                   <th style={{ width: '32%' }}>Nome da Guarnição (DL e DM)</th>
                   <th style={{ width: '22%' }}>Opção Branda</th>
                   <th style={{ width: '22%' }}>Opção Pastosa</th>
@@ -654,8 +705,53 @@ export default function BancoPratos({ store, onOpenFicha }) {
                 {guarnicoes.map(g => {
                   const ficha = getFichaDoPrato(g, fichasTecnicas)
                   const custo = calcularCustoPorcao(ficha)
+                  const isDragging = draggedId === g.id
+                  const isOver = dragOverId === g.id && !isDragging
+
                   return (
-                    <tr key={g.id}>
+                    <tr
+                      key={g.id}
+                      onDragOver={(e) => {
+                        e.preventDefault()
+                        e.dataTransfer.dropEffect = 'move'
+                        if (dragOverId !== g.id) setDragOverId(g.id)
+                      }}
+                      onDragLeave={() => {
+                        if (dragOverId === g.id) setDragOverId(null)
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault()
+                        if (draggedId && draggedId !== g.id) {
+                          moverGuarnicao(draggedId, g.id)
+                        }
+                        setDraggedId(null)
+                        setDragOverId(null)
+                      }}
+                      style={{
+                        opacity: isDragging ? 0.35 : 1,
+                        background: isOver ? '#e3f2fd' : undefined,
+                        borderTop: isOver ? '2px solid #1976d2' : undefined,
+                        transition: 'background 0.15s ease, opacity 0.15s ease',
+                      }}
+                    >
+                      <td className="drag-handle-cell">
+                        <div
+                          draggable
+                          onDragStart={(e) => {
+                            setDraggedId(g.id)
+                            e.dataTransfer.effectAllowed = 'move'
+                            e.dataTransfer.setData('text/plain', g.id)
+                          }}
+                          onDragEnd={() => {
+                            setDraggedId(null)
+                            setDragOverId(null)
+                          }}
+                          className="drag-grip-handle"
+                          title="Segure e arraste para cima ou para baixo para reordenar a guarnição"
+                        >
+                          <GripVertical size={16} />
+                        </div>
+                      </td>
                       <td style={{ fontWeight: 700, color: '#0d47a1' }}>{g.nomeAbrev || g.nome}</td>
                       <td className="mono" style={{ color: '#2e7d32' }}>{g.nomeBranda || g.nomeAbrev || g.nome}</td>
                       <td className="mono" style={{ color: '#e65100' }}>{g.nomePastosa || '—'}</td>

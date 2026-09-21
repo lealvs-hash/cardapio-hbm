@@ -243,6 +243,22 @@ export function useStore() {
     }))
   }, [])
 
+  const moverProteina = useCallback((origemId, destinoId) => {
+    if (!origemId || !destinoId || origemId === destinoId) return
+    setState(prev => {
+      const list = [...prev.proteinas]
+      const fromIndex = list.findIndex(p => p.id === origemId)
+      const toIndex = list.findIndex(p => p.id === destinoId)
+      if (fromIndex === -1 || toIndex === -1) return prev
+      const [item] = list.splice(fromIndex, 1)
+      list.splice(toIndex, 0, item)
+      return {
+        ...prev,
+        proteinas: list,
+      }
+    })
+  }, [])
+
   // ──── Leguminosas actions ────
 
   const adicionarLeguminosa = useCallback((leg) => {
@@ -287,6 +303,22 @@ export function useStore() {
       ...prev,
       guarnicoes: prev.guarnicoes.filter(g => g.id !== id),
     }))
+  }, [])
+
+  const moverGuarnicao = useCallback((origemId, destinoId) => {
+    if (!origemId || !destinoId || origemId === destinoId) return
+    setState(prev => {
+      const list = [...prev.guarnicoes]
+      const fromIndex = list.findIndex(g => g.id === origemId)
+      const toIndex = list.findIndex(g => g.id === destinoId)
+      if (fromIndex === -1 || toIndex === -1) return prev
+      const [item] = list.splice(fromIndex, 1)
+      list.splice(toIndex, 0, item)
+      return {
+        ...prev,
+        guarnicoes: list,
+      }
+    })
   }, [])
 
   // ──── Saladas actions ────
@@ -414,6 +446,7 @@ export function useStore() {
     adicionarProteina,
     editarProteina,
     excluirProteina,
+    moverProteina,
     // Leguminosas
     adicionarLeguminosa,
     editarLeguminosa,
@@ -422,6 +455,7 @@ export function useStore() {
     adicionarGuarnicao,
     editarGuarnicao,
     excluirGuarnicao,
+    moverGuarnicao,
     // Saladas
     adicionarSalada,
     editarSalada,

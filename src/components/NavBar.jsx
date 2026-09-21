@@ -70,7 +70,7 @@ export default function NavBar({ activePage, setActivePage, exportarDados, impor
             border: `1px solid ${dbStatus === 'conectado' ? '#a5d6a7' : dbStatus === 'salvando' ? '#ffe082' : '#e0e0e0'}`,
             marginRight: 4,
           }}
-          title="Status da conexão em tempo real com o banco de dados Firebase (dietas-hospital-brigada)"
+          title="Conexão ativa e em tempo real com o Cloud Firestore (projeto: cardapio-hbm)"
         >
           <span
             style={{
@@ -82,7 +82,7 @@ export default function NavBar({ activePage, setActivePage, exportarDados, impor
             }}
           />
           <span>
-            {dbStatus === 'conectado' ? 'BD Conectado' : dbStatus === 'salvando' ? 'Gravando no BD...' : dbStatus === 'conectando' ? 'Conectando...' : 'Modo Local'}
+            {dbStatus === 'conectado' ? 'BD Conectado (cardapio-hbm)' : dbStatus === 'salvando' ? 'Gravando no BD...' : dbStatus === 'conectando' ? 'Conectando...' : 'Modo Local'}
           </span>
         </div>
 
