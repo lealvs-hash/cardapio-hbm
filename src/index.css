@@ -660,7 +660,7 @@ html, body {
 @media print {
   @page {
     size: A4 landscape;
-    margin: 7mm 8mm;
+    margin: 6mm 8mm;
   }
 
   html, body {
@@ -668,6 +668,7 @@ html, body {
     font-size: 10pt;
     margin: 0 !important;
     padding: 0 !important;
+    width: 100% !important;
   }
 
   .no-print  { display: none !important; }
@@ -681,40 +682,49 @@ html, body {
     print-color-adjust: exact !important;
   }
 
+  /* ══════════════════════════════════════════════════════
+     CARDÁPIO DO DIA — PREENCHIMENTO COMPLETO DA FOLHA A4
+     Ocupa toda a folha paisagem, com pequena margem (6mm/8mm)
+     ══════════════════════════════════════════════════════ */
   .print-area {
     width: 100% !important;
     max-width: 100% !important;
+    height: 196mm !important;
+    min-height: 196mm !important;
+    max-height: 196mm !important;
     display: flex !important;
     flex-direction: column !important;
-    justify-content: flex-start !important;
-    height: auto !important;
-    min-height: auto !important;
+    justify-content: space-between !important;
+    box-sizing: border-box !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
-    box-sizing: border-box !important;
+    margin: 0 auto !important;
   }
 
   .print-header {
-    font-size: 13pt !important;
+    font-size: 14pt !important;
     padding-bottom: 2px !important;
-    margin-bottom: 3px !important;
-    height: auto !important;
-    min-height: 7mm !important;
+    margin-bottom: 2px !important;
+    height: 9mm !important;
     display: flex !important;
     align-items: center !important;
-    border-bottom: 2px solid #000 !important;
+    border-bottom: 2.5px solid #000 !important;
     box-sizing: border-box !important;
+    flex-shrink: 0 !important;
   }
-  .ph-cardapio { font-size: 14pt !important; }
-  .ph-dia { font-size: 13pt !important; }
-  .ph-data { font-size: 12pt !important; }
-  .ph-logo { font-size: 8.5pt !important; }
+  .ph-cardapio { font-size: 16pt !important; font-weight: 900 !important; color: #0D47A1 !important; }
+  .ph-dia { font-size: 15pt !important; font-weight: 700 !important; }
+  .ph-data { font-size: 13.5pt !important; font-weight: 600 !important; }
+  .ph-logo { font-size: 9.5pt !important; }
 
-  /* ── Espaçamento entre Almoço e Jantar ── */
+  /* ── Blocos de Refeição ── */
   .meal-block {
-    margin-bottom: 3.5mm !important;
+    margin-bottom: 4mm !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
   .meal-block:last-of-type {
     margin-bottom: 0 !important;
@@ -725,21 +735,22 @@ html, body {
     border-collapse: collapse !important;
     table-layout: fixed !important;
     box-sizing: border-box !important;
+    flex: 1 1 auto !important;
   }
 
   .cardapio-table thead tr {
-    height: 18pt !important;
+    height: 22pt !important;
   }
   .cardapio-table tbody tr {
-    height: 35pt !important;
-    max-height: 39pt !important;
+    height: 45pt !important;
+    max-height: 48pt !important;
   }
 
   .col-label-header {
     width: 12% !important;
-    font-size: 9pt !important;
+    font-size: 9.5pt !important;
     font-weight: 900 !important;
-    padding: 2px 2px !important;
+    padding: 3px 2px !important;
     letter-spacing: 0.3px !important;
     background: #e0e0e0 !important;
     color: #000 !important;
@@ -747,45 +758,45 @@ html, body {
     box-sizing: border-box !important;
   }
   .col-diet-header {
-    font-size: 8.5pt !important;
-    padding: 2px 2px !important;
+    font-size: 9pt !important;
+    padding: 3px 2px !important;
     background: #e0e0e0 !important;
     color: #000 !important;
     border: 1.5px solid #000 !important;
     box-sizing: border-box !important;
   }
   .th-diet {
-    font-size: 8.5pt !important;
+    font-size: 9.5pt !important;
     font-weight: 900 !important;
     color: #000 !important;
   }
 
   /* ── Apenas a coluna de ALMOÇO e JANTAR (rótulos à esquerda) fica cinza clara ── */
   .row-label-cell {
-    padding: 2px 3px !important;
+    padding: 3px 3px !important;
     background: #eeeeee !important;
     color: #000 !important;
     border: 1.5px solid #000 !important;
     box-sizing: border-box !important;
   }
   .row-label-main {
-    font-size: 7.5pt !important;
+    font-size: 8.5pt !important;
     font-weight: 900 !important;
     letter-spacing: 0.2px !important;
     color: #000 !important;
   }
   .row-label-sub {
-    font-size: 6.5pt !important;
+    font-size: 7pt !important;
     font-weight: 700 !important;
     color: #333 !important;
   }
 
-  /* ── Células de dados das dietas em fundo branco para impressão P&B limpa ── */
+  /* ── Células de dados das dietas com fontes grandes e legíveis ── */
   .cardapio-td {
-    font-size: 8.5pt !important;
+    font-size: 9.5pt !important;
     font-weight: 800 !important;
-    padding: 3px 3px !important;
-    line-height: 1.2 !important;
+    padding: 4px 4px !important;
+    line-height: 1.25 !important;
     background: #ffffff !important;
     color: #000 !important;
     border: 1.5px solid #000 !important;
@@ -799,58 +810,75 @@ html, body {
   .edit-cell::after { content: attr(data-print-val); }
 
   .print-obs {
-    font-size: 8pt !important;
+    font-size: 8.5pt !important;
+    font-weight: bold !important;
     padding-top: 3px !important;
-    margin-top: 3px !important;
-    height: auto !important;
-    min-height: 6mm !important;
+    margin-top: 2px !important;
+    height: 8mm !important;
     display: flex !important;
     align-items: center !important;
     border-top: 1.5px solid #000 !important;
     box-sizing: border-box !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+    flex-shrink: 0 !important;
   }
 
-  /* ── Print styling for Ficha Técnica ── */
+  /* ══════════════════════════════════════════════════════
+     FICHA TÉCNICA — EXPANSÃO HORIZONTAL COM CRESCIMENTO
+     VERTICAL DINÂMICO CONFORME INGREDIENTES E PREPARO
+     Não ocupa toda a folha forçadamente; expande na largura
+     e cresce na altura conforme a quantidade de conteúdo
+     ══════════════════════════════════════════════════════ */
   .ficha-tecnica-doc {
     box-shadow: none !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
     width: 100% !important;
     max-width: 100% !important;
     padding: 0 !important;
     border: none !important;
     box-sizing: border-box !important;
+    height: auto !important;
+    min-height: auto !important;
     page-break-inside: auto !important;
   }
 
   .ficha-header-grid {
-    grid-template-columns: 1fr 180px !important;
+    grid-template-columns: 1fr 200px !important;
     box-sizing: border-box !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   .ficha-photo-box {
-    min-height: 90px !important;
+    min-height: 100px !important;
     padding: 4px !important;
     box-sizing: border-box !important;
   }
 
   .ficha-photo-box img {
-    max-height: 100px !important;
-    object-fit: contain !important;
+    max-height: 110px !important;
+    object-fit: cover !important;
   }
 
   .ficha-tecnica-doc table {
     width: 100% !important;
     border-collapse: collapse !important;
     table-layout: fixed !important;
-    font-size: 8pt !important;
+    font-size: 8.5pt !important;
     box-sizing: border-box !important;
   }
 
-  .ficha-tecnica-doc th,
+  .ficha-tecnica-doc th {
+    padding: 5px 3px !important;
+    font-size: 8.5pt !important;
+    font-weight: 800 !important;
+    box-sizing: border-box !important;
+  }
+
   .ficha-tecnica-doc td {
-    padding: 3px 2px !important;
+    padding: 4px 3px !important;
+    font-size: 8.5pt !important;
     box-sizing: border-box !important;
     word-break: break-word !important;
   }
@@ -861,25 +889,24 @@ html, body {
   }
 
   .ficha-total-row {
-    padding: 4px 10px !important;
-    font-size: 9pt !important;
+    padding: 5px 12px !important;
+    font-size: 9.5pt !important;
     box-sizing: border-box !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
 
   .ficha-prep-box {
-    padding: 6px 8px !important;
-    font-size: 8.5pt !important;
-    line-height: 1.3 !important;
+    padding: 8px 10px !important;
+    font-size: 9pt !important;
+    line-height: 1.4 !important;
     box-sizing: border-box !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
+    page-break-inside: auto !important;
   }
 
   .ficha-footer-grid {
-    padding: 4px 6px !important;
-    font-size: 9pt !important;
+    padding: 6px 8px !important;
+    font-size: 9.5pt !important;
     box-sizing: border-box !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
