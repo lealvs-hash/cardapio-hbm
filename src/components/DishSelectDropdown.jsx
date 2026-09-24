@@ -16,6 +16,7 @@ export default function DishSelectDropdown({
   formatOptionSecondary,
   title = '',
   style = {},
+  allowBlank = false,
 }) {
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -325,7 +326,7 @@ export default function DishSelectDropdown({
             fontFamily: 'inherit',
           }}
         >
-          {/* Cabeçalho de Ações: + NOVO PRATO e Limpar */}
+          {/* Cabeçalho de Ações: + NOVO PRATO, Padrão/Limpar e opcionalmente Em Branco */}
           <div style={{
             padding: '6px 8px',
             background: '#f8fafc',
@@ -359,6 +360,32 @@ export default function DishSelectDropdown({
                 }}
               >
                 <Plus size={14} /> + NOVO PRATO
+              </button>
+            )}
+
+            {allowBlank && (
+              <button
+                type="button"
+                onClick={() => {
+                  onChange('')
+                  setIsOpen(false)
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: '#fff8e1',
+                  color: '#f57f17',
+                  border: '1px solid #ffe082',
+                  borderRadius: 4,
+                  padding: '6px 8px',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                — EM BRANCO —
               </button>
             )}
 

@@ -442,8 +442,11 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
   const protNome = prot?.nomeAbrev || prot?.nome || ''
   
   // Se Dieta Livre não tem proteína selecionada, Branda e Pastosa devem ficar em BRANCO (a menos que tenha uma escolha explícita)
+  // null = usuário deixou explicitamente em branco; undefined = usar derivado do prato; string = valor custom
   let protBranda = ''
-  if (r.proteinaBrandaManual !== undefined && r.proteinaBrandaManual !== '') {
+  if (r.proteinaBrandaManual === null) {
+    protBranda = '' // Explicitamente em branco
+  } else if (r.proteinaBrandaManual !== undefined && r.proteinaBrandaManual !== '') {
     protBranda = r.proteinaBrandaManual
   } else if (altProtBranda) {
     protBranda = altProtBranda.nomeBranda || altProtBranda.nomeAbrev || altProtBranda.nome || ''
@@ -452,7 +455,9 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
   }
 
   let protPastosa = ''
-  if (r.proteinaPastosaManual !== undefined && r.proteinaPastosaManual !== '') {
+  if (r.proteinaPastosaManual === null) {
+    protPastosa = '' // Explicitamente em branco
+  } else if (r.proteinaPastosaManual !== undefined && r.proteinaPastosaManual !== '') {
     protPastosa = formatarNomePastosa(r.proteinaPastosaManual)
   } else if (altProtPastosa) {
     protPastosa = formatarNomePastosa(altProtPastosa)
@@ -614,19 +619,24 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
               )}
             </td>
             <DCell val={derived.protDM} />
-            <td className="cardapio-td edit-cell" title="Proteína para Dieta Branda (por padrão adapta da Dieta Livre ou escolha outra)">
+            <td className="cardapio-td edit-cell" title="Proteína para Dieta Branda (por padrão adapta da Dieta Livre ou escolha outra; use — EM BRANCO — para deixar vazio)">
               <DishSelectDropdown
                 value={r.proteinaBrandaId}
                 options={proteinas}
                 groupBy="categoria"
-                placeholder="— Selecionar —"
-                defaultLabel={derived.protBranda}
+                placeholder={r.proteinaBrandaManual === null ? '— em branco —' : '— Selecionar —'}
+                defaultLabel={r.proteinaBrandaManual === null ? '' : derived.protBranda}
                 defaultItemId={r.proteinaId}
+                allowBlank
                 formatOptionName={item => item.nomeBranda || item.nomeAbrev || item.nome}
                 formatOptionSecondary={item => item.nomeAbrev && item.nomeAbrev !== (item.nomeBranda || item.nome) ? `Livre: ${item.nomeAbrev}` : ''}
                 onChange={val => {
-                  if (val === '__padrao__' || !val || val === r.proteinaId) {
+                  if (val === '__padrao__') {
+                    // Restaura ao padrão derivado
                     onChange({ ...r, proteinaBrandaId: undefined, proteinaBrandaManual: undefined })
+                  } else if (!val || val === '') {
+                    // Deixar explicitamente em branco
+                    onChange({ ...r, proteinaBrandaId: undefined, proteinaBrandaManual: null })
                   } else {
                     const p = proteinas.find(x => x.id === val)
                     onChange({
@@ -640,19 +650,24 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
                 onEdit={item => setEditItem({ tipo: 'proteina', item })}
               />
             </td>
-            <td className="cardapio-td edit-cell" title="Proteína para Dieta Pastosa (por padrão adapta da Dieta Livre ou escolha outra)">
+            <td className="cardapio-td edit-cell" title="Proteína para Dieta Pastosa (por padrão adapta da Dieta Livre ou escolha outra; use — EM BRANCO — para deixar vazio)">
               <DishSelectDropdown
                 value={r.proteinaPastosaId}
                 options={proteinas}
                 groupBy="categoria"
-                placeholder="— Selecionar —"
-                defaultLabel={derived.protPastosa}
+                placeholder={r.proteinaPastosaManual === null ? '— em branco —' : '— Selecionar —'}
+                defaultLabel={r.proteinaPastosaManual === null ? '' : derived.protPastosa}
                 defaultItemId={r.proteinaId}
+                allowBlank
                 formatOptionName={item => formatarNomePastosa(item)}
                 formatOptionSecondary={item => item.nomeAbrev ? `Livre: ${item.nomeAbrev}` : ''}
                 onChange={val => {
-                  if (val === '__padrao__' || !val || val === r.proteinaId) {
+                  if (val === '__padrao__') {
+                    // Restaura ao padrão derivado
                     onChange({ ...r, proteinaPastosaId: undefined, proteinaPastosaManual: undefined })
+                  } else if (!val || val === '') {
+                    // Deixar explicitamente em branco
+                    onChange({ ...r, proteinaPastosaId: undefined, proteinaPastosaManual: null })
                   } else {
                     const p = proteinas.find(x => x.id === val)
                     const pastosaStr = formatarNomePastosa(p)

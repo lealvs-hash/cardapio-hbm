@@ -9,8 +9,11 @@ function deriveData(refeicao, proteinas, leguminosas, guarnicoes = []) {
   const guard = guarnicoes.find(g => g.id === refeicao?.guarnicaoId)
 
   const protNome = prot?.nomeAbrev || prot?.nome || ''
+  // null = usuário deixou explicitamente em branco; undefined = usar derivado do prato
   let protBranda = ''
-  if (refeicao?.proteinaBrandaManual !== undefined && refeicao.proteinaBrandaManual !== '') {
+  if (refeicao?.proteinaBrandaManual === null) {
+    protBranda = '' // Explicitamente em branco
+  } else if (refeicao?.proteinaBrandaManual !== undefined && refeicao.proteinaBrandaManual !== '') {
     protBranda = refeicao.proteinaBrandaManual
   } else if (altProtBranda) {
     protBranda = altProtBranda.nomeBranda || altProtBranda.nomeAbrev || altProtBranda.nome || ''
@@ -19,7 +22,9 @@ function deriveData(refeicao, proteinas, leguminosas, guarnicoes = []) {
   }
 
   let protPastosa = ''
-  if (refeicao?.proteinaPastosaManual !== undefined && refeicao.proteinaPastosaManual !== '') {
+  if (refeicao?.proteinaPastosaManual === null) {
+    protPastosa = '' // Explicitamente em branco
+  } else if (refeicao?.proteinaPastosaManual !== undefined && refeicao.proteinaPastosaManual !== '') {
     protPastosa = formatarNomePastosa(refeicao.proteinaPastosaManual)
   } else if (altProtPastosa) {
     protPastosa = formatarNomePastosa(altProtPastosa)
