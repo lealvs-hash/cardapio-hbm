@@ -153,7 +153,7 @@ export default function PrintView({ cardapio, proteinas, leguminosas, guarnicoes
         <span className="ph-dia">{diaSemana}</span>
         <span className="ph-sep">—</span>
         <span className="ph-data">{dataFormatada}</span>
-        <span className="ph-logo">HBM · Nutrição</span>
+        <span className="ph-ns">NS: {cardapio?.ns ? cardapio.ns : ''}</span>
       </div>
 
       <div className="meal-block">

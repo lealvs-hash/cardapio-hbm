@@ -458,7 +458,7 @@ html, body {
 .ph-sep      { color: #999; font-weight: 300; font-size: 11pt; }
 .ph-dia      { font-weight: 700; color: #333; }
 .ph-data     { font-weight: 600; color: #555; }
-.ph-logo     { font-size: 8pt; font-weight: 400; color: #666; margin-left: auto; font-style: italic; text-transform: none; }
+.ph-ns       { font-size: 11pt; font-weight: 800; color: #000; margin-left: auto; letter-spacing: 0.5px; }
 
 /* ── Meal block spacing ── */
 .meal-block { margin-bottom: 5px; }
@@ -715,7 +715,7 @@ html, body {
   .ph-cardapio { font-size: 16pt !important; font-weight: 900 !important; color: #0D47A1 !important; }
   .ph-dia { font-size: 15pt !important; font-weight: 700 !important; }
   .ph-data { font-size: 13.5pt !important; font-weight: 600 !important; }
-  .ph-logo { font-size: 9.5pt !important; }
+  .ph-ns { font-size: 13pt !important; font-weight: 900 !important; color: #000 !important; margin-left: auto !important; letter-spacing: 0.5px !important; }
 
   /* ── Blocos de Refeição ── */
   .meal-block {

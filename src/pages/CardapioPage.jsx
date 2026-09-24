@@ -804,6 +804,7 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
   const [jantar, setJantar] = useState(() => emptyRefeicao('jantar'))
   const [obsLiquidaCompleta, setObsLiquidaCompleta] = useState(OBS_LIQUIDA_PADRAO.liquidaCompleta)
   const [obsLiquidaSemResiduos, setObsLiquidaSemResiduos] = useState(OBS_LIQUIDA_PADRAO.liquidaSemResiduos)
+  const [ns, setNs] = useState('')
   const [saved, setSaved] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
 
@@ -819,11 +820,13 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
       setJantar({ ...emptyRefeicao('jantar'), ...(fonte.jantar ?? {}) })
       setObsLiquidaCompleta(fonte.observacoes?.liquidaCompleta ?? OBS_LIQUIDA_PADRAO.liquidaCompleta)
       setObsLiquidaSemResiduos(fonte.observacoes?.liquidaSemResiduos ?? OBS_LIQUIDA_PADRAO.liquidaSemResiduos)
+      setNs(fonte.ns ?? fonte.observacoes?.ns ?? '')
     } else {
       setAlmoco(emptyRefeicao('almoco'))
       setJantar(emptyRefeicao('jantar'))
       setObsLiquidaCompleta(OBS_LIQUIDA_PADRAO.liquidaCompleta)
       setObsLiquidaSemResiduos(OBS_LIQUIDA_PADRAO.liquidaSemResiduos)
+      setNs('')
     }
     setSaved(false)
     // Marca como carregado para começar a salvar rascunhos automáticos
@@ -838,9 +841,10 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
       almoco,
       jantar,
       observacoes: { liquidaCompleta: obsLiquidaCompleta, liquidaSemResiduos: obsLiquidaSemResiduos },
+      ns,
     }
     salvarRascunhoCardapio(selectedDate, cardapioAtual)
-  }, [almoco, jantar, obsLiquidaCompleta, obsLiquidaSemResiduos, selectedDate, isLoaded])
+  }, [almoco, jantar, obsLiquidaCompleta, obsLiquidaSemResiduos, ns, selectedDate, isLoaded])
 
   const handleSalvar = () => {
     salvarCardapio(selectedDate, {
@@ -848,6 +852,7 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
       almoco,
       jantar,
       observacoes: { liquidaCompleta: obsLiquidaCompleta, liquidaSemResiduos: obsLiquidaSemResiduos },
+      ns,
     })
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
@@ -856,6 +861,7 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
   const cardapioParaPrint = {
     almoco, jantar,
     observacoes: { liquidaCompleta: obsLiquidaCompleta, liquidaSemResiduos: obsLiquidaSemResiduos },
+    ns,
   }
 
   return (
@@ -867,6 +873,22 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
           <input type="date" className="date-input" value={selectedDate}
             onChange={e => setSelectedDate(e.target.value)} />
           <div className="dia-semana-badge">{getDiaSemana(selectedDate)}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 4 }}>
+            <span className="label-sm" style={{ fontWeight: 800, color: '#0D47A1' }}>NS:</span>
+            <input
+              type="text"
+              placeholder="Nutricionista Supervisor (opcional)"
+              value={ns}
+              onChange={e => setNs(e.target.value)}
+              style={{
+                padding: '4px 8px',
+                fontSize: '12px',
+                borderRadius: 'var(--radius)',
+                border: '1px solid var(--gray-300)',
+                width: 170
+              }}
+            />
+          </div>
           {cardapios[selectedDate] && <span className="badge-saved">✓ Salvo</span>}
           {rascunhosCardapio[selectedDate] && !cardapios[selectedDate] && (
             <span style={{
