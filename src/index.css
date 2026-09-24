@@ -660,12 +660,14 @@ html, body {
 @media print {
   @page {
     size: A4 landscape;
-    margin: 6mm 8mm;
+    margin: 7mm 8mm;
   }
 
   html, body {
     background: white !important;
     font-size: 10pt;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .no-print  { display: none !important; }
@@ -680,124 +682,206 @@ html, body {
   }
 
   .print-area {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 195mm;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    height: auto !important;
+    min-height: auto !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    box-sizing: border-box !important;
   }
 
   .print-header {
-    font-size: 15pt;
-    padding-bottom: 4px;
-    margin-bottom: 4px;
-    height: 10mm;
-    display: flex;
-    align-items: center;
-    border-bottom: 2.5px solid #000;
+    font-size: 13pt !important;
+    padding-bottom: 2px !important;
+    margin-bottom: 3px !important;
+    height: auto !important;
+    min-height: 7mm !important;
+    display: flex !important;
+    align-items: center !important;
+    border-bottom: 2px solid #000 !important;
+    box-sizing: border-box !important;
   }
-  .ph-cardapio { font-size: 16pt; }
-  .ph-dia { font-size: 15pt; }
-  .ph-data { font-size: 14pt; }
-  .ph-logo { font-size: 9.5pt; }
+  .ph-cardapio { font-size: 14pt !important; }
+  .ph-dia { font-size: 13pt !important; }
+  .ph-data { font-size: 12pt !important; }
+  .ph-logo { font-size: 8.5pt !important; }
 
-  /* ── Espaçamento maior entre Almoço e Jantar ── */
+  /* ── Espaçamento entre Almoço e Jantar ── */
   .meal-block {
-    margin-bottom: 7mm;
+    margin-bottom: 3.5mm !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
   .meal-block:last-of-type {
-    margin-bottom: 0;
+    margin-bottom: 0 !important;
   }
 
   .cardapio-table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
+    width: 100% !important;
+    border-collapse: collapse !important;
+    table-layout: fixed !important;
+    box-sizing: border-box !important;
   }
 
   .cardapio-table thead tr {
-    height: 28pt;
+    height: 18pt !important;
   }
   .cardapio-table tbody tr {
-    height: 48pt;
-    max-height: 52pt;
+    height: 35pt !important;
+    max-height: 39pt !important;
   }
 
   .col-label-header {
-    width: 12%;
-    font-size: 10.5pt;
-    font-weight: 900;
-    padding: 4px 2px;
-    letter-spacing: 0.5px;
+    width: 12% !important;
+    font-size: 9pt !important;
+    font-weight: 900 !important;
+    padding: 2px 2px !important;
+    letter-spacing: 0.3px !important;
     background: #e0e0e0 !important;
     color: #000 !important;
     border: 1.5px solid #000 !important;
+    box-sizing: border-box !important;
   }
   .col-diet-header {
-    font-size: 9.5pt;
-    padding: 4px 2px;
+    font-size: 8.5pt !important;
+    padding: 2px 2px !important;
     background: #e0e0e0 !important;
     color: #000 !important;
     border: 1.5px solid #000 !important;
+    box-sizing: border-box !important;
   }
   .th-diet {
-    font-size: 10pt;
-    font-weight: 900;
+    font-size: 8.5pt !important;
+    font-weight: 900 !important;
     color: #000 !important;
   }
 
   /* ── Apenas a coluna de ALMOÇO e JANTAR (rótulos à esquerda) fica cinza clara ── */
   .row-label-cell {
-    padding: 4px 4px;
+    padding: 2px 3px !important;
     background: #eeeeee !important;
     color: #000 !important;
     border: 1.5px solid #000 !important;
+    box-sizing: border-box !important;
   }
   .row-label-main {
-    font-size: 8.5pt;
-    font-weight: 900;
-    letter-spacing: 0.2px;
+    font-size: 7.5pt !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.2px !important;
     color: #000 !important;
   }
   .row-label-sub {
-    font-size: 7.5pt;
-    font-weight: 700;
+    font-size: 6.5pt !important;
+    font-weight: 700 !important;
     color: #333 !important;
   }
 
   /* ── Células de dados das dietas em fundo branco para impressão P&B limpa ── */
   .cardapio-td {
-    font-size: 10pt;
-    font-weight: 800;
-    padding: 5px 4px;
-    line-height: 1.25;
+    font-size: 8.5pt !important;
+    font-weight: 800 !important;
+    padding: 3px 3px !important;
+    line-height: 1.2 !important;
     background: #ffffff !important;
     color: #000 !important;
     border: 1.5px solid #000 !important;
+    box-sizing: border-box !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
   }
 
   /* Esconder os selects na impressão — mostrar apenas o texto derivado */
-  .edit-cell .table-select { display: none; }
+  .edit-cell .table-select { display: none !important; }
   .edit-cell::after { content: attr(data-print-val); }
 
   .print-obs {
-    font-size: 9pt;
-    padding-top: 5px;
-    margin-top: 5px;
-    height: 9mm;
-    display: flex;
-    align-items: center;
-    border-top: 2px solid #000;
+    font-size: 8pt !important;
+    padding-top: 3px !important;
+    margin-top: 3px !important;
+    height: auto !important;
+    min-height: 6mm !important;
+    display: flex !important;
+    align-items: center !important;
+    border-top: 1.5px solid #000 !important;
+    box-sizing: border-box !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
-}
 
-/* Print styling for Ficha Técnica */
-@media print {
+  /* ── Print styling for Ficha Técnica ── */
   .ficha-tecnica-doc {
     box-shadow: none !important;
-    margin: 0 auto !important;
+    margin: 0 !important;
     width: 100% !important;
-    max-width: none !important;
+    max-width: 100% !important;
     padding: 0 !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    page-break-inside: auto !important;
+  }
+
+  .ficha-header-grid {
+    grid-template-columns: 1fr 180px !important;
+    box-sizing: border-box !important;
+  }
+
+  .ficha-photo-box {
+    min-height: 90px !important;
+    padding: 4px !important;
+    box-sizing: border-box !important;
+  }
+
+  .ficha-photo-box img {
+    max-height: 100px !important;
+    object-fit: contain !important;
+  }
+
+  .ficha-tecnica-doc table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    table-layout: fixed !important;
+    font-size: 8pt !important;
+    box-sizing: border-box !important;
+  }
+
+  .ficha-tecnica-doc th,
+  .ficha-tecnica-doc td {
+    padding: 3px 2px !important;
+    box-sizing: border-box !important;
+    word-break: break-word !important;
+  }
+
+  .ficha-tecnica-doc tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .ficha-total-row {
+    padding: 4px 10px !important;
+    font-size: 9pt !important;
+    box-sizing: border-box !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .ficha-prep-box {
+    padding: 6px 8px !important;
+    font-size: 8.5pt !important;
+    line-height: 1.3 !important;
+    box-sizing: border-box !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .ficha-footer-grid {
+    padding: 4px 6px !important;
+    font-size: 9pt !important;
+    box-sizing: border-box !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 }

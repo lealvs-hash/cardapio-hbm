@@ -635,7 +635,7 @@ export default function FichaTecnicaPage({ store, selectedFichaId, setSelectedFi
         </div>
 
         {/* Cabeçalho com Nome da Preparação e Foto */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 220px', border: '1.5px solid #000' }}>
+        <div className="ficha-header-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 220px', border: '1.5px solid #000' }}>
           {/* Lado Esquerdo: Nome e Profissional */}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{
@@ -700,7 +700,7 @@ export default function FichaTecnicaPage({ store, selectedFichaId, setSelectedFi
           </div>
 
           {/* Lado Direito: Imagem Ilustrativa da Receita */}
-          <div style={{
+          <div className="ficha-photo-box" style={{
             borderLeft: '1.5px solid #000',
             display: 'flex',
             flexDirection: 'column',
@@ -761,13 +761,13 @@ export default function FichaTecnicaPage({ store, selectedFichaId, setSelectedFi
         }}>
           <thead>
             <tr style={{ background: '#2e7d32', color: '#fff', textAlign: 'center', fontWeight: 800 }}>
-              <th style={{ border: '1px solid #000', padding: '5px 4px', width: '38%', textAlign: 'left' }}>ITEM</th>
-              <th style={{ border: '1px solid #000', padding: '5px 2px', width: '8%' }}>UN</th>
-              <th style={{ border: '1px solid #000', padding: '5px 2px', width: '13%' }}>Peso Bruto</th>
-              <th style={{ border: '1px solid #000', padding: '5px 2px', width: '13%' }}>Peso Líquido</th>
-              <th style={{ border: '1px solid #000', padding: '5px 2px', width: '12%' }}>Fator Correção</th>
-              <th style={{ border: '1px solid #000', padding: '5px 2px', width: '13%' }}>Valor Unitário</th>
-              <th style={{ border: '1px solid #000', padding: '5px 2px', width: '13%' }}>Valor Total</th>
+              <th style={{ border: '1px solid #000', padding: '5px 4px', width: '34%', textAlign: 'left' }}>ITEM</th>
+              <th style={{ border: '1px solid #000', padding: '5px 2px', width: '7%' }}>UN</th>
+              <th style={{ border: '1px solid #000', padding: '5px 2px', width: '11%' }}>Peso Bruto</th>
+              <th style={{ border: '1px solid #000', padding: '5px 2px', width: '11%' }}>Peso Líquido</th>
+              <th style={{ border: '1px solid #000', padding: '5px 2px', width: '11%' }}>Fator Correção</th>
+              <th style={{ border: '1px solid #000', padding: '5px 2px', width: '12%' }}>Valor Unitário</th>
+              <th style={{ border: '1px solid #000', padding: '5px 2px', width: '14%' }}>Valor Total</th>
               {modoEdicao && <th className="no-print" style={{ border: '1px solid #000', width: '6%' }}></th>}
             </tr>
           </thead>
@@ -887,7 +887,7 @@ export default function FichaTecnicaPage({ store, selectedFichaId, setSelectedFi
         )}
 
         {/* Linha TOTAL DOS INSUMOS */}
-        <div style={{
+        <div className="ficha-total-row" style={{
           display: 'grid',
           gridTemplateColumns: '1fr 140px',
           border: '1.5px solid #000',
@@ -906,7 +906,7 @@ export default function FichaTecnicaPage({ store, selectedFichaId, setSelectedFi
         </div>
 
         {/* Bloco MODO DE PREPARO */}
-        <div style={{
+        <div className="ficha-prep-box" style={{
           border: '1.5px solid #000',
           borderTop: 'none',
           padding: '8px 10px',
@@ -932,7 +932,7 @@ export default function FichaTecnicaPage({ store, selectedFichaId, setSelectedFi
         </div>
 
         {/* Rodapé com Rendimento e Custos */}
-        <div style={{
+        <div className="ficha-footer-grid" style={{
           display: 'grid',
           gridTemplateColumns: '1.2fr 1fr 1fr',
           border: '1.5px solid #000',
