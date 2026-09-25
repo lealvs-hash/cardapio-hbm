@@ -73,6 +73,25 @@ function normalizarProteinas(prots = []) {
     })
 }
 
+// Mapas para migração de categoria de insumos já salvos (sem categoria)
+const mapInsumosIniciaisById   = new Map(INSUMOS_INICIAIS.map(i => [i.id, i]))
+const mapInsumosIniciaisByNome = new Map(INSUMOS_INICIAIS.map(i => [i.nome.trim().toUpperCase(), i]))
+
+function normalizarInsumos(insumos = []) {
+  if (!Array.isArray(insumos)) return []
+  return insumos.map(item => {
+    if (!item || typeof item !== 'object') return item
+    // Já tem categoria definida → mantém
+    if (item.categoria) return item
+    // Tenta encontrar pelo id ou pelo nome nos dados iniciais para recuperar a categoria
+    const porId   = mapInsumosIniciaisById.get(item.id)
+    const porNome = mapInsumosIniciaisByNome.get((item.nome || '').trim().toUpperCase())
+    const categoriaInferida = porId?.categoria || porNome?.categoria || 'OUTROS'
+    return { ...item, categoria: categoriaInferida }
+  })
+}
+
+
 function normalizarCardapios(cardapios = {}) {
   const res = {}
   for (const [data, c] of Object.entries(cardapios)) {
@@ -138,7 +157,7 @@ export function useStore() {
         leguminosas: saved.leguminosas ?? LEGUMINOSAS_INICIAIS,
         guarnicoes: saved.guarnicoes ?? GUARNICOES_INICIAIS,
         saladas: saved.saladas ?? SALADAS_INICIAIS,
-        insumos: saved.insumos ?? INSUMOS_INICIAIS,
+        insumos: normalizarInsumos(saved.insumos ?? INSUMOS_INICIAIS),
         fichasTecnicas: saved.fichasTecnicas ?? FICHAS_TECNICAS_INICIAIS,
         cardapios: normalizarCardapios(saved.cardapios ?? {}),
         rascunhosCardapio: normalizarCardapios(saved.rascunhosCardapio ?? {}),
@@ -182,7 +201,7 @@ export function useStore() {
             leguminosas: leguminosasMescladas,
             guarnicoes: guarnicoesMescladas,
             saladas: saladasMescladas,
-            insumos: remoto.insumos ?? prev.insumos,
+            insumos: normalizarInsumos(remoto.insumos ?? prev.insumos),
             fichasTecnicas: fichasMescladas,
             cardapios: normalizarCardapios(cardapiosMesclados),
             rascunhosCardapio: normalizarCardapios(prev.rascunhosCardapio),
