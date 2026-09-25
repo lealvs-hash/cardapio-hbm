@@ -518,28 +518,66 @@ export const OBS_LIQUIDA_PADRAO = {
 
 // Insumos/Ingredientes com tabela de valores e preços
 export const INSUMOS_INICIAIS = [
-  // CARNES/PROTEÍNAS — Aves
-  { id: 'ins1',  nome: 'FRANGO - FILÉ',              un: 'KG', valorUnitario: 11.20, fatorCorrecao: 1.000, categoria: 'AVES' },
-  // CARNES/PROTEÍNAS — Bovinos
-  { id: 'ins15', nome: 'CARNE BOVINA MOÍDA',          un: 'KG', valorUnitario: 28.90, fatorCorrecao: 1.000, categoria: 'BOVINOS' },
-  // Hortifrúti
-  { id: 'ins2',  nome: 'CEBOLA',                      un: 'KG', valorUnitario:  3.20, fatorCorrecao: 1.000, categoria: 'HORTIFRÚTI' },
-  { id: 'ins4',  nome: 'TOMATE',                      un: 'KG', valorUnitario:  2.29, fatorCorrecao: 1.250, categoria: 'HORTIFRÚTI' },
-  { id: 'ins8',  nome: 'LIMÃO',                       un: 'KG', valorUnitario:  8.99, fatorCorrecao: 1.000, categoria: 'HORTIFRÚTI' },
-  { id: 'ins16', nome: 'BATATA INGLESA',              un: 'KG', valorUnitario:  4.50, fatorCorrecao: 1.150, categoria: 'HORTIFRÚTI' },
-  { id: 'ins17', nome: 'CENOURA',                     un: 'KG', valorUnitario:  3.90, fatorCorrecao: 1.100, categoria: 'HORTIFRÚTI' },
-  { id: 'ins6',  nome: 'COGUMELO CHAMPIGNON (FRESCO)',un: 'KG', valorUnitario: 43.00, fatorCorrecao: 1.000, categoria: 'HORTIFRÚTI' },
-  // Secos / Cereais / Leguminosas
-  { id: 'ins13', nome: 'ARROZ PARBOILIZADO',          un: 'KG', valorUnitario:  5.50, fatorCorrecao: 1.000, categoria: 'SECOS' },
-  { id: 'ins14', nome: 'FEIJÃO PRETO',               un: 'KG', valorUnitario:  7.80, fatorCorrecao: 1.000, categoria: 'SECOS' },
-  { id: 'ins11', nome: 'AÇÚCAR',                     un: 'KG', valorUnitario:  2.00, fatorCorrecao: 1.000, categoria: 'SECOS' },
-  { id: 'ins7',  nome: 'CASTANHA',                   un: 'KG', valorUnitario: 30.00, fatorCorrecao: 1.000, categoria: 'SECOS' },
-  // Condimentos / Temperos
-  { id: 'ins3',  nome: 'SAL REFINADO',               un: 'KG', valorUnitario:  2.00, fatorCorrecao: 1.000, categoria: 'CONDIMENTOS' },
-  { id: 'ins5',  nome: 'ALHO',                       un: 'KG', valorUnitario: 20.99, fatorCorrecao: 1.000, categoria: 'CONDIMENTOS' },
-  { id: 'ins9',  nome: 'PIMENTA BRANCA',             un: 'KG', valorUnitario: 42.90, fatorCorrecao: 1.000, categoria: 'CONDIMENTOS' },
-  { id: 'ins10', nome: 'AÇAFRÃO',                    un: 'KG', valorUnitario: 14.00, fatorCorrecao: 1.000, categoria: 'CONDIMENTOS' },
-  { id: 'ins12', nome: 'AZEITE',                     un: 'ML', valorUnitario: 15.00, fatorCorrecao: 1.000, categoria: 'CONDIMENTOS' },
+  // ── BOVINOS ──
+  { id: 'ins_bov1',  nome: 'COXÃO DE DENTRO',          un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'BOVINOS' },
+  { id: 'ins_bov2',  nome: 'PATINHO',                   un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'BOVINOS' },
+  { id: 'ins_bov3',  nome: 'VAZIO',                     un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'BOVINOS' },
+  { id: 'ins_bov4',  nome: 'CARNE MOÍDA DE PRIMEIRA',   un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'BOVINOS' },
+
+  // ── AVES ──
+  { id: 'ins_ave1',  nome: 'COXA E SOBRECOXA DE FRANGO',un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'AVES' },
+  { id: 'ins_ave2',  nome: 'PEITO DE FRANGO',           un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'AVES' },
+  { id: 'ins_ave3',  nome: 'CARNE MOÍDA DE FRANGO',     un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'AVES' },
+
+  // ── SUÍNOS ──
+  { id: 'ins_sui1',  nome: 'PERNIL SUÍNO',              un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'SUÍNOS' },
+
+  // ── PEIXES ──
+  { id: 'ins_pei1',  nome: 'FILÉ DE PEIXE',             un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'PEIXES' },
+
+  // ── SECOS / CEREAIS ──
+  { id: 'ins_sec1',  nome: 'ARROZ PARBOILIZADO',        un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'SECOS' },
+  { id: 'ins_sec2',  nome: 'ARROZ INTEGRAL',            un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'SECOS' },
+  { id: 'ins_sec3',  nome: 'ARROZ BRANCO',              un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'SECOS' },
+  { id: 'ins_sec4',  nome: 'MASSA PARAFUSO',            un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'SECOS' },
+  { id: 'ins_sec5',  nome: 'MASSA ESPAGUETE',           un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'SECOS' },
+  { id: 'ins_sec6',  nome: 'FARINHA DE MILHO',          un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'SECOS' },
+  { id: 'ins_sec7',  nome: 'FARINHA DE TRIGO',          un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'SECOS' },
+  { id: 'ins_sec8',  nome: 'EXTRATO DE TOMATE',         un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'SECOS' },
+  { id: 'ins_sec9',  nome: 'TOMATE PELADO',             un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'SECOS' },
+  { id: 'ins_sec10', nome: 'SELETA DE LEGUMES ENLATADA',un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'SECOS' },
+  { id: 'ins_sec11', nome: 'ERVILHA E MILHO ENLATADO',  un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'SECOS' },
+  { id: 'ins_sec12', nome: 'CREME DE LEITE',            un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'SECOS' },
+  { id: 'ins_sec13', nome: 'LEITE',                     un: 'L',  valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'SECOS' },
+
+  // ── SECOS / LEGUMINOSAS ──
+  { id: 'ins_leg1',  nome: 'FEIJÃO',                    un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'SECOS' },
+  { id: 'ins_leg2',  nome: 'ERVILHA (CREME DE ERVILHA)',un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'SECOS' },
+  { id: 'ins_leg3',  nome: 'LENTILHA',                  un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'SECOS' },
+
+  // ── HORTIFRÚTI ──
+  { id: 'ins_hrt1',  nome: 'MORANGA',                   un: 'KG', valorUnitario: 0, fatorCorrecao: 1.150, categoria: 'HORTIFRÚTI' },
+  { id: 'ins_hrt2',  nome: 'BATATA',                    un: 'KG', valorUnitario: 0, fatorCorrecao: 1.150, categoria: 'HORTIFRÚTI' },
+  { id: 'ins_hrt3',  nome: 'BATATA DOCE',               un: 'KG', valorUnitario: 0, fatorCorrecao: 1.150, categoria: 'HORTIFRÚTI' },
+  { id: 'ins_hrt4',  nome: 'MANDIOCA',                  un: 'KG', valorUnitario: 0, fatorCorrecao: 1.200, categoria: 'HORTIFRÚTI' },
+  { id: 'ins_hrt5',  nome: 'ABOBRINHA',                 un: 'KG', valorUnitario: 0, fatorCorrecao: 1.100, categoria: 'HORTIFRÚTI' },
+  { id: 'ins_hrt6',  nome: 'BERINJELA',                 un: 'KG', valorUnitario: 0, fatorCorrecao: 1.100, categoria: 'HORTIFRÚTI' },
+  { id: 'ins_hrt7',  nome: 'BETERRABA',                 un: 'KG', valorUnitario: 0, fatorCorrecao: 1.200, categoria: 'HORTIFRÚTI' },
+  { id: 'ins_hrt8',  nome: 'CHUCHU',                    un: 'KG', valorUnitario: 0, fatorCorrecao: 1.150, categoria: 'HORTIFRÚTI' },
+  { id: 'ins_hrt9',  nome: 'CENOURA',                   un: 'KG', valorUnitario: 0, fatorCorrecao: 1.100, categoria: 'HORTIFRÚTI' },
+  { id: 'ins_hrt10', nome: 'CEBOLA',                    un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'HORTIFRÚTI' },
+  { id: 'ins_hrt11', nome: 'ALHO',                      un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'HORTIFRÚTI' },
+  { id: 'ins_hrt12', nome: 'PIMENTÃO',                  un: 'KG', valorUnitario: 0, fatorCorrecao: 1.100, categoria: 'HORTIFRÚTI' },
+  { id: 'ins_hrt13', nome: 'ESPINAFRE',                 un: 'KG', valorUnitario: 0, fatorCorrecao: 1.300, categoria: 'HORTIFRÚTI' },
+  { id: 'ins_hrt14', nome: 'COUVE',                     un: 'KG', valorUnitario: 0, fatorCorrecao: 1.200, categoria: 'HORTIFRÚTI' },
+  { id: 'ins_hrt15', nome: 'COUVE-FLOR',                un: 'KG', valorUnitario: 0, fatorCorrecao: 1.250, categoria: 'HORTIFRÚTI' },
+  { id: 'ins_hrt16', nome: 'COUVE CHINESA',             un: 'KG', valorUnitario: 0, fatorCorrecao: 1.200, categoria: 'HORTIFRÚTI' },
+  { id: 'ins_hrt17', nome: 'BRÓCOLIS',                  un: 'KG', valorUnitario: 0, fatorCorrecao: 1.300, categoria: 'HORTIFRÚTI' },
+
+  // ── LATICÍNIOS ──
+  { id: 'ins_lat1',  nome: 'REQUEIJÃO',                 un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'LATICÍNIOS' },
+  { id: 'ins_lat2',  nome: 'PRESUNTO',                  un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'LATICÍNIOS' },
+  { id: 'ins_lat3',  nome: 'QUEIJO',                    un: 'KG', valorUnitario: 0, fatorCorrecao: 1.000, categoria: 'LATICÍNIOS' },
 ]
 
 // Exemplo inicial de Ficha Técnica de Preparação conforme anexo do usuário

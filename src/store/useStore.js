@@ -78,17 +78,23 @@ const mapInsumosIniciaisById   = new Map(INSUMOS_INICIAIS.map(i => [i.id, i]))
 const mapInsumosIniciaisByNome = new Map(INSUMOS_INICIAIS.map(i => [i.nome.trim().toUpperCase(), i]))
 
 function normalizarInsumos(insumos = []) {
-  if (!Array.isArray(insumos)) return []
-  return insumos.map(item => {
+  if (!Array.isArray(insumos)) return INSUMOS_INICIAIS
+
+  // 1. Migra categoria nos itens que já existem mas não tinham o campo
+  const migrados = insumos.map(item => {
     if (!item || typeof item !== 'object') return item
-    // Já tem categoria definida → mantém
     if (item.categoria) return item
-    // Tenta encontrar pelo id ou pelo nome nos dados iniciais para recuperar a categoria
     const porId   = mapInsumosIniciaisById.get(item.id)
     const porNome = mapInsumosIniciaisByNome.get((item.nome || '').trim().toUpperCase())
-    const categoriaInferida = porId?.categoria || porNome?.categoria || 'OUTROS'
-    return { ...item, categoria: categoriaInferida }
+    return { ...item, categoria: porId?.categoria || porNome?.categoria || 'OUTROS' }
   })
+
+  // 2. Adiciona itens novos do INSUMOS_INICIAIS que ainda não existem nos dados salvos
+  //    (compara por ID — itens customizados do usuário nunca têm IDs que começam com 'ins_')
+  const idsExistentes = new Set(migrados.map(i => i?.id).filter(Boolean))
+  const novos = INSUMOS_INICIAIS.filter(i => !idsExistentes.has(i.id))
+
+  return [...migrados, ...novos]
 }
 
 
