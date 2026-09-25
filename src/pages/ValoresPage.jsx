@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Plus, Trash2, Edit2, Check, X, Search, DollarSign, ChevronDown, ChevronRight } from 'lucide-react'
+import { Plus, Trash2, Edit2, Check, X, Search, DollarSign, ChevronDown, ChevronRight, ChevronUp, Eye, EyeOff } from 'lucide-react'
 
 // Hierarquia de categorias: grupo pai → subcategorias ou lista plana
 const GRUPOS = [
@@ -75,8 +75,9 @@ export default function ValoresPage({ store, onOpenFicha }) {
   const [busca, setBusca] = useState('')
   const [modalNovo, setModalNovo] = useState(false)
   const [editandoId, setEditandoId] = useState(null)
-  const [formEdit, setFormEdit] = useState({})
   const [gruposAbertos, setGruposAbertos] = useState({})   // grupo → bool (aberto por padrão)
+  const [expandedFichas, setExpandedFichas] = useState({}) // itemId → bool
+  const [mostrarFichasGlobal, setMostrarFichasGlobal] = useState(false)
 
   const [novoInsumo, setNovoInsumo] = useState({
     nome: '',
@@ -242,22 +243,91 @@ export default function ValoresPage({ store, onOpenFicha }) {
 
         {/* USO EM FICHAS */}
         <td style={{ padding: '7px 10px', textAlign: 'center', borderBottom: '1px solid #e8e8e8', fontSize: '11px' }}>
-          {fichasQueUsam.length > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
-              {fichasQueUsam.map(f => (
+          {fichasQueUsam.length > 0 ? (() => {
+            const estaExpandido = mostrarFichasGlobal || !!expandedFichas[item.id]
+            if (!estaExpandido) {
+              return (
                 <button
-                  key={f.id}
                   type="button"
-                  className="btn btn-xs"
-                  style={{ background: '#e8f5e9', color: '#1b5e20', border: '1px solid #81c784', fontSize: '11px', padding: '2px 7px', cursor: 'pointer', borderRadius: 4, fontWeight: 600 }}
-                  onClick={() => onOpenFicha && onOpenFicha({ nomeAbrev: f.nomePreparacao, id: f.pratoId })}
-                  title={`Abrir Ficha Técnica: ${f.nomePreparacao}`}
+                  onClick={() => setExpandedFichas(prev => ({ ...prev, [item.id]: true }))}
+                  style={{
+                    background: '#e8f5e9',
+                    color: '#1b5e20',
+                    border: '1px solid #a5d6a7',
+                    borderRadius: 12,
+                    padding: '2px 9px',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    transition: 'all 0.15s ease'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#c8e6c9'}
+                  onMouseLeave={e => e.currentTarget.style.background = '#e8f5e9'}
+                  title={`Clique para expandir as ${fichasQueUsam.length} fichas`}
                 >
-                  📄 {f.nomePreparacao}
+                  <span>📄 {fichasQueUsam.length} {fichasQueUsam.length === 1 ? 'ficha' : 'fichas'}</span>
+                  <ChevronDown size={12} />
                 </button>
-              ))}
-            </div>
-          ) : <span style={{ color: '#aaa', fontSize: '11px' }}>—</span>}
+              )
+            }
+
+            return (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
+                {!mostrarFichasGlobal && (
+                  <button
+                    type="button"
+                    onClick={() => setExpandedFichas(prev => ({ ...prev, [item.id]: false }))}
+                    style={{
+                      background: '#fff',
+                      color: '#555',
+                      border: '1px solid #ccc',
+                      borderRadius: 10,
+                      padding: '1px 6px',
+                      fontSize: '10px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 3,
+                      marginBottom: 2
+                    }}
+                    title="Recolher fichas deste ingrediente"
+                  >
+                    <span>Recolher</span>
+                    <ChevronUp size={11} />
+                  </button>
+                )}
+                {fichasQueUsam.map(f => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    className="btn btn-xs"
+                    style={{
+                      background: '#e8f5e9',
+                      color: '#1b5e20',
+                      border: '1px solid #81c784',
+                      fontSize: '11px',
+                      padding: '2px 7px',
+                      cursor: 'pointer',
+                      borderRadius: 4,
+                      fontWeight: 600,
+                      maxWidth: 180,
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}
+                    onClick={() => onOpenFicha && onOpenFicha({ nomeAbrev: f.nomePreparacao, id: f.pratoId })}
+                    title={`Abrir Ficha Técnica: ${f.nomePreparacao}`}
+                  >
+                    📄 {f.nomePreparacao}
+                  </button>
+                ))}
+              </div>
+            )
+          })() : <span style={{ color: '#aaa', fontSize: '11px' }}>—</span>}
         </td>
 
         {/* AÇÕES */}
@@ -307,8 +377,8 @@ export default function ValoresPage({ store, onOpenFicha }) {
         </button>
       </div>
 
-      {/* Busca */}
-      <div style={{ margin: '16px 0', display: 'flex', gap: 12, alignItems: 'center' }}>
+      {/* Busca e Opções */}
+      <div style={{ margin: '16px 0', display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
         <div style={{ position: 'relative', flex: 1, maxWidth: 380 }}>
           <Search size={16} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#888' }} />
           <input
@@ -323,6 +393,35 @@ export default function ValoresPage({ store, onOpenFicha }) {
         <span style={{ fontSize: '13px', color: '#666', fontWeight: 600 }}>
           {listaFiltrada.length} item(ns)
         </span>
+
+        <button
+          type="button"
+          onClick={() => {
+            const novoEstado = !mostrarFichasGlobal
+            setMostrarFichasGlobal(novoEstado)
+            if (!novoEstado) setExpandedFichas({})
+          }}
+          style={{
+            marginLeft: 'auto',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '6px 12px',
+            fontSize: '12px',
+            fontWeight: 700,
+            borderRadius: 6,
+            cursor: 'pointer',
+            border: mostrarFichasGlobal ? '1.5px solid #2e7d32' : '1px solid #cbd5e1',
+            background: mostrarFichasGlobal ? '#e8f5e9' : '#fff',
+            color: mostrarFichasGlobal ? '#1b5e20' : '#475569',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+            transition: 'all 0.15s ease'
+          }}
+          title={mostrarFichasGlobal ? 'Recolher detalhes de fichas em todos os itens' : 'Expandir e ver todas as fichas associadas'}
+        >
+          {mostrarFichasGlobal ? <EyeOff size={14} color="#1b5e20" /> : <Eye size={14} color="#555" />}
+          <span>{mostrarFichasGlobal ? 'Recolher Fichas' : 'Expandir Todas as Fichas'}</span>
+        </button>
       </div>
 
       {/* Tabela por grupo */}
