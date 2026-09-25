@@ -540,7 +540,7 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
           <tr className="row-base">
             <td className="row-label-cell">
               <span className="row-label-main">PRATO-BASE</span>
-              <span className="row-label-sub">CEREAL</span>
+              <span className="row-label-sub">CARBOIDRATO</span>
             </td>
             <td className="cardapio-td edit-cell">
               <BaseSelect field="baseGeralDL" options={BASES_DIETA.geralDL} />
@@ -892,7 +892,7 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
             <span className="label-sm" style={{ fontWeight: 800, color: '#0D47A1' }}>NS:</span>
             <input
               type="text"
-              placeholder="Nutricionista Supervisor (opcional)"
+              placeholder=""
               value={ns}
               onChange={e => setNs(e.target.value)}
               style={{

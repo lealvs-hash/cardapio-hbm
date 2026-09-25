@@ -397,6 +397,11 @@ export default function Historico({ store, onNavigateToDate, onOpenFicha }) {
                     <div style={{ fontSize: '11px', color: ehHoje ? '#1565c0' : '#666', fontWeight: 600, marginTop: 2 }}>
                       {formatDateShort(dStr)}
                     </div>
+                    {cardapioDia?.ns && (
+                      <div style={{ fontSize: '10px', color: '#5c6bc0', fontWeight: 700, marginTop: 2 }}>
+                        NS: {cardapioDia.ns}
+                      </div>
+                    )}
 
                     {/* Ações rápidas no cabeçalho do dia */}
                     <div style={{ display: 'flex', gap: 4, justifyContent: 'center', marginTop: 6 }}>

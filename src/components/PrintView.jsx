@@ -99,11 +99,11 @@ function MealTable({ title, refeicao, proteinas, leguminosas, guarnicoes, showSa
         </tr>
       </thead>
       <tbody>
-        {/* ── PRATO-BASE (Cereal) ── */}
+        {/* ── PRATO-BASE (Carboidrato) ── */}
         <tr className="row-base">
           <td className="row-label-cell">
             <span className="row-label-main">PRATO-BASE</span>
-            <span className="row-label-sub">CEREAL</span>
+            <span className="row-label-sub">CARBOIDRATO</span>
           </td>
           {COLS.map(col => <Td key={col.key} val={d.base[col.key]} />)}
         </tr>
