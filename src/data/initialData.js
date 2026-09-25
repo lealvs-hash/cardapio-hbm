@@ -518,23 +518,28 @@ export const OBS_LIQUIDA_PADRAO = {
 
 // Insumos/Ingredientes com tabela de valores e preços
 export const INSUMOS_INICIAIS = [
-  { id: 'ins1', nome: 'FRANGO - FILÉ', un: 'KG', valorUnitario: 11.20, fatorCorrecao: 1.000 },
-  { id: 'ins2', nome: 'CEBOLA', un: 'KG', valorUnitario: 3.20, fatorCorrecao: 1.000 },
-  { id: 'ins3', nome: 'SAL REFINADO', un: 'KG', valorUnitario: 2.00, fatorCorrecao: 1.000 },
-  { id: 'ins4', nome: 'TOMATE', un: 'KG', valorUnitario: 2.29, fatorCorrecao: 1.250 },
-  { id: 'ins5', nome: 'ALHO', un: 'KG', valorUnitario: 20.99, fatorCorrecao: 1.000 },
-  { id: 'ins6', nome: 'COGUMELO CHAMPIGNON (FRESCO)', un: 'KG', valorUnitario: 43.00, fatorCorrecao: 1.000 },
-  { id: 'ins7', nome: 'CASTANHA', un: 'KG', valorUnitario: 30.00, fatorCorrecao: 1.000 },
-  { id: 'ins8', nome: 'LIMÃO', un: 'KG', valorUnitario: 8.99, fatorCorrecao: 1.000 },
-  { id: 'ins9', nome: 'PIMENTA BRANCA', un: 'KG', valorUnitario: 42.90, fatorCorrecao: 1.000 },
-  { id: 'ins10', nome: 'AÇAFRÃO', un: 'KG', valorUnitario: 14.00, fatorCorrecao: 1.000 },
-  { id: 'ins11', nome: 'AÇÚCAR', un: 'KG', valorUnitario: 2.00, fatorCorrecao: 1.000 },
-  { id: 'ins12', nome: 'AZEITE', un: 'ML', valorUnitario: 15.00, fatorCorrecao: 1.000 },
-  { id: 'ins13', nome: 'ARROZ PARBOILIZADO', un: 'KG', valorUnitario: 5.50, fatorCorrecao: 1.000 },
-  { id: 'ins14', nome: 'FEIJÃO PRETO', un: 'KG', valorUnitario: 7.80, fatorCorrecao: 1.000 },
-  { id: 'ins15', nome: 'CARNE BOVINA MOÍDA', un: 'KG', valorUnitario: 28.90, fatorCorrecao: 1.000 },
-  { id: 'ins16', nome: 'BATATA INGLESA', un: 'KG', valorUnitario: 4.50, fatorCorrecao: 1.150 },
-  { id: 'ins17', nome: 'CENOURA', un: 'KG', valorUnitario: 3.90, fatorCorrecao: 1.100 },
+  // CARNES/PROTEÍNAS — Aves
+  { id: 'ins1',  nome: 'FRANGO - FILÉ',              un: 'KG', valorUnitario: 11.20, fatorCorrecao: 1.000, categoria: 'AVES' },
+  // CARNES/PROTEÍNAS — Bovinos
+  { id: 'ins15', nome: 'CARNE BOVINA MOÍDA',          un: 'KG', valorUnitario: 28.90, fatorCorrecao: 1.000, categoria: 'BOVINOS' },
+  // Hortifrúti
+  { id: 'ins2',  nome: 'CEBOLA',                      un: 'KG', valorUnitario:  3.20, fatorCorrecao: 1.000, categoria: 'HORTIFRÚTI' },
+  { id: 'ins4',  nome: 'TOMATE',                      un: 'KG', valorUnitario:  2.29, fatorCorrecao: 1.250, categoria: 'HORTIFRÚTI' },
+  { id: 'ins8',  nome: 'LIMÃO',                       un: 'KG', valorUnitario:  8.99, fatorCorrecao: 1.000, categoria: 'HORTIFRÚTI' },
+  { id: 'ins16', nome: 'BATATA INGLESA',              un: 'KG', valorUnitario:  4.50, fatorCorrecao: 1.150, categoria: 'HORTIFRÚTI' },
+  { id: 'ins17', nome: 'CENOURA',                     un: 'KG', valorUnitario:  3.90, fatorCorrecao: 1.100, categoria: 'HORTIFRÚTI' },
+  { id: 'ins6',  nome: 'COGUMELO CHAMPIGNON (FRESCO)',un: 'KG', valorUnitario: 43.00, fatorCorrecao: 1.000, categoria: 'HORTIFRÚTI' },
+  // Secos / Cereais / Leguminosas
+  { id: 'ins13', nome: 'ARROZ PARBOILIZADO',          un: 'KG', valorUnitario:  5.50, fatorCorrecao: 1.000, categoria: 'SECOS' },
+  { id: 'ins14', nome: 'FEIJÃO PRETO',               un: 'KG', valorUnitario:  7.80, fatorCorrecao: 1.000, categoria: 'SECOS' },
+  { id: 'ins11', nome: 'AÇÚCAR',                     un: 'KG', valorUnitario:  2.00, fatorCorrecao: 1.000, categoria: 'SECOS' },
+  { id: 'ins7',  nome: 'CASTANHA',                   un: 'KG', valorUnitario: 30.00, fatorCorrecao: 1.000, categoria: 'SECOS' },
+  // Condimentos / Temperos
+  { id: 'ins3',  nome: 'SAL REFINADO',               un: 'KG', valorUnitario:  2.00, fatorCorrecao: 1.000, categoria: 'CONDIMENTOS' },
+  { id: 'ins5',  nome: 'ALHO',                       un: 'KG', valorUnitario: 20.99, fatorCorrecao: 1.000, categoria: 'CONDIMENTOS' },
+  { id: 'ins9',  nome: 'PIMENTA BRANCA',             un: 'KG', valorUnitario: 42.90, fatorCorrecao: 1.000, categoria: 'CONDIMENTOS' },
+  { id: 'ins10', nome: 'AÇAFRÃO',                    un: 'KG', valorUnitario: 14.00, fatorCorrecao: 1.000, categoria: 'CONDIMENTOS' },
+  { id: 'ins12', nome: 'AZEITE',                     un: 'ML', valorUnitario: 15.00, fatorCorrecao: 1.000, categoria: 'CONDIMENTOS' },
 ]
 
 // Exemplo inicial de Ficha Técnica de Preparação conforme anexo do usuário
