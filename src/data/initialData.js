@@ -45,7 +45,7 @@ export const PROTEINAS_INICIAIS = [
     nomeAbrev: 'PEITO DE FRANGO AO MOLHO CREMOSO DE MILHO',
     nomeBranda: 'PEITO DE FRANGO EM CUBOS',
     nomePastosa: 'FRANGO DESFIADO COM CALDO/MOLHO',
-    nomeLiquida: 'CARNE COM CALDO/MOLHO LIQUIDIFICADA',
+    nomeLiquida: '',
   },
   {
     id: 'pf2',

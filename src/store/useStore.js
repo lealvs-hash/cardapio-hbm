@@ -45,7 +45,7 @@ function loadFromStorage() {
   return null
 }
 
-const PADRAO_LIQUIDA_PROTEINA = 'CARNE COM CALDO/MOLHO LIQUIDIFICADA'
+const PADRAO_LIQUIDA_PROTEINA = ''
 
 const mapIniciais = new Map(PROTEINAS_INICIAIS.map(item => [item.id, item]))
 
@@ -62,13 +62,22 @@ function normalizarProteinas(prots = []) {
         sufixoPastosa = ''
       }
       const inicial = mapIniciais.get(id)
+      let nomeLiquida = p.nomeLiquida !== undefined ? p.nomeLiquida : (inicial?.nomeLiquida || '')
+      // Remove de todas as receitas a carne liquidificada automática
+      if (
+        typeof nomeLiquida === 'string' &&
+        (nomeLiquida.trim().toUpperCase() === 'CARNE COM CALDO/MOLHO LIQUIDIFICADA' ||
+         nomeLiquida.trim().toUpperCase() === 'CARNE C/ CALDO LIQUIDIFICADA')
+      ) {
+        nomeLiquida = ''
+      }
       return {
         ...p,
         id,
         sufixoPastosa,
         nomeBranda: p.nomeBranda || inicial?.nomeBranda || p.nomeAbrev || p.nome || '',
         nomePastosa: p.nomePastosa ? limparDuplicidadeMolho(p.nomePastosa) : (inicial?.nomePastosa ? limparDuplicidadeMolho(inicial.nomePastosa) : p.nomePastosa),
-        nomeLiquida: p.nomeLiquida !== undefined ? p.nomeLiquida : PADRAO_LIQUIDA_PROTEINA,
+        nomeLiquida,
       }
     })
 }
@@ -278,6 +287,22 @@ export function useStore() {
         [data]: cardapio,
       },
     }))
+  }, [])
+
+  const salvarCeia = useCallback((data, ceia) => {
+    setState(prev => {
+      const cardapioAtual = prev.cardapios[data] || {}
+      return {
+        ...prev,
+        cardapios: {
+          ...prev.cardapios,
+          [data]: {
+            ...cardapioAtual,
+            ceia,
+          },
+        },
+      }
+    })
   }, [])
 
   const excluirCardapio = useCallback((data) => {
@@ -509,9 +534,10 @@ export function useStore() {
 
   return {
     state,
-    // Cardápios
+    // Cardápios & Ceia
     salvarCardapio,
     salvarRascunhoCardapio,
+    salvarCeia,
     excluirCardapio,
     // Proteínas
     adicionarProteina,

@@ -911,4 +911,208 @@ html, body {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
+
+  /* ══════════════════════════════════════════════════════
+     CEIA DO DIA — IMPRESSÃO COMPLETA EM FOLHA A4 SEM QUEBRAS
+     ══════════════════════════════════════════════════════ */
+  body.print-ceia-only .print-area {
+    display: none !important;
+  }
+  body.print-ceia-only .ceia-print-sheet {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 190mm !important;
+    min-height: 190mm !important;
+    max-height: 192mm !important;
+    box-sizing: border-box !important;
+    padding: 14mm 20mm !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    margin: 0 auto !important;
+    background: #fff !important;
+    color: #000 !important;
+    font-family: Arial, Calibri, 'Helvetica Neue', sans-serif !important;
+  }
+
+  body:not(.print-ceia-only) .ceia-print-sheet {
+    display: none !important;
+  }
+
+  .ceia-print-header {
+    text-align: center !important;
+    margin-bottom: 6mm !important;
+  }
+
+  .ceia-print-title {
+    font-size: 18pt !important;
+    font-weight: 900 !important;
+    color: #000 !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    letter-spacing: 0.5px !important;
+    text-decoration: underline !important;
+    text-underline-offset: 4px !important;
+    font-style: italic !important;
+  }
+
+  .ceia-print-body {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-around !important;
+    padding: 4mm 0 !important;
+  }
+
+  .ceia-print-row {
+    font-size: 13.5pt !important;
+    line-height: 1.4 !important;
+    margin: 3mm 0 !important;
+    color: #000 !important;
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 8px !important;
+  }
+
+  .ceia-print-label {
+    font-weight: 900 !important;
+    font-size: 13.5pt !important;
+    color: #000 !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+  }
+
+  .ceia-print-val {
+    font-weight: 700 !important;
+    font-size: 13.5pt !important;
+    color: #000 !important;
+    text-transform: uppercase !important;
+  }
+
+  .ceia-print-footer {
+    text-align: right !important;
+    font-size: 12pt !important;
+    font-weight: 800 !important;
+    color: #000 !important;
+    margin-top: 4mm !important;
+    letter-spacing: 0.3px !important;
+  }
+}
+
+/* Ceia print sheet hidden on screen */
+.ceia-print-sheet {
+  display: none;
+}
+
+/* ── Seção CEIA do Cardápio (Tela) ── */
+.ceia-editor-card {
+  margin-top: 20px;
+  margin-bottom: 24px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 16px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.ceia-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 14px;
+}
+
+.ceia-editor-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ceia-editor-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.3px;
+}
+
+.ceia-editor-sub {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.ceia-editor-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.ceia-fields-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.ceia-field-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ceia-field-label {
+  width: 240px;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 800;
+  color: #334155;
+  text-align: right;
+  letter-spacing: 0.3px;
+}
+
+.ceia-field-input {
+  flex: 1;
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  text-transform: uppercase;
+  color: #1e293b;
+  background: #f8fafc;
+  transition: all 0.15s ease;
+}
+
+.ceia-field-input:focus {
+  background: #ffffff;
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+@media (max-width: 768px) {
+  .ceia-field-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .ceia-field-label {
+    width: auto;
+    text-align: left;
+  }
+  .ceia-field-input {
+    width: 100%;
+  }
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { Printer, Save, Plus, X, Check, ChevronDown, Pencil } from 'lucide-react'
+import { Printer, Save, Plus, X, Check, ChevronDown, Pencil, Moon } from 'lucide-react'
 import PrintView from '../components/PrintView'
+import CeiaPrintView from '../components/CeiaPrintView'
 import { DIAS_SEMANA, BASES_DIETA, OBS_LIQUIDA_PADRAO } from '../data/initialData'
 import { verificarRepeticaoPrato } from '../utils/repetitionUtils'
 import { formatarNomePastosa } from '../utils/formatUtils'
@@ -12,6 +13,17 @@ import DishSelectDropdown from '../components/DishSelectDropdown'
 function formatDate(dateStr) {
   const [y, m, d] = dateStr.split('-')
   return `${d}/${m}/${y}`
+}
+
+function emptyCeia() {
+  return {
+    psiquiatria: '',
+    dietaLivre: '',
+    dietaDM: '',
+    dietaBranda: '',
+    dietaPastosaLiquida: '',
+    dietaLiquida: '',
+  }
 }
 
 function getDiaSemana(dateStr) {
@@ -84,7 +96,7 @@ function QuickCreateModal({ tipo, initial = null, onSave, onClose }) {
         nomeAbrev: nomeFinal,
         nomeBranda: initial.nomeBranda || '',
         nomePastosa: initial.nomePastosa || '',
-        nomeLiquida: initial.nomeLiquida !== undefined ? initial.nomeLiquida : (tipo === 'proteina' ? 'CARNE COM CALDO/MOLHO LIQUIDIFICADA' : ''),
+        nomeLiquida: initial.nomeLiquida || '',
         sufixoPastosa: initial.sufixoPastosa || '',
         sufixoLiquida: initial.sufixoLiquida || 'LIQUIDIFICADO',
       }
@@ -95,7 +107,7 @@ function QuickCreateModal({ tipo, initial = null, onSave, onClose }) {
       nomeAbrev: '',
       nomeBranda: '',
       nomePastosa: '',
-      nomeLiquida: tipo === 'proteina' ? 'CARNE COM CALDO/MOLHO LIQUIDIFICADA' : '',
+      nomeLiquida: '',
       sufixoPastosa: '',
       sufixoLiquida: 'LIQUIDIFICADO',
     }
@@ -202,8 +214,8 @@ function QuickCreateModal({ tipo, initial = null, onSave, onClose }) {
                 </div>
               </div>
               <div className="form-group" style={{ marginTop: 8 }}>
-                <label>Opção LÍQ. PASTOSA <span style={{ fontWeight: 400, color: '#888' }}>(Padrão: CARNE C/ CALDO LIQUIDIFICADA — ou deixe vazio)</span></label>
-                <input type="text" value={form.nomeLiquida} onChange={handleUpperChange('nomeLiquida')} placeholder="Ex: CARNE C/ CALDO LIQUIDIFICADA" style={{ textTransform: 'uppercase' }} />
+                <label>Opção LÍQ. PASTOSA <span style={{ fontWeight: 400, color: '#888' }}>(Opcional — ou deixe vazio)</span></label>
+                <input type="text" value={form.nomeLiquida} onChange={handleUpperChange('nomeLiquida')} placeholder="Ou deixe em branco" style={{ textTransform: 'uppercase' }} />
               </div>
             </>
           )}
@@ -851,7 +863,9 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
   const [obsLiquidaCompleta, setObsLiquidaCompleta] = useState(OBS_LIQUIDA_PADRAO.liquidaCompleta)
   const [obsLiquidaSemResiduos, setObsLiquidaSemResiduos] = useState(OBS_LIQUIDA_PADRAO.liquidaSemResiduos)
   const [ns, setNs] = useState('')
+  const [ceia, setCeia] = useState(() => emptyCeia())
   const [saved, setSaved] = useState(false)
+  const [savedCeia, setSavedCeia] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
 
   // Ao trocar de data, carrega primeiro se houver rascunho em cache, senão o cardápio salvo, senão o padrão limpo
@@ -867,14 +881,17 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
       setObsLiquidaCompleta(fonte.observacoes?.liquidaCompleta ?? OBS_LIQUIDA_PADRAO.liquidaCompleta)
       setObsLiquidaSemResiduos(fonte.observacoes?.liquidaSemResiduos ?? OBS_LIQUIDA_PADRAO.liquidaSemResiduos)
       setNs(fonte.ns ?? fonte.observacoes?.ns ?? '')
+      setCeia({ ...emptyCeia(), ...(fonte.ceia ?? {}) })
     } else {
       setAlmoco(emptyRefeicao('almoco'))
       setJantar(emptyRefeicao('jantar'))
       setObsLiquidaCompleta(OBS_LIQUIDA_PADRAO.liquidaCompleta)
       setObsLiquidaSemResiduos(OBS_LIQUIDA_PADRAO.liquidaSemResiduos)
       setNs('')
+      setCeia(emptyCeia())
     }
     setSaved(false)
+    setSavedCeia(false)
     // Marca como carregado para começar a salvar rascunhos automáticos
     setTimeout(() => setIsLoaded(true), 50)
   }, [selectedDate])
@@ -888,26 +905,93 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
       jantar,
       observacoes: { liquidaCompleta: obsLiquidaCompleta, liquidaSemResiduos: obsLiquidaSemResiduos },
       ns,
+      ceia,
     }
     salvarRascunhoCardapio(selectedDate, cardapioAtual)
-  }, [almoco, jantar, obsLiquidaCompleta, obsLiquidaSemResiduos, ns, selectedDate, isLoaded])
+  }, [almoco, jantar, obsLiquidaCompleta, obsLiquidaSemResiduos, ns, ceia, selectedDate, isLoaded])
 
+  // Salvar Cardápio Principal (preserva a Ceia existente)
   const handleSalvar = () => {
+    const cardapioExistente = cardapios[selectedDate] || {}
     salvarCardapio(selectedDate, {
+      ...cardapioExistente,
       diaSemana: getDiaSemana(selectedDate),
       almoco,
       jantar,
       observacoes: { liquidaCompleta: obsLiquidaCompleta, liquidaSemResiduos: obsLiquidaSemResiduos },
       ns,
+      ceia,
     })
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
+  }
+
+  // Gravar Ceia de forma independente (preserva o cardápio principal)
+  const handleSalvarCeia = () => {
+    const cardapioExistente = cardapios[selectedDate] || {}
+    salvarCardapio(selectedDate, {
+      ...cardapioExistente,
+      diaSemana: getDiaSemana(selectedDate),
+      almoco,
+      jantar,
+      observacoes: { liquidaCompleta: obsLiquidaCompleta, liquidaSemResiduos: obsLiquidaSemResiduos },
+      ns,
+      ceia,
+    })
+    if (store.salvarCeia) {
+      store.salvarCeia(selectedDate, ceia)
+    }
+    setSavedCeia(true)
+    setTimeout(() => setSavedCeia(false), 2500)
+  }
+
+  // Impressão independente do Cardápio do Dia (A4 Paisagem)
+  const handleImprimirCardapio = () => {
+    const cleanup = () => {
+      document.body.classList.remove('print-cardapio-only')
+      window.removeEventListener('afterprint', cleanup)
+    }
+    window.addEventListener('afterprint', cleanup)
+    document.body.classList.add('print-cardapio-only')
+    window.print()
+  }
+
+  // Impressão independente da Ceia (Folha A4 sem quebras)
+  const handleImprimirCeia = () => {
+    const cleanup = () => {
+      document.body.classList.remove('print-ceia-only')
+      window.removeEventListener('afterprint', cleanup)
+    }
+    window.addEventListener('afterprint', cleanup)
+    document.body.classList.add('print-ceia-only')
+    window.print()
+  }
+
+  const handleCeiaChange = field => e => {
+    const val = e.target.value.toUpperCase()
+    setCeia(prev => ({ ...prev, [field]: val }))
+  }
+
+  const handleReplicarLivre = () => {
+    if (!ceia.dietaLivre) return
+    setCeia(prev => ({
+      ...prev,
+      psiquiatria: prev.psiquiatria || prev.dietaLivre,
+      dietaDM: prev.dietaDM || prev.dietaLivre,
+    }))
+  }
+
+  const handleLimparCeia = () => {
+    if (window.confirm('Limpar todos os campos da Ceia deste dia?')) {
+      setCeia(emptyCeia())
+    }
   }
 
   const cardapioParaPrint = {
     almoco, jantar,
     observacoes: { liquidaCompleta: obsLiquidaCompleta, liquidaSemResiduos: obsLiquidaSemResiduos },
     ns,
+    ceia,
   }
 
   return (
@@ -954,8 +1038,8 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
           <button className="btn btn-primary" onClick={handleSalvar}>
             <Save size={15} /> {saved ? '✓ Salvo!' : 'Salvar Cardápio'}
           </button>
-          <button className="btn btn-secondary" onClick={() => window.print()}>
-            <Printer size={15} /> Imprimir
+          <button className="btn btn-secondary" onClick={handleImprimirCardapio} title="Imprimir Cardápio do Dia (A4 Paisagem)">
+            <Printer size={15} /> Imprimir Cardápio
           </button>
         </div>
       </div>
@@ -1001,11 +1085,138 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
         </div>
       </div>
 
+      {/* ── Seção CEIA DO DIA ── */}
+      <div className="ceia-editor-card no-print">
+        <div className="ceia-editor-header">
+          <div className="ceia-editor-title-wrap">
+            <h4 className="ceia-editor-title">
+              <Moon size={18} style={{ color: '#5c6bc0' }} />
+              CEIA — DATA: {getDiaSemana(selectedDate).toUpperCase()} : {formatDate(selectedDate)}
+            </h4>
+            <span className="ceia-editor-sub">
+              Preenchimento da ceia por dieta. Gravação e impressão independentes do cardápio principal.
+            </span>
+          </div>
+
+          <div className="ceia-editor-actions">
+            {ceia.dietaLivre && (
+              <button
+                type="button"
+                className="btn btn-outline"
+                style={{ fontSize: '11px', padding: '5px 9px' }}
+                onClick={handleReplicarLivre}
+                title="Copia o conteúdo da Dieta Livre para Psiquiatria e DM"
+              >
+                ⚡ Replicar Livre → Psiq/DM
+              </button>
+            )}
+            <button
+              type="button"
+              className="btn btn-outline"
+              style={{ fontSize: '11px', padding: '5px 9px' }}
+              onClick={handleLimparCeia}
+              title="Limpar todos os campos da ceia"
+            >
+              Limpar Ceia
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handleSalvarCeia}
+              style={{ background: '#5c6bc0', borderColor: '#3f51b5' }}
+            >
+              <Save size={15} /> {savedCeia ? '✓ Ceia Gravada!' : 'Gravar Ceia'}
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={handleImprimirCeia}
+              title="Imprimir somente a folha de Ceia em folha A4 sem quebras"
+            >
+              <Printer size={15} /> Imprimir Ceia
+            </button>
+          </div>
+        </div>
+
+        <div className="ceia-fields-grid">
+          <div className="ceia-field-row">
+            <label className="ceia-field-label">PSIQUIATRIA:</label>
+            <input
+              type="text"
+              className="ceia-field-input"
+              value={ceia.psiquiatria || ''}
+              onChange={handleCeiaChange('psiquiatria')}
+              placeholder="Ex: BOLO SEMI INTEGRAL DE MILHO + SUCO NATURAL DE LARANJA"
+            />
+          </div>
+
+          <div className="ceia-field-row">
+            <label className="ceia-field-label">DIETA LIVRE:</label>
+            <input
+              type="text"
+              className="ceia-field-input"
+              value={ceia.dietaLivre || ''}
+              onChange={handleCeiaChange('dietaLivre')}
+              placeholder="Ex: BOLO SEMI INTEGRAL DE MILHO + SUCO NATURAL DE LARANJA"
+            />
+          </div>
+
+          <div className="ceia-field-row">
+            <label className="ceia-field-label">DIETA DM:</label>
+            <input
+              type="text"
+              className="ceia-field-input"
+              value={ceia.dietaDM || ''}
+              onChange={handleCeiaChange('dietaDM')}
+              placeholder="Ex: BOLO SEMI INTEGRAL DE MILHO + SUCO NATURAL DE LARANJA"
+            />
+          </div>
+
+          <div className="ceia-field-row">
+            <label className="ceia-field-label">DIETA BRANDA:</label>
+            <input
+              type="text"
+              className="ceia-field-input"
+              value={ceia.dietaBranda || ''}
+              onChange={handleCeiaChange('dietaBranda')}
+              placeholder="Ex: BISCOITO DOCE + SUCO DE CX"
+            />
+          </div>
+
+          <div className="ceia-field-row">
+            <label className="ceia-field-label">DIETA PASTOSA E LÍQUIDA PASTOSA:</label>
+            <input
+              type="text"
+              className="ceia-field-input"
+              value={ceia.dietaPastosaLiquida || ''}
+              onChange={handleCeiaChange('dietaPastosaLiquida')}
+              placeholder="Ex: MINGAU DE AVEIA COM CANELA + SUCO NATURAL DE LARANJA"
+            />
+          </div>
+
+          <div className="ceia-field-row">
+            <label className="ceia-field-label">DIETA LÍQUIDA:</label>
+            <input
+              type="text"
+              className="ceia-field-input"
+              value={ceia.dietaLiquida || ''}
+              onChange={handleCeiaChange('dietaLiquida')}
+              placeholder="Ex: CHÁ + GELATINA + SUCO CX + ÁGUA"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* ── Print-only ── */}
       <div className="print-only">
         <PrintView
           cardapio={cardapioParaPrint}
           proteinas={proteinas} leguminosas={leguminosas} guarnicoes={guarnicoes}
+          dataFormatada={formatDate(selectedDate)}
+          diaSemana={getDiaSemana(selectedDate)}
+        />
+        <CeiaPrintView
+          ceia={ceia}
           dataFormatada={formatDate(selectedDate)}
           diaSemana={getDiaSemana(selectedDate)}
         />

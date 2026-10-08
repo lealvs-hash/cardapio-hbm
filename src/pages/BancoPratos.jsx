@@ -20,7 +20,7 @@ function ModalPreparacao({ initial, onSave, onClose, titulo, tipo = 'proteina', 
       nomeAbrev: '',
       nomeBranda: '',
       nomePastosa: '',
-      nomeLiquida: tipo === 'guarnicao' ? '' : 'CARNE COM CALDO/MOLHO LIQUIDIFICADA',
+      nomeLiquida: '',
       sufixoPastosa: '',
       sufixoLiquida: 'LIQUIDIFICADO',
       perCapita: '',
@@ -126,8 +126,8 @@ function ModalPreparacao({ initial, onSave, onClose, titulo, tipo = 'proteina', 
             </div>
             <div className="form-group">
               <label>Opção LÍQ. PASTOSA</label>
-              <input type="text" value={form.nomeLiquida || ''} onChange={handleUpperChange('nomeLiquida')} placeholder={tipo === 'guarnicao' ? 'Ou deixe em branco' : 'Ex: CARNE C/ CALDO LIQUIDIFICADA'} style={{ textTransform: 'uppercase' }} />
-              <span className="field-hint">{tipo === 'guarnicao' ? 'Opcional (ou deixe vazio)' : 'Padrão: Carne liquidificada'}</span>
+              <input type="text" value={form.nomeLiquida || ''} onChange={handleUpperChange('nomeLiquida')} placeholder="Opcional (ou deixe em branco)" style={{ textTransform: 'uppercase' }} />
+              <span className="field-hint">Opcional (ou deixe vazio)</span>
             </div>
           </div>
 
