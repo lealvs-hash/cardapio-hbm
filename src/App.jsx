@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useStore } from './store/useStore'
 import NavBar from './components/NavBar'
 import CardapioPage from './pages/CardapioPage'
+import CeiaPage from './pages/CeiaPage'
 import BancoPratos from './pages/BancoPratos'
 import FichaTecnicaPage from './pages/FichaTecnicaPage'
 import ValoresPage from './pages/ValoresPage'
@@ -115,6 +116,7 @@ export default function App() {
             setSelectedDate={setCardapioDate}
           />
         )}
+        {activePage === 'ceia' && <CeiaPage store={store} />}
         {activePage === 'banco' && <BancoPratos store={store} onOpenFicha={handleOpenFicha} />}
         {activePage === 'ficha' && (
           <FichaTecnicaPage

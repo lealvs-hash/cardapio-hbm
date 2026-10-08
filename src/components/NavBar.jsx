@@ -1,5 +1,5 @@
 import React from 'react'
-import { UtensilsCrossed, BookOpen, History, Download, Upload, RotateCcw, FileText, DollarSign } from 'lucide-react'
+import { UtensilsCrossed, BookOpen, History, Download, Upload, RotateCcw, FileText, DollarSign, Moon } from 'lucide-react'
 
 export default function NavBar({ activePage, setActivePage, exportarDados, importarDados, resetarDados, dbStatus = 'conectado' }) {
   const fileInputRef = React.useRef(null)
@@ -25,6 +25,7 @@ export default function NavBar({ activePage, setActivePage, exportarDados, impor
 
   const navItems = [
     { key: 'cardapio', label: 'Cardápio do Dia', Icon: UtensilsCrossed },
+    { key: 'ceia', label: 'Ceia', Icon: Moon },
     { key: 'banco', label: 'Pratos', Icon: BookOpen },
     { key: 'ficha', label: 'Ficha Técnica', Icon: FileText },
     { key: 'valores', label: 'Valores', Icon: DollarSign },

@@ -136,6 +136,7 @@ function createInitialState() {
     fichasTecnicas: FICHAS_TECNICAS_INICIAIS,
     cardapios: {}, // { 'YYYY-MM-DD': { diaSemana, almoco, jantar, observacoes } }
     rascunhosCardapio: {}, // { 'YYYY-MM-DD': { diaSemana, almoco, jantar, observacoes } }
+    ceias: {}, // { 'YYYY-MM-DD': { psiquiatria, dietaLivre, dietaDM, dietaBranda, dietaPastosaLiquida, dietaLiquida } }
   }
 }
 
@@ -176,6 +177,7 @@ export function useStore() {
         fichasTecnicas: saved.fichasTecnicas ?? FICHAS_TECNICAS_INICIAIS,
         cardapios: normalizarCardapios(saved.cardapios ?? {}),
         rascunhosCardapio: normalizarCardapios(saved.rascunhosCardapio ?? {}),
+        ceias: saved.ceias ?? {},
       }
     }
     return createInitialState()
@@ -301,6 +303,29 @@ export function useStore() {
             ceia,
           },
         },
+        ceias: {
+          ...(prev.ceias || {}),
+          [data]: ceia,
+        },
+      }
+    })
+  }, [])
+
+  const excluirCeia = useCallback((data) => {
+    setState(prev => {
+      const cardapioAtual = prev.cardapios[data]
+      const novoCardapio = cardapioAtual ? { ...cardapioAtual } : null
+      if (novoCardapio) delete novoCardapio.ceia
+
+      const novasCeias = { ...(prev.ceias || {}) }
+      delete novasCeias[data]
+
+      return {
+        ...prev,
+        cardapios: novoCardapio
+          ? { ...prev.cardapios, [data]: novoCardapio }
+          : prev.cardapios,
+        ceias: novasCeias,
       }
     })
   }, [])
@@ -538,6 +563,7 @@ export function useStore() {
     salvarCardapio,
     salvarRascunhoCardapio,
     salvarCeia,
+    excluirCeia,
     excluirCardapio,
     // Proteínas
     adicionarProteina,

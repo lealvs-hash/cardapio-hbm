@@ -7,8 +7,11 @@ export default function CeiaPrintView({ ceia = {}, dataFormatada, diaSemana }) {
     <div className="ceia-print-sheet">
       <div className="ceia-print-header">
         <h1 className="ceia-print-title">
-          <u><em>CEIA - DATA: {diaSemanaUpper} : {dataFormatada}</em></u>
+          <u><em>CEIA</em></u>
         </h1>
+        <div className="ceia-print-date">
+          DATA: {diaSemanaUpper} : {dataFormatada}
+        </div>
       </div>
 
       <div className="ceia-print-body">
