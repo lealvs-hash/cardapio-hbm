@@ -31,7 +31,7 @@ function emptyRefeicao(tipo = 'almoco') {
     proteinaBrandaManual: undefined,
     proteinaPastosaId: undefined,
     proteinaPastosaManual: undefined,
-    proteinaLiquidaManual: undefined,
+    proteinaLiquidaManual: undefined, proteinaLiquidaId: undefined,
     leguminosaId:  tipo === 'almoco' ? 'leg1' : '', // Feijão Preto pré-selecionado no Almoço
     guarnicaoId:   '',
     guarnicaoAbrev: '',
@@ -272,6 +272,7 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
   const prot  = proteinas.find(p  => p.id  === r.proteinaId)
   const altProtBranda = proteinas.find(p => p.id === r.proteinaBrandaId)
   const altProtPastosa = proteinas.find(p => p.id === r.proteinaPastosaId)
+  const altProtLiquida = proteinas.find(p => p.id === r.proteinaLiquidaId)
   const leg   = leguminosas.find(l => l.id === r.leguminosaId)
   const guard = guarnicoes.find(g  => g.id  === r.guarnicaoId)
   const sal   = saladas.find(s    => s.id   === r.saladaId)
@@ -299,7 +300,7 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
           proteinaBrandaManual: undefined,
           proteinaPastosaId: undefined,
           proteinaPastosaManual: undefined,
-          proteinaLiquidaManual: undefined,
+          proteinaLiquidaManual: undefined, proteinaLiquidaId: undefined,
         })
       } else {
         // base field: store nomeAbrev as value
@@ -399,7 +400,7 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
         proteinaBrandaManual: undefined,
         proteinaPastosaId: undefined,
         proteinaPastosaManual: undefined,
-        proteinaLiquidaManual: undefined,
+        proteinaLiquidaManual: undefined, proteinaLiquidaId: undefined,
       })
       return
     }
@@ -413,7 +414,7 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
       proteinaBrandaManual: undefined,
       proteinaPastosaId: undefined,
       proteinaPastosaManual: undefined,
-      proteinaLiquidaManual: undefined,
+      proteinaLiquidaManual: undefined, proteinaLiquidaId: undefined,
     })
   }
   const handleLegChange = (e) => {
@@ -465,13 +466,16 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
     protPastosa = formatarNomePastosa(prot)
   }
   
+  // null ou '' = em branco explícito; undefined = usa o cadastrado no prato (sem forçar padrão)
   let protLiquida = ''
-  if (r.proteinaLiquidaManual !== undefined && r.proteinaLiquidaManual !== '') {
+  if (r.proteinaLiquidaManual === null || r.proteinaLiquidaManual === '') {
+    protLiquida = ''
+  } else if (r.proteinaLiquidaManual !== undefined) {
     protLiquida = r.proteinaLiquidaManual
-  } else if (prot?.nomeLiquida) {
-    protLiquida = prot.nomeLiquida
+  } else if (altProtLiquida) {
+    protLiquida = altProtLiquida.nomeLiquida || ''
   } else if (prot) {
-    protLiquida = 'CARNE COM CALDO/MOLHO LIQUIDIFICADA'
+    protLiquida = prot.nomeLiquida || ''
   }
 
   const guardNome = guard?.nomeAbrev || ''
@@ -682,15 +686,42 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
                 onEdit={item => setEditItem({ tipo: 'proteina', item })}
               />
             </td>
-            <td className="cardapio-td edit-cell" title="Líquida Pastosa (Carne com caldo liquidificada — pode alterar ou deixar em branco)">
-              <input
-                type="text"
-                className="table-select"
-                style={{ textAlign: 'center', fontSize: '7pt', height: '100%' }}
-                value={r.proteinaLiquidaManual !== undefined ? r.proteinaLiquidaManual : derived.protLiquida}
-                onChange={e => onChange({ ...r, proteinaLiquidaManual: e.target.value.toUpperCase() })}
-                placeholder="Vazio"
-              />
+            <td className="cardapio-td edit-cell" title="Líquida Pastosa (puxa do prato; escolha outra opção ou use — EM BRANCO — para deixar vazio)">
+              {(() => {
+                const liqEmBranco = r.proteinaLiquidaManual === null || r.proteinaLiquidaManual === ''
+                // Opções: só pratos com nome líquido cadastrado, sem repetir o mesmo texto
+                const vistos = new Set()
+                const opcoesLiquida = proteinas.filter(p => {
+                  const nome = (p?.nomeLiquida || '').trim().toUpperCase()
+                  if (!nome || vistos.has(nome)) return false
+                  vistos.add(nome)
+                  return true
+                })
+                return (
+                  <DishSelectDropdown
+                    value={r.proteinaLiquidaId}
+                    options={opcoesLiquida}
+                    groupBy={null}
+                    placeholder={liqEmBranco ? '— em branco —' : '— Selecionar —'}
+                    defaultLabel={liqEmBranco ? '' : derived.protLiquida}
+                    defaultItemId={r.proteinaId}
+                    allowBlank
+                    formatOptionName={item => item.nomeLiquida}
+                    formatOptionSecondary={() => ''}
+                    onChange={val => {
+                      if (val === '__padrao__') {
+                        onChange({ ...r, proteinaLiquidaId: undefined, proteinaLiquidaManual: undefined })
+                      } else if (!val) {
+                        onChange({ ...r, proteinaLiquidaId: undefined, proteinaLiquidaManual: null })
+                      } else {
+                        const p = proteinas.find(x => x.id === val)
+                        onChange({ ...r, proteinaLiquidaId: val, proteinaLiquidaManual: p?.nomeLiquida || null })
+                      }
+                    }}
+                    onEdit={item => setEditItem({ tipo: 'proteina', item })}
+                  />
+                )
+              })()}
             </td>
           </tr>
 

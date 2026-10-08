@@ -32,13 +32,17 @@ function deriveData(refeicao, proteinas, leguminosas, guarnicoes = []) {
     protPastosa = formatarNomePastosa(prot)
   }
   
+  // null ou '' = em branco explícito; undefined = usa o cadastrado no prato (sem forçar padrão)
+  const altProtLiquida = proteinas.find(p => p.id === refeicao?.proteinaLiquidaId)
   let protLiquida = ''
-  if (refeicao?.proteinaLiquidaManual !== undefined && refeicao.proteinaLiquidaManual !== '') {
+  if (refeicao?.proteinaLiquidaManual === null || refeicao?.proteinaLiquidaManual === '') {
+    protLiquida = ''
+  } else if (refeicao?.proteinaLiquidaManual !== undefined) {
     protLiquida = refeicao.proteinaLiquidaManual
-  } else if (prot?.nomeLiquida) {
-    protLiquida = prot.nomeLiquida
+  } else if (altProtLiquida) {
+    protLiquida = altProtLiquida.nomeLiquida || ''
   } else if (prot) {
-    protLiquida = 'CARNE COM CALDO/MOLHO LIQUIDIFICADA'
+    protLiquida = prot.nomeLiquida || ''
   }
 
   const legNome    = leg?.nomeAbrev   || ''

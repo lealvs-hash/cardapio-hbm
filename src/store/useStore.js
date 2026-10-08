@@ -68,7 +68,7 @@ function normalizarProteinas(prots = []) {
         sufixoPastosa,
         nomeBranda: p.nomeBranda || inicial?.nomeBranda || p.nomeAbrev || p.nome || '',
         nomePastosa: p.nomePastosa ? limparDuplicidadeMolho(p.nomePastosa) : (inicial?.nomePastosa ? limparDuplicidadeMolho(inicial.nomePastosa) : p.nomePastosa),
-        nomeLiquida: p.nomeLiquida !== undefined && p.nomeLiquida !== '' ? p.nomeLiquida : PADRAO_LIQUIDA_PROTEINA,
+        nomeLiquida: p.nomeLiquida !== undefined ? p.nomeLiquida : PADRAO_LIQUIDA_PROTEINA,
       }
     })
 }
