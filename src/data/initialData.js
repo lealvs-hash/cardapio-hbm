@@ -15,7 +15,7 @@ export const DIAS_SEMANA = [
 export const BASES_DIETA = {
   geralDL: ['ARROZ PARBOILIZADO', 'MASSA ESPAGUETE', 'MASSA PARAFUSO'],
   dm: ['ARROZ INTEGRAL'],
-  branda: ['ARROZ BRANCO', 'MASSA'],
+  branda: ['ARROZ PARBOILIZADO', 'ARROZ BRANCO', 'MASSA'],
   pastosa: ['ARROZ BRANCO PAPA', 'MASSA', 'ARROZ BRANCO'],
   liquidaPastosa: ['CANJA LIQUIDIFICADA'],
 }

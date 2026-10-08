@@ -75,6 +75,9 @@ export default function ValoresPage({ store, onOpenFicha }) {
   const [busca, setBusca] = useState('')
   const [modalNovo, setModalNovo] = useState(false)
   const [editandoId, setEditandoId] = useState(null)
+  const [formEdit, setFormEdit] = useState({})
+  const [precoEditId, setPrecoEditId] = useState(null)   // edição rápida só do preço
+  const [precoEditValor, setPrecoEditValor] = useState('')
   const [gruposAbertos, setGruposAbertos] = useState({})   // grupo → bool (aberto por padrão)
   const [expandedFichas, setExpandedFichas] = useState({}) // itemId → bool
   const [mostrarFichasGlobal, setMostrarFichasGlobal] = useState(false)
@@ -217,7 +220,7 @@ export default function ValoresPage({ store, onOpenFicha }) {
           )}
         </td>
 
-        {/* VALOR */}
+        {/* VALOR — clique para editar rápido */}
         <td style={{ padding: '7px 10px', textAlign: 'right', fontWeight: 700, borderBottom: '1px solid #e8e8e8', color: '#1b5e20' }}>
           {editando ? (
             <input
@@ -226,7 +229,53 @@ export default function ValoresPage({ store, onOpenFicha }) {
               onChange={e => setFormEdit({ ...formEdit, valorUnitario: e.target.value })}
               style={{ width: '90px', padding: '4px 6px', fontSize: '13px', textAlign: 'right' }}
             />
-          ) : `R$ ${(Number(item.valorUnitario) || 0).toFixed(2).replace('.', ',')}`}
+          ) : precoEditId === item.id ? (
+            <input
+              type="text"
+              inputMode="decimal"
+              autoFocus
+              value={precoEditValor}
+              onChange={e => setPrecoEditValor(e.target.value)}
+              onFocus={e => e.target.select()}
+              onBlur={() => {
+                const v = parseFloat(String(precoEditValor).replace(',', '.'))
+                if (!isNaN(v)) editarInsumo(item.id, { valorUnitario: v })
+                setPrecoEditId(null)
+              }}
+              onKeyDown={e => {
+                if (e.key === 'Enter') e.currentTarget.blur()
+                if (e.key === 'Escape') setPrecoEditId(null)
+              }}
+              style={{ width: '90px', padding: '4px 6px', fontSize: '13px', textAlign: 'right', border: '1.5px solid #2e7d32', borderRadius: 4 }}
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                setPrecoEditId(item.id)
+                setPrecoEditValor((Number(item.valorUnitario) || 0).toFixed(2).replace('.', ','))
+              }}
+              title="Clique para editar o preço"
+              style={{
+                background: 'transparent',
+                border: '1px dashed #a5d6a7',
+                borderRadius: 4,
+                padding: '3px 8px',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '13px',
+                color: '#1b5e20',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = '#e8f5e9'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            >
+              R$ {(Number(item.valorUnitario) || 0).toFixed(2).replace('.', ',')}
+              <Edit2 size={11} color="#66bb6a" />
+            </button>
+          )}
         </td>
 
         {/* FC */}
