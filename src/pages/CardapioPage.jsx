@@ -55,11 +55,11 @@ function emptyRefeicao(tipo = 'almoco') {
 }
 
 const COLS = [
-  { key: 'geralDL', label: 'DIETA LIVRE'         },
-  { key: 'dm',      label: 'DM'                  },
-  { key: 'branda',  label: 'BRANDA'              },
-  { key: 'pastosa', label: 'DIETA PASTOSA'       },
-  { key: 'liquida', label: 'LÍQ. PASTOSA'        },
+  { key: 'geralDL', label: 'DIETA LIVRE'           },
+  { key: 'dm',      label: 'DIETA DM'              },
+  { key: 'branda',  label: 'DIETA BRANDA'          },
+  { key: 'pastosa', label: 'DIETA PASTOSA'         },
+  { key: 'liquida', label: 'DIETA LÍQUIDA PASTOSA' },
 ]
 
 const CATEGORIAS_RAPIDAS = {
@@ -1068,16 +1068,19 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
       />
 
       {/* ── Observações de dieta líquida ── */}
-      <div className="obs-section no-print">
-        <h4>💧 Dieta Líquida</h4>
+      <div className="obs-section no-print" style={{ padding: '14px 18px' }}>
         <div className="form-grid form-grid-2">
           <div className="form-group">
-            <label>Líquida Completa</label>
+            <label style={{ fontWeight: 800, color: '#334155', fontSize: '12px', letterSpacing: '0.3px' }}>
+              DIETA LÍQUIDA COMPLETA
+            </label>
             <input type="text" value={obsLiquidaCompleta}
               onChange={e => setObsLiquidaCompleta(e.target.value)} />
           </div>
           <div className="form-group">
-            <label>Líquida Sem Resíduos</label>
+            <label style={{ fontWeight: 800, color: '#334155', fontSize: '12px', letterSpacing: '0.3px' }}>
+              DIETA LÍQUIDA SEM RESÍDUOS
+            </label>
             <input type="text" value={obsLiquidaSemResiduos}
               onChange={e => setObsLiquidaSemResiduos(e.target.value)} />
           </div>

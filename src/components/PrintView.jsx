@@ -72,11 +72,11 @@ function deriveData(refeicao, proteinas, leguminosas, guarnicoes = []) {
 }
 
 const COLS = [
-  { key: 'geralDL', label: 'DIETA LIVRE'          },
-  { key: 'dm',      label: 'DM'                   },
-  { key: 'branda',  label: 'BRANDA'               },
-  { key: 'pastosa', label: 'DIETA PASTOSA'        },
-  { key: 'liquida', label: 'DIETA LÍQ. PASTOSA'  },
+  { key: 'geralDL', label: 'DIETA LIVRE'           },
+  { key: 'dm',      label: 'DIETA DM'              },
+  { key: 'branda',  label: 'DIETA BRANDA'          },
+  { key: 'pastosa', label: 'DIETA PASTOSA'         },
+  { key: 'liquida', label: 'DIETA LÍQUIDA PASTOSA' },
 ]
 
 function MealTable({ title, refeicao, proteinas, leguminosas, guarnicoes, showSalada = false }) {
@@ -177,11 +177,11 @@ export default function PrintView({ cardapio, proteinas, leguminosas, guarnicoes
 
       <div className="print-obs">
         <span className="obs-item">
-          <strong>LÍQUIDA COMPLETA:</strong>&nbsp;{cardapio.observacoes?.liquidaCompleta || '—'}
+          <strong>DIETA LÍQUIDA COMPLETA:</strong>&nbsp;{cardapio.observacoes?.liquidaCompleta || '—'}
         </span>
         <span className="obs-sep">•</span>
         <span className="obs-item">
-          <strong>LÍQ. SEM RESÍDUOS:</strong>&nbsp;{cardapio.observacoes?.liquidaSemResiduos || '—'}
+          <strong>DIETA LÍQUIDA SEM RESÍDUOS:</strong>&nbsp;{cardapio.observacoes?.liquidaSemResiduos || '—'}
         </span>
       </div>
     </div>
