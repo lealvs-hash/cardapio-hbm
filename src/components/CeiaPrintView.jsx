@@ -1,22 +1,22 @@
 import React from 'react'
 
 const DIETAS_CONFIG = [
-  { key: 'psiquiatria', label: 'PSIQUIATRIA', cor: '#4338ca', bg: '#eef2ff', borda: '#c7d2fe', icon: '🧠' },
-  { key: 'dietaLivre', label: 'DIETA LIVRE', cor: '#065f46', bg: '#ecfdf5', borda: '#a7f3d0', icon: '🍽️' },
-  { key: 'dietaDM', label: 'DIETA DM', cor: '#9a3412', bg: '#fff7ed', borda: '#fed7aa', icon: '🥗' },
-  { key: 'dietaBranda', label: 'DIETA BRANDA', cor: '#0e7490', bg: '#ecfeff', borda: '#a5f3fc', icon: '🥣' },
-  { key: 'dietaPastosaLiquida', label: 'PASTOSA E LÍQ. PASTOSA', cor: '#854d0e', bg: '#fefce8', borda: '#fef08a', icon: '🥄' },
-  { key: 'dietaLiquida', label: 'DIETA LÍQUIDA', cor: '#1e40af', bg: '#eff6ff', borda: '#bfdbfe', icon: '💧' },
+  { key: 'psiquiatria', label: 'PSIQUIATRIA', cor: '#4338ca', bg: '#eef2ff', borda: '#c7d2fe' },
+  { key: 'dietaLivre', label: 'DIETA LIVRE', cor: '#065f46', bg: '#ecfdf5', borda: '#a7f3d0' },
+  { key: 'dietaDM', label: 'DIETA DM', cor: '#9a3412', bg: '#fff7ed', borda: '#fed7aa' },
+  { key: 'dietaBranda', label: 'DIETA BRANDA', cor: '#0e7490', bg: '#ecfeff', borda: '#a5f3fc' },
+  { key: 'dietaPastosaLiquida', label: 'PASTOSA E LÍQ. PASTOSA', cor: '#854d0e', bg: '#fefce8', borda: '#fef08a' },
+  { key: 'dietaLiquida', label: 'DIETA LÍQUIDA', cor: '#1e40af', bg: '#eff6ff', borda: '#bfdbfe' },
 ]
 
 export default function CeiaPrintView({ ceia = {}, dataFormatada, diaSemana, modelo = 'moderno' }) {
   const diaSemanaUpper = (diaSemana || '').toUpperCase()
 
-  // ── MODELO 1: MODERNO / EXECUTIVO (Design profissional hospitalar, data APENAS embaixo) ──
+  // ── MODELO 1: MODERNO / EXECUTIVO (Design limpo hospitalar, sem emojis e data apenas embaixo) ──
   if (modelo === 'moderno') {
     return (
       <div className="ceia-print-sheet ceia-modern-sheet">
-        {/* Topo institucional sem repetição de data */}
+        {/* Topo institucional limpo */}
         <div className="ceia-modern-header">
           <div className="ceia-modern-brand">
             <div className="ceia-modern-brand-title">🏥 HBM NUTRIÇÃO</div>
@@ -27,17 +27,14 @@ export default function CeiaPrintView({ ceia = {}, dataFormatada, diaSemana, mod
             <h1 className="ceia-modern-title">CEIA</h1>
           </div>
 
-          <div className="ceia-modern-header-tag">
-            <span className="ceia-modern-tag-title">MAPA DE PRODUÇÃO</span>
-            <span className="ceia-modern-tag-sub">DISTRIBUIÇÃO NOTURNA</span>
-          </div>
+          <div className="ceia-modern-header-spacer" />
         </div>
 
-        {/* Tabela de dietas com crachás coloridos e tipografia destacada */}
+        {/* Tabela de dietas com crachás coloridos limpos (sem emoticons) */}
         <div className="ceia-modern-body">
           <table className="ceia-modern-table">
             <tbody>
-              {DIETAS_CONFIG.map(({ key, label, cor, bg, borda, icon }) => {
+              {DIETAS_CONFIG.map(({ key, label, cor, bg, borda }) => {
                 const valor = (ceia[key] || '').trim()
                 return (
                   <tr key={key} className="ceia-modern-row">
@@ -50,7 +47,6 @@ export default function CeiaPrintView({ ceia = {}, dataFormatada, diaSemana, mod
                           borderColor: borda,
                         }}
                       >
-                        <span className="ceia-modern-badge-icon">{icon}</span>
                         <span className="ceia-modern-badge-text">{label}</span>
                       </div>
                     </td>
@@ -66,7 +62,7 @@ export default function CeiaPrintView({ ceia = {}, dataFormatada, diaSemana, mod
           </table>
         </div>
 
-        {/* Rodapé moderno com assinatura e data única */}
+        {/* Rodapé moderno com data única (sem assinatura de nutricionista) */}
         <div className="ceia-modern-footer">
           <div className="ceia-modern-footer-left">
             <span className="ceia-modern-footer-obs">
@@ -74,10 +70,6 @@ export default function CeiaPrintView({ ceia = {}, dataFormatada, diaSemana, mod
             </span>
           </div>
           <div className="ceia-modern-footer-right">
-            <div className="ceia-modern-signature-line">
-              <span className="ceia-modern-sig-label">Nutricionista Responsável:</span>
-              <span className="ceia-modern-sig-dots">________________________________</span>
-            </div>
             <div className="ceia-modern-footer-date">
               {diaSemanaUpper} : {dataFormatada}
             </div>
