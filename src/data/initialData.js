@@ -20,6 +20,73 @@ export const BASES_DIETA = {
   liquidaPastosa: ['CANJA LIQUIDIFICADA'],
 }
 
+// Pratos-Base de Carboidrato pré-cadastrados (gerenciáveis no Banco de Pratos)
+export const CARBOIDRATOS_INICIAIS = [
+  {
+    id: 'carb1',
+    categoria: 'Arroz',
+    nome: 'Arroz Parboilizado',
+    nomeAbrev: 'ARROZ PARBOILIZADO',
+    nomeBranda: 'ARROZ PARBOILIZADO',
+    nomePastosa: 'ARROZ PAPA',
+    nomeLiquida: 'CANJA LIQUIDIFICADA',
+  },
+  {
+    id: 'carb2',
+    categoria: 'Arroz',
+    nome: 'Arroz Integral',
+    nomeAbrev: 'ARROZ INTEGRAL',
+    nomeBranda: 'ARROZ BRANCO',
+    nomePastosa: 'ARROZ BRANCO PAPA',
+    nomeLiquida: '',
+  },
+  {
+    id: 'carb3',
+    categoria: 'Arroz',
+    nome: 'Arroz Branco',
+    nomeAbrev: 'ARROZ BRANCO',
+    nomeBranda: 'ARROZ BRANCO',
+    nomePastosa: 'ARROZ BRANCO PAPA',
+    nomeLiquida: '',
+  },
+  {
+    id: 'carb4',
+    categoria: 'Arroz',
+    nome: 'Arroz Branco Papa',
+    nomeAbrev: 'ARROZ BRANCO PAPA',
+    nomeBranda: 'ARROZ BRANCO',
+    nomePastosa: 'ARROZ BRANCO PAPA',
+    nomeLiquida: '',
+  },
+  {
+    id: 'carb5',
+    categoria: 'Massa',
+    nome: 'Massa Espaguete',
+    nomeAbrev: 'MASSA ESPAGUETE',
+    nomeBranda: 'MASSA',
+    nomePastosa: 'MASSA PAPA',
+    nomeLiquida: '',
+  },
+  {
+    id: 'carb6',
+    categoria: 'Massa',
+    nome: 'Massa Parafuso',
+    nomeAbrev: 'MASSA PARAFUSO',
+    nomeBranda: 'MASSA',
+    nomePastosa: 'MASSA PAPA',
+    nomeLiquida: '',
+  },
+  {
+    id: 'carb7',
+    categoria: 'Outro',
+    nome: 'Canja Liquidificada',
+    nomeAbrev: 'CANJA LIQUIDIFICADA',
+    nomeBranda: '',
+    nomePastosa: 'CANJA',
+    nomeLiquida: 'CANJA LIQUIDIFICADA',
+  },
+]
+
 // Saladas pré-cadastradas (somente Almoço)
 export const SALADAS_INICIAIS = [
   { id: 'sal1', nome: 'Alface Simples', nomeAbrev: 'ALFACE' },

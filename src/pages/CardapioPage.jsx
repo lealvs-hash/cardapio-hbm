@@ -63,8 +63,8 @@ const COLS = [
 ]
 
 const CATEGORIAS_RAPIDAS = {
+  carboidrato: ['Arroz', 'Massa', 'Tubérculo / Cereal', 'Outro'],
   proteina:  [
-    'Prato Base',
     'Frango — Peito', 'Frango — Sobrecoxa', 'Frango — Moído',
     'Bovina — Moída', 'Bovina — Coxão de Dentro', 'Bovina — Patinho', 'Bovina — Vazio',
     'Suíno — Pernil', 'Peixe — Filé', 'Outra',
@@ -72,7 +72,6 @@ const CATEGORIAS_RAPIDAS = {
   leguminosa: ['Leguminosa'],
   guarnicao:  ['Guarnição'],
   salada:     ['Salada'],
-  base:       ['Prato Base'],
 }
 
 // ─────────────────────────────────────────────
@@ -132,7 +131,13 @@ function QuickCreateModal({ tipo, initial = null, onSave, onClose }) {
     })
   }
 
-  const labels = { proteina: 'Proteína / Prato', leguminosa: 'Leguminosa', guarnicao: 'Guarnição', salada: 'Salada', base: 'Prato Base' }
+  const labels = {
+    carboidrato: 'Prato-Base (Carboidrato)',
+    proteina: 'Proteína / Prato',
+    leguminosa: 'Prato-Base: Leguminosa',
+    guarnicao: 'Guarnição',
+    salada: 'Salada',
+  }
 
   const handleSave = () => {
     const nomeVal = (form.nomeAbrev || form.nome || '').trim()
@@ -167,7 +172,7 @@ function QuickCreateModal({ tipo, initial = null, onSave, onClose }) {
           <button className="icon-btn" onClick={onClose}><X size={14} /></button>
         </div>
         <div className="modal-body" style={{ padding: 16 }}>
-          {tipo === 'proteina' && (
+          {(tipo === 'proteina' || tipo === 'carboidrato') && (
             <div className="form-group" style={{ marginBottom: 12 }}>
               <label>Categoria</label>
               <div className="select-wrapper">
@@ -186,13 +191,37 @@ function QuickCreateModal({ tipo, initial = null, onSave, onClose }) {
               type="text"
               value={form.nomeAbrev || form.nome || ''}
               onChange={handleUpperChange('nomeAbrev', true)}
-              placeholder="Ex: PEITO DE FRANGO AO MOLHO CREMOSO DE MILHO"
+              placeholder="Ex: ARROZ PARBOILIZADO, FILÉ DE PEITO..."
               style={{ textTransform: 'uppercase' }}
             />
             <span className="field-hint" style={{ fontSize: '10px', color: '#666' }}>
               Aparece na Dieta Livre e repete idêntico na Dieta DM
             </span>
           </div>
+
+          {/* Adaptações para Carboidrato */}
+          {tipo === 'carboidrato' && (
+            <>
+              <div className="modal-section-title" style={{ marginTop: 12, marginBottom: 8, fontSize: '11px', fontWeight: 800, color: '#1565c0' }}>
+                🥣 Adaptações do Prato-Base por Dieta
+              </div>
+              <div className="form-grid form-grid-3" style={{ gap: 8 }}>
+                <div className="form-group">
+                  <label>Opção BRANDA</label>
+                  <input type="text" value={form.nomeBranda} onChange={handleUpperChange('nomeBranda')} placeholder="Ex: ARROZ BRANCO" style={{ textTransform: 'uppercase' }} />
+                  <span className="field-hint" style={{ fontSize: '10px', color: '#666' }}>Se vazio, usa Dieta Livre</span>
+                </div>
+                <div className="form-group">
+                  <label>Opção PASTOSA</label>
+                  <input type="text" value={form.nomePastosa} onChange={handleUpperChange('nomePastosa')} placeholder="Ex: ARROZ PAPA" style={{ textTransform: 'uppercase' }} />
+                </div>
+                <div className="form-group">
+                  <label>Opção LÍQ. PASTOSA</label>
+                  <input type="text" value={form.nomeLiquida} onChange={handleUpperChange('nomeLiquida')} placeholder="Ex: CANJA LIQUIDIFICADA" style={{ textTransform: 'uppercase' }} />
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Adaptações para Proteína */}
           {tipo === 'proteina' && (
@@ -249,15 +278,15 @@ function QuickCreateModal({ tipo, initial = null, onSave, onClose }) {
             <div className="form-grid form-grid-3" style={{ marginTop: 8, gap: 6 }}>
               <div className="form-group">
                 <label>Branda</label>
-                <input type="text" value={form.nomeBranda} onChange={upper('nomeBranda')} placeholder="CALDO DE FEIJÃO" />
+                <input type="text" value={form.nomeBranda} onChange={handleUpperChange('nomeBranda')} placeholder="CALDO DE FEIJÃO" style={{ textTransform: 'uppercase' }} />
               </div>
               <div className="form-group">
                 <label>Pastosa</label>
-                <input type="text" value={form.nomePastosa} onChange={upper('nomePastosa')} placeholder="FEIJÃO LIQUIDIFICADO" />
+                <input type="text" value={form.nomePastosa} onChange={handleUpperChange('nomePastosa')} placeholder="FEIJÃO LIQUIDIFICADO" style={{ textTransform: 'uppercase' }} />
               </div>
               <div className="form-group">
                 <label>Líquida</label>
-                <input type="text" value={form.nomeLiquida} onChange={upper('nomeLiquida')} placeholder="CALDO COADO" />
+                <input type="text" value={form.nomeLiquida} onChange={handleUpperChange('nomeLiquida')} placeholder="CALDO COADO" style={{ textTransform: 'uppercase' }} />
               </div>
             </div>
           )}
@@ -276,7 +305,7 @@ function QuickCreateModal({ tipo, initial = null, onSave, onClose }) {
 // ─────────────────────────────────────────────
 // Tabela interativa de uma refeição
 // ─────────────────────────────────────────────
-function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, guarnicoes, saladas = [], showSalada, store, onOpenFicha, dataRef, cardapios = {} }) {
+function EditableRefeicaoTable({ title, r, onChange, carboidratos = [], proteinas, leguminosas, guarnicoes, saladas = [], showSalada, store, onOpenFicha, dataRef, cardapios = {} }) {
   const [qc, setQC] = useState(null) // { tipo, field }
   const [editItem, setEditItem] = useState(null) // { tipo, item }
 
@@ -293,15 +322,16 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
   const repGuard = verificarRepeticaoPrato(r.guarnicaoId, r.guarnicaoAbrev || guard?.nomeAbrev || guard?.nome, dataRef, cardapios)
 
   const cats = [...new Set(proteinas.map(p => p.categoria))]
-  const pratosBase = proteinas.filter(p => p.categoria === 'Prato Base')
 
   // ── Quick-create handler ──
   const handleQCSave = (tipo, data) => {
     const id = `qc_${Date.now()}`
     const item = { ...data, id }
-    if (tipo === 'proteina' || tipo === 'base') {
+    if (tipo === 'carboidrato') {
+      store.adicionarCarboidrato(item)
+      onChange({ ...r, [qc.field]: item.nomeAbrev || item.nome })
+    } else if (tipo === 'proteina') {
       store.adicionarProteina(item)
-      // If tipo=base, field is a base key; if proteina, field is proteinaId
       if (qc.field === 'proteinaId') {
         onChange({
           ...r,
@@ -313,13 +343,10 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
           proteinaPastosaManual: undefined,
           proteinaLiquidaManual: undefined, proteinaLiquidaId: undefined,
         })
-      } else {
-        // base field: store nomeAbrev as value
-        onChange({ ...r, [qc.field]: item.nomeAbrev })
       }
     } else if (tipo === 'leguminosa') {
       store.adicionarLeguminosa(item)
-      onChange({ ...r, leguminosaId: id })
+      onChange({ ...r, leguminosaId: id, leguminosaAbrev: item.nomeAbrev || item.nome })
     } else if (tipo === 'guarnicao') {
       store.adicionarGuarnicao(item)
       onChange({
@@ -339,7 +366,9 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
 
   // ── Quick-edit handler ──
   const handleEditSave = (tipo, data) => {
-    if (tipo === 'proteina' || tipo === 'base') {
+    if (tipo === 'carboidrato') {
+      store.editarCarboidrato(data.id, data)
+    } else if (tipo === 'proteina') {
       store.editarProteina(data.id, data)
       if (r.proteinaId === data.id) {
         onChange({
@@ -383,18 +412,18 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
     const val = r[field]
     const handleChange = (e) => {
       if (e.target.value === '__add__') {
-        setQC({ tipo: 'base', field })
+        setQC({ tipo: 'carboidrato', field })
       } else {
         onChange({ ...r, [field]: e.target.value })
       }
     }
     return (
       <select className="table-select" value={val} onChange={handleChange}>
-        <option value="__add__">+ Prato</option>
+        <option value="__add__">+ Novo Prato-Base</option>
         {options.map(b => <option key={b} value={b}>{b}</option>)}
-        {pratosBase.length > 0 && (
-          <optgroup label="── Pratos Especiais ──">
-            {pratosBase.map(p => <option key={p.id} value={p.nomeAbrev}>{p.nome}</option>)}
+        {carboidratos.length > 0 && (
+          <optgroup label="── Pratos-Base Cadastrados ──">
+            {carboidratos.map(p => <option key={p.id} value={p.nomeAbrev || p.nome}>{p.nomeAbrev || p.nome}</option>)}
           </optgroup>
         )}
       </select>
@@ -850,7 +879,7 @@ function EditableRefeicaoTable({ title, r, onChange, proteinas, leguminosas, gua
 // ─────────────────────────────────────────────
 export default function CardapioPage({ store, onOpenFicha, selectedDate: propSelectedDate, setSelectedDate: propSetSelectedDate }) {
   const { state, salvarCardapio, salvarRascunhoCardapio } = store
-  const { proteinas, leguminosas, guarnicoes, saladas = [], cardapios, rascunhosCardapio = {} } = state
+  const { carboidratos = [], proteinas, leguminosas, guarnicoes, saladas = [], cardapios, rascunhosCardapio = {} } = state
 
   const todayStr = new Date().toISOString().slice(0, 10)
   const [internalDate, setInternalDate] = useState(todayStr)
@@ -1047,6 +1076,7 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
       <EditableRefeicaoTable
         title="ALMOÇO"
         r={almoco} onChange={setAlmoco}
+        carboidratos={carboidratos}
         proteinas={proteinas} leguminosas={leguminosas}
         guarnicoes={guarnicoes} saladas={saladas}
         showSalada={true} store={store}
@@ -1059,6 +1089,7 @@ export default function CardapioPage({ store, onOpenFicha, selectedDate: propSel
       <EditableRefeicaoTable
         title="JANTAR"
         r={jantar} onChange={setJantar}
+        carboidratos={carboidratos}
         proteinas={proteinas} leguminosas={leguminosas}
         guarnicoes={guarnicoes} saladas={saladas}
         showSalada={false} store={store}

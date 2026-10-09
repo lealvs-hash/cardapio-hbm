@@ -50,6 +50,13 @@ function ModalPreparacao({ initial, onSave, onClose, titulo, tipo = 'proteina', 
     })
   }
 
+  const CATEGORIAS_CARBOIDRATO = [
+    'Arroz',
+    'Massa',
+    'Tubérculo / Cereal',
+    'Outro',
+  ]
+
   const CATEGORIAS_PROTEINA = [
     'Bovina — Coxão de Dentro',
     'Bovina — Patinho',
@@ -60,7 +67,6 @@ function ModalPreparacao({ initial, onSave, onClose, titulo, tipo = 'proteina', 
     'Frango — Moído',
     'Suíno — Pernil',
     'Peixe — Filé',
-    'Prato Base',
     'Outra',
   ]
 
@@ -72,7 +78,9 @@ function ModalPreparacao({ initial, onSave, onClose, titulo, tipo = 'proteina', 
     'Guarnição Geral',
   ]
 
-  const categoriasDisponiveis = tipo === 'guarnicao' ? CATEGORIAS_GUARNICAO : CATEGORIAS_PROTEINA
+  const categoriasDisponiveis = tipo === 'carboidrato'
+    ? CATEGORIAS_CARBOIDRATO
+    : (tipo === 'guarnicao' ? CATEGORIAS_GUARNICAO : CATEGORIAS_PROTEINA)
 
   return (
     <div className="modal-overlay">
@@ -104,7 +112,11 @@ function ModalPreparacao({ initial, onSave, onClose, titulo, tipo = 'proteina', 
                 type="text"
                 value={form.nomeAbrev || form.nome || ''}
                 onChange={handleUpperChange('nomeAbrev', true)}
-                placeholder={tipo === 'guarnicao' ? 'Ex: BATATA ASSADA C/ ERVAS' : 'Ex: PEITO DE FRANGO AO MOLHO CREMOSO DE MILHO'}
+                placeholder={
+                  tipo === 'carboidrato'
+                    ? 'Ex: ARROZ PARBOILIZADO ou MASSA ESPAGUETE'
+                    : (tipo === 'guarnicao' ? 'Ex: BATATA ASSADA C/ ERVAS' : 'Ex: PEITO DE FRANGO AO MOLHO CREMOSO DE MILHO')
+                }
                 style={{ textTransform: 'uppercase' }}
                 autoFocus
               />
@@ -208,7 +220,7 @@ function EditRow({ fields, item, onSave, onCancel }) {
 }
 
 // ── Simple two-field table (Guarnições, Saladas, Leguminosas) ──
-function SimpleTable({ titulo, emoji, items = [], onAdd, onEdit, onDelete, emptyItem, fields }) {
+function SimpleTable({ titulo, emoji, items = [], onAdd, onEdit, onDelete, emptyItem, fields, addLabel }) {
   const [editingId, setEditingId] = useState(null)
   const [adding, setAdding] = useState(false)
 
@@ -219,7 +231,7 @@ function SimpleTable({ titulo, emoji, items = [], onAdd, onEdit, onDelete, empty
           {emoji} {titulo} <span className="count" style={{ fontSize: '12px', color: '#666' }}>({items.length})</span>
         </h3>
         <button className="btn btn-sm btn-primary" onClick={() => setAdding(true)}>
-          <Plus size={14} /> Adicionar
+          <Plus size={14} /> {addLabel || 'Adicionar'}
         </button>
       </div>
       <div className="table-scroll">
@@ -324,22 +336,22 @@ const GRUPOS_CARNES = [
   { key: 'FRANGO', label: 'Aves / Frango' },
   { key: 'SUINO', label: 'Carne Suína' },
   { key: 'PEIXE', label: 'Peixes' },
-  { key: 'BASE', label: 'Pratos Base / Mistos' },
 ]
 
 export default function BancoPratos({ store, onOpenFicha }) {
   const {
     state,
+    adicionarCarboidrato, editarCarboidrato, excluirCarboidrato, moverCarboidrato,
     adicionarProteina, editarProteina, excluirProteina, moverProteina,
     adicionarLeguminosa, editarLeguminosa, excluirLeguminosa,
     adicionarGuarnicao, editarGuarnicao, excluirGuarnicao, moverGuarnicao,
     adicionarSalada, editarSalada, excluirSalada,
   } = store
 
-  const { proteinas = [], leguminosas = [], guarnicoes = [], saladas = [], fichasTecnicas = [] } = state
+  const { carboidratos = [], proteinas = [], leguminosas = [], guarnicoes = [], saladas = [], fichasTecnicas = [] } = state
 
-  // Aba principal de tipo de alimento: Carnes | Leguminosas | Guarnições | Saladas
-  const [tipoAtivo, setTipoAtivo] = useState('proteinas')
+  // Aba principal de tipo de alimento: Carboidratos | Leguminosas | Proteínas | Guarnições | Saladas
+  const [tipoAtivo, setTipoAtivo] = useState('carboidratos')
   // Sub-filtro dentro de Proteínas (Bovina, Frango, Suíno, Peixe, Todos)
   const [subGrupoCarne, setSubGrupoCarne] = useState('TODOS')
   const [busca, setBusca] = useState('')
@@ -348,7 +360,8 @@ export default function BancoPratos({ store, onOpenFicha }) {
   const [draggedId, setDraggedId] = useState(null)
   const [dragOverId, setDragOverId] = useState(null)
 
-  // Modal de Proteína e Guarnição
+  // Modais de Criação/Edição
+  const [modalCarboidrato, setModalCarboidrato] = useState(null) // null | 'new' | item
   const [modalProteina, setModalProteina] = useState(null) // null | 'new' | item
   const [modalGuarnicao, setModalGuarnicao] = useState(null) // null | 'new' | item
 
@@ -363,7 +376,6 @@ export default function BancoPratos({ store, onOpenFicha }) {
     if (subGrupoCarne === 'FRANGO') return (p.categoria || '').toLowerCase().includes('frango')
     if (subGrupoCarne === 'SUINO') return (p.categoria || '').toLowerCase().includes('suíno') || (p.categoria || '').toLowerCase().includes('suino')
     if (subGrupoCarne === 'PEIXE') return (p.categoria || '').toLowerCase().includes('peixe')
-    if (subGrupoCarne === 'BASE') return (p.categoria || '').toLowerCase().includes('base')
     return true
   })
 
@@ -375,37 +387,250 @@ export default function BancoPratos({ store, onOpenFicha }) {
       <div className="page-header no-print">
         <h2>🍽️ Pratos & Preparações</h2>
         <p className="page-sub">
-          Gerencie e cadastre o cardápio de proteínas organizadas por tipo de corte/carne, além das leguminosas, guarnições e saladas.
+          Gerencie e cadastre as preparações do hospital organizadas nas 5 categorias do cardápio: Pratos-Base de Carboidrato e Leguminosa, Carnes & Proteínas, Guarnições e Saladas.
         </p>
       </div>
 
-      {/* Navegação por Grandes Grupos */}
+      {/* Navegação por Grandes Grupos alinhados 1:1 com o Cardápio */}
       <div style={{ display: 'flex', gap: 8, margin: '14px 0 16px', borderBottom: '2px solid #e0e0e0', paddingBottom: 8, flexWrap: 'wrap' }}>
         <button
+          className={`btn ${tipoAtivo === 'carboidratos' ? 'btn-primary' : 'btn-secondary'}`}
+          onClick={() => { setTipoAtivo('carboidratos'); setBusca('') }}
+        >
+          🍚 Prato-Base: Carboidrato ({carboidratos.length})
+        </button>
+        <button
+          className={`btn ${tipoAtivo === 'leguminosas' ? 'btn-primary' : 'btn-secondary'}`}
+          onClick={() => { setTipoAtivo('leguminosas'); setBusca('') }}
+        >
+          🫘 Prato-Base: Leguminosa ({leguminosas.length})
+        </button>
+        <button
           className={`btn ${tipoAtivo === 'proteinas' ? 'btn-primary' : 'btn-secondary'}`}
-          onClick={() => setTipoAtivo('proteinas')}
+          onClick={() => { setTipoAtivo('proteinas'); setBusca('') }}
         >
           🥩 Carnes & Proteínas ({proteinas.length})
         </button>
         <button
-          className={`btn ${tipoAtivo === 'leguminosas' ? 'btn-primary' : 'btn-secondary'}`}
-          onClick={() => setTipoAtivo('leguminosas')}
-        >
-          🫘 Leguminosas ({leguminosas.length})
-        </button>
-        <button
           className={`btn ${tipoAtivo === 'guarnicoes' ? 'btn-primary' : 'btn-secondary'}`}
-          onClick={() => setTipoAtivo('guarnicoes')}
+          onClick={() => { setTipoAtivo('guarnicoes'); setBusca('') }}
         >
           🥗 Guarnições ({guarnicoes.length})
         </button>
         <button
           className={`btn ${tipoAtivo === 'saladas' ? 'btn-primary' : 'btn-secondary'}`}
-          onClick={() => setTipoAtivo('saladas')}
+          onClick={() => { setTipoAtivo('saladas'); setBusca('') }}
         >
           🥬 Saladas ({saladas.length})
         </button>
       </div>
+
+      {/* SEÇÃO PRATO-BASE: CARBOIDRATOS */}
+      {tipoAtivo === 'carboidratos' && (
+        <div className="banco-section">
+          <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 10 }}>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: '#1e293b' }}>
+                🍚 Prato-Base: Carboidrato <span className="count" style={{ fontSize: '12px', color: '#64748b' }}>({carboidratos.length})</span>
+              </h3>
+              <span style={{ fontSize: '12px', color: '#64748b' }}>
+                Arrozes, massas e cereais base que alimentam a 1ª linha do Cardápio do Dia.
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <div style={{ position: 'relative' }}>
+                <Search size={15} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: '#888' }} />
+                <input
+                  type="text"
+                  placeholder="Buscar carboidrato..."
+                  value={busca}
+                  onChange={e => setBusca(e.target.value)}
+                  style={{ padding: '5px 10px 5px 28px', fontSize: '12px', borderRadius: 4, border: '1px solid #ccc', minWidth: 180 }}
+                />
+              </div>
+              <button className="btn btn-sm btn-primary" onClick={() => setModalCarboidrato('new')}>
+                <Plus size={14} /> + Novo Prato-Base Carboidrato
+              </button>
+            </div>
+          </div>
+
+          {modalCarboidrato && (
+            <ModalPreparacao
+              tipo="carboidrato"
+              titulo={modalCarboidrato === 'new' ? 'Cadastrar Prato-Base (Carboidrato)' : modalCarboidrato._isCopia ? 'Copiar Prato-Base (Carboidrato)' : 'Editar Prato-Base (Carboidrato)'}
+              initial={modalCarboidrato !== 'new' ? modalCarboidrato : undefined}
+              onClose={() => setModalCarboidrato(null)}
+              onOpenFicha={onOpenFicha}
+              onSave={(data) => {
+                if (modalCarboidrato === 'new' || modalCarboidrato._isCopia || !modalCarboidrato.id) {
+                  adicionarCarboidrato(data)
+                } else {
+                  editarCarboidrato(modalCarboidrato.id, data)
+                }
+                setModalCarboidrato(null)
+              }}
+            />
+          )}
+
+          <div className="table-scroll">
+            <table className="banco-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '38px', textAlign: 'center' }} title="Segurar e puxar para reordenar"></th>
+                  <th style={{ width: '32%' }}>Nome do Carboidrato (DL e DM)</th>
+                  <th style={{ width: '22%' }}>Opção Branda</th>
+                  <th style={{ width: '22%' }}>Opção Pastosa</th>
+                  <th style={{ width: '14%', textAlign: 'center' }}>Ficha / Custo</th>
+                  <th style={{ width: '10%', textAlign: 'center' }}>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {carboidratos
+                  .filter(c => {
+                    const termo = busca.toLowerCase()
+                    return (c.nome || '').toLowerCase().includes(termo) ||
+                           (c.nomeAbrev || '').toLowerCase().includes(termo) ||
+                           (c.categoria || '').toLowerCase().includes(termo)
+                  })
+                  .map(c => {
+                    const ficha = getFichaDoPrato(c, fichasTecnicas)
+                    const custo = calcularCustoPorcao(ficha)
+                    const isDragging = draggedId === c.id
+                    const isOver = dragOverId === c.id && !isDragging
+
+                    return (
+                      <tr
+                        key={c.id}
+                        onDragOver={(e) => {
+                          e.preventDefault()
+                          e.dataTransfer.dropEffect = 'move'
+                          if (dragOverId !== c.id) setDragOverId(c.id)
+                        }}
+                        onDragLeave={() => {
+                          if (dragOverId === c.id) setDragOverId(null)
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault()
+                          if (draggedId && draggedId !== c.id) {
+                            moverCarboidrato(draggedId, c.id)
+                          }
+                          setDraggedId(null)
+                          setDragOverId(null)
+                        }}
+                        style={{
+                          opacity: isDragging ? 0.35 : 1,
+                          background: isOver ? '#e3f2fd' : undefined,
+                          borderTop: isOver ? '2px solid #1976d2' : undefined,
+                          transition: 'background 0.15s ease, opacity 0.15s ease',
+                        }}
+                      >
+                        <td className="drag-handle-cell">
+                          <div
+                            draggable
+                            onDragStart={(e) => {
+                              setDraggedId(c.id)
+                              e.dataTransfer.effectAllowed = 'move'
+                              e.dataTransfer.setData('text/plain', c.id)
+                            }}
+                            onDragEnd={() => {
+                              setDraggedId(null)
+                              setDragOverId(null)
+                            }}
+                            className="drag-grip-handle"
+                            title="Segure e arraste para reordenar"
+                          >
+                            <GripVertical size={16} />
+                          </div>
+                        </td>
+                        <td style={{ fontWeight: 700, color: '#0d47a1' }}>{c.nomeAbrev || c.nome}</td>
+                        <td className="mono" style={{ color: '#2e7d32' }}>{c.nomeBranda || c.nomeAbrev || c.nome}</td>
+                        <td className="mono" style={{ color: '#e65100' }}>{formatarNomePastosa(c)}</td>
+                        <td style={{ textAlign: 'center' }}>
+                          {ficha ? (
+                            <button
+                              type="button"
+                              className="btn btn-sm"
+                              style={{
+                                background: '#e8f5e9',
+                                color: '#1b5e20',
+                                border: '1px solid #81c784',
+                                fontSize: '11px',
+                                fontWeight: 700,
+                                padding: '3px 8px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 4,
+                                borderRadius: 4,
+                                cursor: 'pointer',
+                              }}
+                              onClick={() => onOpenFicha && onOpenFicha(c)}
+                              title="Ver Ficha Técnica, Insumos e Modo de Preparo"
+                            >
+                              <FileText size={12} />
+                              <span>R$ {custo !== null ? custo.toFixed(2).replace('.', ',') : '0,00'}</span>
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              className="btn btn-sm"
+                              style={{
+                                background: '#fafafa',
+                                color: '#555',
+                                border: '1px dashed #bbb',
+                                fontSize: '11px',
+                                padding: '3px 6px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 3,
+                                borderRadius: 4,
+                                cursor: 'pointer',
+                              }}
+                              onClick={() => onOpenFicha && onOpenFicha(c)}
+                              title="Criar Ficha Técnica para este prato-base"
+                            >
+                              <Plus size={11} />
+                              <span>Criar Ficha</span>
+                            </button>
+                          )}
+                        </td>
+                        <td style={{ textAlign: 'center', whiteSpace: 'nowrap' }}>
+                          <button
+                            className="icon-btn"
+                            onClick={() => {
+                              const copia = {
+                                ...c,
+                                id: undefined,
+                                nome: `${c.nome} (Cópia)`,
+                                nomeAbrev: `${c.nomeAbrev || c.nome} CÓPIA`.slice(0, 45),
+                                _isCopia: true,
+                              }
+                              setModalCarboidrato(copia)
+                            }}
+                            title="Duplicar / Copiar"
+                            style={{ color: '#0277bd' }}
+                          >
+                            <Copy size={14} />
+                          </button>
+                          <button className="icon-btn" onClick={() => setModalCarboidrato(c)} title="Editar"><Pencil size={14} /></button>
+                          <button
+                            className="icon-btn red"
+                            onClick={() => {
+                              if (window.confirm(`Excluir "${c.nome}"?`)) excluirCarboidrato(c.id)
+                            }}
+                            title="Excluir"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* SEÇÃO PROTEÍNAS */}
       {tipoAtivo === 'proteinas' && (
@@ -643,8 +868,9 @@ export default function BancoPratos({ store, onOpenFicha }) {
       {/* SEÇÃO LEGUMINOSAS */}
       {tipoAtivo === 'leguminosas' && (
         <SimpleTable
-          titulo="Leguminosas"
+          titulo="Prato-Base: Leguminosas"
           emoji="🫘"
+          addLabel="+ Novo Prato-Base Leguminosa"
           items={leguminosas}
           onAdd={adicionarLeguminosa}
           onEdit={editarLeguminosa}
@@ -853,6 +1079,7 @@ export default function BancoPratos({ store, onOpenFicha }) {
         <SimpleTable
           titulo="Saladas"
           emoji="🥬"
+          addLabel="+ Nova Salada"
           items={saladas}
           onAdd={adicionarSalada}
           onEdit={editarSalada}

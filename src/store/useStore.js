@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import {
+  CARBOIDRATOS_INICIAIS,
   PROTEINAS_INICIAIS,
   LEGUMINOSAS_INICIAIS,
   GUARNICOES_INICIAIS,
@@ -126,8 +127,28 @@ function normalizarCardapios(cardapios = {}) {
   return res
 }
 
+function extrairPratosBaseDeProteinas(prots = []) {
+  const pratosBase = []
+  const proteinasReais = []
+  for (const p of prots) {
+    if (p && typeof p === 'object') {
+      const cat = (p.categoria || '').toLowerCase()
+      if (cat.includes('base') || cat === 'prato base') {
+        pratosBase.push({
+          ...p,
+          categoria: 'Arroz',
+        })
+      } else {
+        proteinasReais.push(p)
+      }
+    }
+  }
+  return { pratosBase, proteinasReais }
+}
+
 function createInitialState() {
   return {
+    carboidratos: CARBOIDRATOS_INICIAIS,
     proteinas: normalizarProteinas(PROTEINAS_INICIAIS),
     leguminosas: LEGUMINOSAS_INICIAIS,
     guarnicoes: GUARNICOES_INICIAIS,
@@ -168,8 +189,13 @@ export function useStore() {
   const [state, setState] = useState(() => {
     const saved = loadFromStorage()
     if (saved) {
+      const { pratosBase, proteinasReais } = extrairPratosBaseDeProteinas(saved.proteinas ?? PROTEINAS_INICIAIS)
+      const carbsSalvos = saved.carboidratos ?? CARBOIDRATOS_INICIAIS
+      const carboidratosFinais = mesclarListasPorId(carbsSalvos, pratosBase)
+
       return {
-        proteinas: normalizarProteinas(saved.proteinas ?? PROTEINAS_INICIAIS),
+        carboidratos: carboidratosFinais,
+        proteinas: normalizarProteinas(proteinasReais),
         leguminosas: saved.leguminosas ?? LEGUMINOSAS_INICIAIS,
         guarnicoes: saved.guarnicoes ?? GUARNICOES_INICIAIS,
         saladas: saved.saladas ?? SALADAS_INICIAIS,
@@ -194,7 +220,10 @@ export function useStore() {
       if (exists && remoto) {
         isRemoteUpdateRef.current = true
         setState(prev => {
-          const proteinasMescladas = normalizarProteinas(mesclarListasPorId(remoto.proteinas, prev.proteinas))
+          const { pratosBase: pbRemoto, proteinasReais: protRemoto } = extrairPratosBaseDeProteinas(remoto.proteinas || [])
+          const carbsBaseRemotos = mesclarListasPorId(remoto.carboidratos || [], pbRemoto)
+          const carboidratosMesclados = mesclarListasPorId(carbsBaseRemotos, prev.carboidratos || [])
+          const proteinasMescladas = normalizarProteinas(mesclarListasPorId(protRemoto, prev.proteinas || []))
           const guarnicoesMescladas = mesclarListasPorId(remoto.guarnicoes, prev.guarnicoes)
           const leguminosasMescladas = mesclarListasPorId(remoto.leguminosas, prev.leguminosas)
           const saladasMescladas = mesclarListasPorId(remoto.saladas, prev.saladas)
@@ -206,6 +235,7 @@ export function useStore() {
             setTimeout(() => {
               salvarDadosBD({
                 ...remoto,
+                carboidratos: carboidratosMesclados,
                 proteinas: proteinasMescladas,
                 guarnicoes: guarnicoesMescladas,
                 cardapios: cardapiosMesclados,
@@ -214,6 +244,7 @@ export function useStore() {
           }
 
           return {
+            carboidratos: carboidratosMesclados,
             proteinas: proteinasMescladas,
             leguminosas: leguminosasMescladas,
             guarnicoes: guarnicoesMescladas,
@@ -335,6 +366,46 @@ export function useStore() {
       const { [data]: _, ...rest } = prev.cardapios
       const { [data]: _r, ...restRascunhos } = prev.rascunhosCardapio || {}
       return { ...prev, cardapios: rest, rascunhosCardapio: restRascunhos }
+    })
+  }, [])
+
+  // ──── Carboidratos actions ────
+
+  const adicionarCarboidrato = useCallback((carb) => {
+    const id = carb.id || `custom_c_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
+    setState(prev => ({
+      ...prev,
+      carboidratos: [...(prev.carboidratos || []), { ...carb, id }],
+    }))
+  }, [])
+
+  const editarCarboidrato = useCallback((id, dados) => {
+    setState(prev => ({
+      ...prev,
+      carboidratos: (prev.carboidratos || []).map(c => c.id === id ? { ...c, ...dados, id } : c),
+    }))
+  }, [])
+
+  const excluirCarboidrato = useCallback((id) => {
+    setState(prev => ({
+      ...prev,
+      carboidratos: (prev.carboidratos || []).filter(c => c.id !== id),
+    }))
+  }, [])
+
+  const moverCarboidrato = useCallback((origemId, destinoId) => {
+    if (!origemId || !destinoId || origemId === destinoId) return
+    setState(prev => {
+      const list = [...(prev.carboidratos || [])]
+      const fromIndex = list.findIndex(c => c.id === origemId)
+      const toIndex = list.findIndex(c => c.id === destinoId)
+      if (fromIndex === -1 || toIndex === -1) return prev
+      const [item] = list.splice(fromIndex, 1)
+      list.splice(toIndex, 0, item)
+      return {
+        ...prev,
+        carboidratos: list,
+      }
     })
   }, [])
 
@@ -565,6 +636,11 @@ export function useStore() {
     salvarCeia,
     excluirCeia,
     excluirCardapio,
+    // Prato-Base: Carboidratos
+    adicionarCarboidrato,
+    editarCarboidrato,
+    excluirCarboidrato,
+    moverCarboidrato,
     // Proteínas
     adicionarProteina,
     editarProteina,

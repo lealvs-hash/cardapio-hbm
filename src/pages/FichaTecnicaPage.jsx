@@ -3,7 +3,7 @@ import { Plus, Trash2, Edit2, Printer, Save, Check, X, Image as ImageIcon, Calcu
 
 export default function FichaTecnicaPage({ store, selectedFichaId, setSelectedFichaId }) {
   const { state, salvarFichaTecnica, excluirFichaTecnica } = store
-  const { fichasTecnicas = [], insumos = [], proteinas = [], guarnicoes = [] } = state
+  const { fichasTecnicas = [], insumos = [], carboidratos = [], leguminosas = [], proteinas = [], guarnicoes = [] } = state
 
   const [fichaSelecionadaId, setFichaSelecionadaId] = useState(
     selectedFichaId || fichasTecnicas[0]?.id || ''
@@ -82,7 +82,7 @@ export default function FichaTecnicaPage({ store, selectedFichaId, setSelectedFi
 
   const criarNovaFicha = (nome, pratoId = null) => {
     const id = `ft_${Date.now()}`
-    const prato = pratoId ? [...proteinas, ...guarnicoes].find(p => p.id === pratoId) : null
+    const prato = pratoId ? [...carboidratos, ...leguminosas, ...proteinas, ...guarnicoes].find(p => p.id === pratoId) : null
     const baseInsumo = insumos.find(i =>
       nome.toUpperCase().includes(i.nome.toUpperCase())
     ) || insumos[0] || { nome: 'FRANGO - FILÉ', un: 'KG', valorUnitario: 11.20, fatorCorrecao: 1.0 }
@@ -981,7 +981,7 @@ export default function FichaTecnicaPage({ store, selectedFichaId, setSelectedFi
                     onChange={e => {
                       const pId = e.target.value
                       if (!pId) return
-                      const p = [...proteinas, ...guarnicoes].find(x => x.id === pId)
+                      const p = [...carboidratos, ...leguminosas, ...proteinas, ...guarnicoes].find(x => x.id === pId)
                       if (p) {
                         const inp = document.getElementById('nome-nova-ficha-input')
                         if (inp) inp.value = (p.nomeAbrev || p.nome).toUpperCase()
@@ -989,6 +989,16 @@ export default function FichaTecnicaPage({ store, selectedFichaId, setSelectedFi
                     }}
                   >
                     <option value="">— Digitar nome livremente ou selecione abaixo —</option>
+                    <optgroup label="🍚 Pratos-Base: Carboidratos">
+                      {carboidratos.map(c => (
+                        <option key={c.id} value={c.id}>{c.nomeAbrev || c.nome} ({c.categoria || 'Carboidrato'})</option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="🫘 Pratos-Base: Leguminosas">
+                      {leguminosas.map(l => (
+                        <option key={l.id} value={l.id}>{l.nomeAbrev || l.nome}</option>
+                      ))}
+                    </optgroup>
                     <optgroup label="🥩 Proteínas & Carnes">
                       {proteinas.map(p => (
                         <option key={p.id} value={p.id}>{p.nomeAbrev || p.nome} ({p.categoria || 'Proteína'})</option>
