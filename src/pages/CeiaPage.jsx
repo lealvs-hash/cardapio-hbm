@@ -38,7 +38,6 @@ export default function CeiaPage({ store }) {
   const [buscaHistorico, setBuscaHistorico] = useState('')
   const [saved, setSaved] = useState(false)
   const [printDate, setPrintDate] = useState(todayStr)
-  const [modeloPrint, setModeloPrint] = useState('moderno') // 'moderno' | 'classico'
   const [showPrevia, setShowPrevia] = useState(false)
 
   // Consolida todas as ceias gravadas (seja em state.ceias ou dentro de state.cardapios[data].ceia)
@@ -242,49 +241,6 @@ export default function CeiaPage({ store }) {
             </div>
 
             <div className="ceia-editor-actions">
-              {/* Seletor de Modelo de Impressão */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#f1f5f9', padding: '3px 5px', borderRadius: 8, border: '1px solid #cbd5e1' }}>
-                <span style={{ fontSize: '11px', fontWeight: 800, color: '#475569', padding: '0 4px' }}>Modelo:</span>
-                <button
-                  type="button"
-                  className="btn btn-sm"
-                  style={{
-                    fontSize: '11px',
-                    padding: '3px 8px',
-                    fontWeight: 800,
-                    borderRadius: 6,
-                    background: modeloPrint === 'moderno' ? '#4338ca' : 'transparent',
-                    color: modeloPrint === 'moderno' ? '#ffffff' : '#475569',
-                    border: 'none',
-                    boxShadow: modeloPrint === 'moderno' ? '0 1px 3px rgba(67,56,202,0.3)' : 'none',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => setModeloPrint('moderno')}
-                  title="Layout Moderno: Visual executivo com crachás coloridos e ícones hospitalares"
-                >
-                  🌟 Moderno
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-sm"
-                  style={{
-                    fontSize: '11px',
-                    padding: '3px 8px',
-                    fontWeight: 800,
-                    borderRadius: 6,
-                    background: modeloPrint === 'classico' ? '#1e293b' : 'transparent',
-                    color: modeloPrint === 'classico' ? '#ffffff' : '#475569',
-                    border: 'none',
-                    boxShadow: modeloPrint === 'classico' ? '0 1px 3px rgba(30,41,59,0.3)' : 'none',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => setModeloPrint('classico')}
-                  title="Layout Clássico: Modelo direto original estilo Word"
-                >
-                  📄 Clássico
-                </button>
-              </div>
-
               <button
                 type="button"
                 className={`btn btn-sm ${showPrevia ? 'btn-primary' : 'btn-outline'}`}
@@ -329,7 +285,7 @@ export default function CeiaPage({ store }) {
                 type="button"
                 className="btn btn-secondary"
                 onClick={() => handleImprimir(selectedDate, form)}
-                title={`Imprimir folha A4 da Ceia no modelo ${modeloPrint}`}
+                title="Imprimir folha A4 da Ceia"
                 style={{ fontSize: '12px', padding: '6px 12px' }}
               >
                 <Printer size={14} /> Imprimir Ceia
@@ -412,7 +368,7 @@ export default function CeiaPage({ store }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                   <Eye size={16} style={{ color: '#4338ca' }} />
                   <strong style={{ fontSize: '13px', color: '#1e293b' }}>
-                    Prévia da Folha A4 — {modeloPrint === 'moderno' ? '🌟 Modelo Moderno' : '📄 Modelo Clássico'}
+                    Prévia da Folha A4 da Ceia
                   </strong>
                   <span style={{ fontSize: '11px', color: '#64748b' }}>
                     (Data exibida exclusivamente no rodapé, sem repetição no topo)
@@ -444,7 +400,7 @@ export default function CeiaPage({ store }) {
                     ceia={form}
                     dataFormatada={formatDate(selectedDate)}
                     diaSemana={getDiaSemana(selectedDate)}
-                    modelo={modeloPrint}
+                    modelo="moderno"
                   />
                 </div>
               </div>
@@ -570,7 +526,7 @@ export default function CeiaPage({ store }) {
           ceia={ceiaParaPrint}
           dataFormatada={formatDate(printDate)}
           diaSemana={getDiaSemana(printDate)}
-          modelo={modeloPrint}
+          modelo="moderno"
         />
       </div>
     </div>
