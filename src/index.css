@@ -1012,11 +1012,399 @@ html, body {
     margin-top: 4mm !important;
     letter-spacing: 0.3px !important;
   }
+
+  /* ── MODELO MODERNO DE IMPRESSÃO DA CEIA ── */
+  .ceia-modern-sheet {
+    border: 1.5px solid #94a3b8 !important;
+    border-radius: 6px !important;
+    padding: 8mm 14mm !important;
+  }
+
+  .ceia-modern-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    border-bottom: 2px solid #1e293b !important;
+    padding-bottom: 3mm !important;
+    margin-bottom: 4mm !important;
+  }
+
+  .ceia-modern-brand-title {
+    font-size: 13pt !important;
+    font-weight: 900 !important;
+    color: #1e3a8a !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  .ceia-modern-brand-sub {
+    font-size: 8pt !important;
+    font-weight: 700 !important;
+    color: #475569 !important;
+    letter-spacing: 0.3px !important;
+  }
+
+  .ceia-modern-title {
+    font-size: 20pt !important;
+    font-weight: 900 !important;
+    color: #0f172a !important;
+    letter-spacing: 1.5px !important;
+    margin: 0 !important;
+    text-align: center !important;
+  }
+
+  .ceia-modern-header-tag {
+    text-align: right !important;
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    padding: 2mm 3.5mm !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.8mm !important;
+  }
+
+  .ceia-modern-tag-title {
+    font-size: 8.5pt !important;
+    font-weight: 900 !important;
+    color: #1e293b !important;
+    letter-spacing: 0.4px !important;
+  }
+
+  .ceia-modern-tag-sub {
+    font-size: 7pt !important;
+    font-weight: 700 !important;
+    color: #64748b !important;
+    letter-spacing: 0.2px !important;
+  }
+
+  .ceia-modern-body {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-around !important;
+    margin: 1mm 0 !important;
+  }
+
+  .ceia-modern-table {
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 3mm !important;
+  }
+
+  .ceia-modern-row {
+    background: #ffffff !important;
+  }
+
+  .ceia-modern-badge-cell {
+    width: 220px !important;
+    vertical-align: middle !important;
+    padding-right: 3mm !important;
+  }
+
+  .ceia-modern-badge {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 2.5mm 3.5mm !important;
+    border-radius: 5px !important;
+    border: 1.2px solid transparent !important;
+    box-sizing: border-box !important;
+  }
+
+  .ceia-modern-badge-icon {
+    font-size: 11pt !important;
+  }
+
+  .ceia-modern-badge-text {
+    font-size: 9.5pt !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.3px !important;
+    white-space: nowrap !important;
+  }
+
+  .ceia-modern-val-cell {
+    vertical-align: middle !important;
+    background: #f8fafc !important;
+    border: 1.2px solid #cbd5e1 !important;
+    border-radius: 5px !important;
+    padding: 3mm 4.5mm !important;
+  }
+
+  .ceia-modern-val-text {
+    font-size: 12pt !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    text-transform: uppercase !important;
+    line-height: 1.25 !important;
+  }
+
+  .ceia-modern-empty {
+    color: #94a3b8 !important;
+    font-weight: 400 !important;
+  }
+
+  .ceia-modern-footer {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-end !important;
+    border-top: 1.5px solid #cbd5e1 !important;
+    padding-top: 3mm !important;
+    margin-top: 3mm !important;
+  }
+
+  .ceia-modern-footer-obs {
+    font-size: 8pt !important;
+    font-weight: 700 !important;
+    color: #64748b !important;
+  }
+
+  .ceia-modern-footer-right {
+    text-align: right !important;
+  }
+
+  .ceia-modern-signature-line {
+    font-size: 8pt !important;
+    color: #334155 !important;
+    margin-bottom: 1.5mm !important;
+  }
+
+  .ceia-modern-sig-label {
+    font-weight: 700 !important;
+    margin-right: 4px !important;
+  }
+
+  .ceia-modern-footer-date {
+    font-size: 10.5pt !important;
+    font-weight: 900 !important;
+    color: #0f172a !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.3px !important;
+  }
 }
 
-/* Ceia print sheet hidden on screen */
+/* Ceia print sheet hidden on screen except inside preview container */
 .ceia-print-sheet {
   display: none;
+}
+
+/* ── Prévia na Tela da Ceia ── */
+.ceia-preview-box {
+  margin-top: 14px;
+  margin-bottom: 20px;
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 14px 18px;
+}
+
+.ceia-preview-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 14px;
+}
+
+.ceia-preview-paper-container {
+  display: flex;
+  justify-content: center;
+  background: #475569;
+  padding: 24px 14px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.ceia-preview-sheet {
+  background: #ffffff;
+  width: 100%;
+  max-width: 740px;
+  min-height: 480px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.28);
+  border-radius: 4px;
+  padding: 24px 32px;
+  box-sizing: border-box;
+}
+
+.ceia-preview-sheet .ceia-print-sheet {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  min-height: 440px;
+  background: #ffffff;
+  color: #000000;
+  font-family: Arial, Calibri, 'Helvetica Neue', sans-serif;
+}
+
+/* Prévia: Modelo Clássico na tela */
+.ceia-preview-sheet .ceia-classic-sheet .ceia-print-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.ceia-preview-sheet .ceia-classic-sheet .ceia-print-title {
+  font-size: 24px;
+  font-weight: 900;
+  text-align: center;
+  font-style: italic;
+  text-decoration: underline;
+  margin: 0;
+}
+.ceia-preview-sheet .ceia-classic-sheet .ceia-print-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 18px 0;
+}
+.ceia-preview-sheet .ceia-classic-sheet .ceia-print-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 15px;
+}
+.ceia-preview-sheet .ceia-classic-sheet .ceia-print-label {
+  font-weight: 900;
+  white-space: nowrap;
+}
+.ceia-preview-sheet .ceia-classic-sheet .ceia-print-val {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.ceia-preview-sheet .ceia-classic-sheet .ceia-print-footer {
+  text-align: right;
+  font-size: 14px;
+  font-weight: 900;
+  margin-top: 20px;
+}
+
+/* Prévia: Modelo Moderno na tela */
+.ceia-preview-sheet .ceia-modern-sheet {
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 18px 22px;
+}
+.ceia-preview-sheet .ceia-modern-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #1e293b;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+.ceia-preview-sheet .ceia-modern-brand-title {
+  font-size: 15px;
+  font-weight: 900;
+  color: #1e3a8a;
+}
+.ceia-preview-sheet .ceia-modern-brand-sub {
+  font-size: 10px;
+  font-weight: 700;
+  color: #475569;
+}
+.ceia-preview-sheet .ceia-modern-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: 1.5px;
+  margin: 0;
+  text-align: center;
+}
+.ceia-preview-sheet .ceia-modern-header-tag {
+  text-align: right;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 5px 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ceia-preview-sheet .ceia-modern-tag-title {
+  font-size: 10px;
+  font-weight: 900;
+  color: #1e293b;
+}
+.ceia-preview-sheet .ceia-modern-tag-sub {
+  font-size: 9px;
+  font-weight: 700;
+  color: #64748b;
+}
+.ceia-preview-sheet .ceia-modern-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 9px;
+}
+.ceia-preview-sheet .ceia-modern-badge-cell {
+  width: 210px;
+  vertical-align: middle;
+  padding-right: 12px;
+}
+.ceia-preview-sheet .ceia-modern-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border-radius: 6px;
+  border: 1.2px solid transparent;
+}
+.ceia-preview-sheet .ceia-modern-badge-icon {
+  font-size: 14px;
+}
+.ceia-preview-sheet .ceia-modern-badge-text {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.ceia-preview-sheet .ceia-modern-val-cell {
+  vertical-align: middle;
+  background: #f8fafc;
+  border: 1.2px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 7px 12px;
+}
+.ceia-preview-sheet .ceia-modern-val-text {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+  text-transform: uppercase;
+}
+.ceia-preview-sheet .ceia-modern-empty {
+  color: #94a3b8;
+  font-weight: 400;
+}
+.ceia-preview-sheet .ceia-modern-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-top: 1.5px solid #cbd5e1;
+  padding-top: 12px;
+  margin-top: 14px;
+}
+.ceia-preview-sheet .ceia-modern-footer-obs {
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748b;
+}
+.ceia-preview-sheet .ceia-modern-footer-right {
+  text-align: right;
+}
+.ceia-preview-sheet .ceia-modern-signature-line {
+  font-size: 10px;
+  color: #334155;
+  margin-bottom: 6px;
+}
+.ceia-preview-sheet .ceia-modern-sig-label {
+  font-weight: 700;
+  margin-right: 4px;
+}
+.ceia-preview-sheet .ceia-modern-footer-date {
+  font-size: 13px;
+  font-weight: 900;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 /* ── Seção CEIA do Cardápio (Tela) ── */

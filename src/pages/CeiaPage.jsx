@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { Moon, Printer, Save, Calendar, Search, Trash2, Edit3, ChevronLeft, ChevronRight, Check, Sparkles } from 'lucide-react'
+import { Moon, Printer, Save, Calendar, Search, Trash2, Edit3, ChevronLeft, ChevronRight, Check, Sparkles, Eye, EyeOff } from 'lucide-react'
 import CeiaPrintView from '../components/CeiaPrintView'
 import { DIAS_SEMANA } from '../data/initialData'
 
@@ -38,6 +38,8 @@ export default function CeiaPage({ store }) {
   const [buscaHistorico, setBuscaHistorico] = useState('')
   const [saved, setSaved] = useState(false)
   const [printDate, setPrintDate] = useState(todayStr)
+  const [modeloPrint, setModeloPrint] = useState('moderno') // 'moderno' | 'classico'
+  const [showPrevia, setShowPrevia] = useState(false)
 
   // Consolida todas as ceias gravadas (seja em state.ceias ou dentro de state.cardapios[data].ceia)
   const todasCeias = useMemo(() => {
@@ -240,11 +242,65 @@ export default function CeiaPage({ store }) {
             </div>
 
             <div className="ceia-editor-actions">
+              {/* Seletor de Modelo de Impressão */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#f1f5f9', padding: '3px 5px', borderRadius: 8, border: '1px solid #cbd5e1' }}>
+                <span style={{ fontSize: '11px', fontWeight: 800, color: '#475569', padding: '0 4px' }}>Modelo:</span>
+                <button
+                  type="button"
+                  className="btn btn-sm"
+                  style={{
+                    fontSize: '11px',
+                    padding: '3px 8px',
+                    fontWeight: 800,
+                    borderRadius: 6,
+                    background: modeloPrint === 'moderno' ? '#4338ca' : 'transparent',
+                    color: modeloPrint === 'moderno' ? '#ffffff' : '#475569',
+                    border: 'none',
+                    boxShadow: modeloPrint === 'moderno' ? '0 1px 3px rgba(67,56,202,0.3)' : 'none',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => setModeloPrint('moderno')}
+                  title="Layout Moderno: Visual executivo com crachás coloridos e ícones hospitalares"
+                >
+                  🌟 Moderno
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-sm"
+                  style={{
+                    fontSize: '11px',
+                    padding: '3px 8px',
+                    fontWeight: 800,
+                    borderRadius: 6,
+                    background: modeloPrint === 'classico' ? '#1e293b' : 'transparent',
+                    color: modeloPrint === 'classico' ? '#ffffff' : '#475569',
+                    border: 'none',
+                    boxShadow: modeloPrint === 'classico' ? '0 1px 3px rgba(30,41,59,0.3)' : 'none',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => setModeloPrint('classico')}
+                  title="Layout Clássico: Modelo direto original estilo Word"
+                >
+                  📄 Clássico
+                </button>
+              </div>
+
+              <button
+                type="button"
+                className={`btn btn-sm ${showPrevia ? 'btn-primary' : 'btn-outline'}`}
+                style={{ fontSize: '11px', padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 4 }}
+                onClick={() => setShowPrevia(!showPrevia)}
+                title="Visualizar como a folha A4 será impressa"
+              >
+                {showPrevia ? <EyeOff size={13} /> : <Eye size={13} />}
+                {showPrevia ? 'Ocultar Prévia' : 'Ver Prévia da Folha'}
+              </button>
+
               {form.dietaLivre && (
                 <button
                   type="button"
                   className="btn btn-outline"
-                  style={{ fontSize: '11px', padding: '6px 10px' }}
+                  style={{ fontSize: '11px', padding: '5px 10px' }}
                   onClick={handleReplicarLivre}
                   title="Copia o conteúdo da Dieta Livre para Psiquiatria e DM"
                 >
@@ -255,7 +311,7 @@ export default function CeiaPage({ store }) {
               <button
                 type="button"
                 className="btn btn-outline"
-                style={{ fontSize: '11px', padding: '6px 10px' }}
+                style={{ fontSize: '11px', padding: '5px 10px' }}
                 onClick={handleLimpar}
                 title="Limpar campos da ceia deste dia"
               >
@@ -265,17 +321,18 @@ export default function CeiaPage({ store }) {
                 type="button"
                 className="btn btn-primary"
                 onClick={handleSalvar}
-                style={{ background: '#4338ca', borderColor: '#3730a3' }}
+                style={{ background: '#4338ca', borderColor: '#3730a3', fontSize: '12px', padding: '6px 12px' }}
               >
-                <Save size={15} /> {saved ? '✓ Ceia Salva!' : 'Gravar Ceia'}
+                <Save size={14} /> {saved ? '✓ Ceia Salva!' : 'Gravar Ceia'}
               </button>
               <button
                 type="button"
                 className="btn btn-secondary"
                 onClick={() => handleImprimir(selectedDate, form)}
-                title="Imprimir folha A4 da Ceia sem quebras"
+                title={`Imprimir folha A4 da Ceia no modelo ${modeloPrint}`}
+                style={{ fontSize: '12px', padding: '6px 12px' }}
               >
-                <Printer size={15} /> Imprimir Ceia
+                <Printer size={14} /> Imprimir Ceia
               </button>
             </div>
           </div>
@@ -347,6 +404,52 @@ export default function CeiaPage({ store }) {
               />
             </div>
           </div>
+
+          {/* Prévia da Folha A4 na tela */}
+          {showPrevia && (
+            <div className="ceia-preview-box no-print">
+              <div className="ceia-preview-box-header">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                  <Eye size={16} style={{ color: '#4338ca' }} />
+                  <strong style={{ fontSize: '13px', color: '#1e293b' }}>
+                    Prévia da Folha A4 — {modeloPrint === 'moderno' ? '🌟 Modelo Moderno' : '📄 Modelo Clássico'}
+                  </strong>
+                  <span style={{ fontSize: '11px', color: '#64748b' }}>
+                    (Data exibida exclusivamente no rodapé, sem repetição no topo)
+                  </span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => handleImprimir(selectedDate, form)}
+                    style={{ fontSize: '11px', padding: '4px 8px' }}
+                  >
+                    <Printer size={13} /> Imprimir Agora
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline btn-sm"
+                    onClick={() => setShowPrevia(false)}
+                    style={{ fontSize: '11px', padding: '4px 8px' }}
+                  >
+                    ✕ Fechar Prévia
+                  </button>
+                </div>
+              </div>
+
+              <div className="ceia-preview-paper-container">
+                <div className="ceia-preview-sheet">
+                  <CeiaPrintView
+                    ceia={form}
+                    dataFormatada={formatDate(selectedDate)}
+                    diaSemana={getDiaSemana(selectedDate)}
+                    modelo={modeloPrint}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -467,6 +570,7 @@ export default function CeiaPage({ store }) {
           ceia={ceiaParaPrint}
           dataFormatada={formatDate(printDate)}
           diaSemana={getDiaSemana(printDate)}
+          modelo={modeloPrint}
         />
       </div>
     </div>
